@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>barcode.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="barcode.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="barcode.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="EPPlus" Version="6.1.2" />
+    <PackageReference Include="MySql.Data" Version="8.0.32" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="ServiceStack.Text.Core" Version="6.6.0" />
+    <PackageReference Include="Z.Dapper.Plus" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="libmiroppb">
+      <HintPath>..\..\libmiroppb\libmiroppb\bin\Debug\libmiroppb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="barcode.png" />
+  </ItemGroup>
+
+</Project>
