@@ -9,11 +9,9 @@ Currently uses my personal MariaDB server, but I wrote this to be as open to cha
 <img src="https://github.com/miroppb/PrintAndScan4Ukraine/blob/master/PrintAndScan4Ukraine/Images/ScanWindow.png?raw=true" alt="Screenshot" width="700"/>
 
 ## Requirements
----
 Written for .NET 7, but should be backwards compatible.
 
 ## Setup
----
 Secrets.cs
 ```csharp
 public class Secrets
