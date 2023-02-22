@@ -1,5 +1,4 @@
-﻿using ServiceStack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -8,7 +7,7 @@ namespace PrintAndScan4Ukraine.Model
 {
 	public class Package : INotifyPropertyChanged
 	{
-        public int? Id { get; set; }
+		public int? Id { get; set; }
 		public int PackageId { get; set; }
 		public string? Sender_Name { get; set; } = string.Empty;
 		public string? Sender_Address { get; set; } = string.Empty;
@@ -21,7 +20,8 @@ namespace PrintAndScan4Ukraine.Model
 		public double? Cost
 		{
 			get => _Cost;
-			set {
+			set
+			{
 				_Cost = value;
 				CalcTotal();
 				RaisePropertyChanged();
@@ -31,7 +31,8 @@ namespace PrintAndScan4Ukraine.Model
 		public double? Delivery
 		{
 			get => _Delivery;
-			set {
+			set
+			{
 				_Delivery = value;
 				CalcTotal();
 				RaisePropertyChanged();
@@ -41,7 +42,8 @@ namespace PrintAndScan4Ukraine.Model
 		public double? Insurance
 		{
 			get => _Insurance;
-			set {
+			set
+			{
 				_Insurance = value;
 				CalcTotal();
 				RaisePropertyChanged();
@@ -51,7 +53,8 @@ namespace PrintAndScan4Ukraine.Model
 		public double? Other
 		{
 			get => _Other;
-			set {
+			set
+			{
 				_Other = value;
 				CalcTotal();
 				RaisePropertyChanged();
@@ -63,7 +66,8 @@ namespace PrintAndScan4Ukraine.Model
 		public List<Contents> Recipient_Contents
 		{
 			get => _recipient_contents;
-			set {
+			set
+			{
 				if (value == null)
 					_recipient_contents = new List<Contents>();
 				else
@@ -78,7 +82,8 @@ namespace PrintAndScan4Ukraine.Model
 		public double? Total
 		{
 			get => _Total;
-			set {
+			set
+			{
 				_Total = value;
 				RaisePropertyChanged();
 			}

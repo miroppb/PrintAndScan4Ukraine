@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -19,7 +18,7 @@ using System.Windows;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
-    public class PackagesViewModel : INotifyPropertyChanged
+	public class PackagesViewModel : INotifyPropertyChanged
 	{
 		private readonly IPackageDataProvider _packageDataProvider;
 		private Package? _selectedPackage;
@@ -32,42 +31,42 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public bool CanSave => SelectedPackage != null;
 
 		public PackagesViewModel(IPackageDataProvider packageDataProvider)
-        {
+		{
 			_packageDataProvider = packageDataProvider;
-            SaveCommand = new DelegateCommand(Save, () => CanSave);
+			SaveCommand = new DelegateCommand(Save, () => CanSave);
 		}
 
 		public Package SelectedPackage
-        {
-            get => _selectedPackage!;
-            set
-            { 
-                _selectedPackage = value;
-                RaisePropertyChanged();
-                SaveCommand.RaiseCanExecuteChanged();
+		{
+			get => _selectedPackage!;
+			set
+			{
+				_selectedPackage = value;
+				RaisePropertyChanged();
+				SaveCommand.RaiseCanExecuteChanged();
 			}
-        }
+		}
 
 		protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-        public async Task LoadAsync()
-        {
-            if (Packages.Any())
-                Packages.Clear();
+		public async Task LoadAsync()
+		{
+			if (Packages.Any())
+				Packages.Clear();
 
-            var packages = await _packageDataProvider.GetAllAsync();
-            if (packages != null)
-                packages.ToList().ForEach(p => Packages.Add(p));
-        }
+			var packages = await _packageDataProvider.GetAllAsync();
+			if (packages != null)
+				packages.ToList().ForEach(p => Packages.Add(p));
+		}
 
-        public void Save()
-        {
-            if (SelectedPackage != null)
-                _packageDataProvider.UpdateRecord(new List<Package>() { SelectedPackage });
-        }
+		public void Save()
+		{
+			if (SelectedPackage != null)
+				_packageDataProvider.UpdateRecord(new List<Package>() { SelectedPackage });
+		}
 
 		public bool UpdateRecord(List<Package> packages)
 		{
@@ -77,17 +76,17 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 		public async Task<bool> InsertAsync(Package package)
-        {
-            return await _packageDataProvider.InsertRecordAsync(package);
-        }
+		{
+			return await _packageDataProvider.InsertRecordAsync(package);
+		}
 
 		public bool Export(IEnumerable<Package> packages)
-        {
+		{
 			SaveFileDialog sfd = new SaveFileDialog();
 			sfd.Filter = "Excel File|*.xlsx";
 			if ((bool)sfd.ShowDialog()!)
 			{
-                libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
+				libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
 				ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
 				using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
@@ -129,8 +128,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				libmiroppb.Log($"{JsonConvert.SerializeObject(packages)}");
 			}
-            MessageBox.Show($"Exported to: {sfd.FileName}");
-            return true;
+			MessageBox.Show($"Exported to: {sfd.FileName}");
+			return true;
 		}
-    }
+	}
 }

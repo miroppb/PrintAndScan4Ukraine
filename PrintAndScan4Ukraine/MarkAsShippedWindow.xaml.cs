@@ -1,12 +1,9 @@
-﻿using PrintAndScan4Ukraine.Data;
-using PrintAndScan4Ukraine.Model;
+﻿using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace PrintAndScan4Ukraine

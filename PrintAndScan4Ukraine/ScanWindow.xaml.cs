@@ -63,8 +63,6 @@ namespace PrintAndScan4Ukraine
 			scanNewWindow.ShowDialog();
 			await _viewModel.LoadAsync();
 			try { _viewModel.SelectedPackage = _viewModel.Packages[_viewModel.Packages.Count - 1]; } catch { }
-
-			//do loop for new barcodes
 		}
 
 		private void MnuExport_Click(object sender, RoutedEventArgs e)
