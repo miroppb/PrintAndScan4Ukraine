@@ -9,33 +9,26 @@ Currently uses my personal MariaDB server, but I wrote this to be as open to cha
 <img src="https://github.com/miroppb/PrintAndScan4Ukraine/blob/master/PrintAndScan4Ukraine/Images/ScanWindow.png?raw=true" alt="Screenshot" width="700"/>
 
 ## Requirements
-Written for .NET 7, but should be backwards compatible.
+Written for .NET 7, but should be backwards compatible in most cases.
 
 ## Setup
 Secrets.cs
 ```csharp
 public class Secrets
 {
-    public static MySqlConnection GetConnectionString()
-    {
-        return new MySqlConnection($"Server={MySqlUrl};Database={MySqlDb};Uid={MySqlUsername};Pwd={MySqlPassword};");
-    }
+    public static MySqlConnection GetConnectionString() => new MySqlConnection($"Server={MySqlUrl};Database={MySqlDb};Uid={MySqlUsername};Pwd={MySqlPassword};");
 
-    internal static NetworkCredential GetFTPCredentials()
-    {
-        return new NetworkCredential("username", "password"); //used for checking updates
-    }
+    internal static NetworkCredential GetFTPCredentials() => new NetworkCredential("###", "###");
 
-    internal static string GetFTPURL()
-    {
-        return "ftp://urltoftpserver.com/update/location/file.zip";
-    }
+    internal static string GetFTPURL() => "ftp://ftp/url/to/update.zip";
 
-    public const string MySqlUrl = "###";
-    public const string MySqlUsername = "###";
-    public const string MySqlPassword = "###";
-    public const string MySqlDb = "###";
-    public const string MySqlTable = "###";
+    internal static string GetMySQLTable() => MySqlTable;
+
+    private const string MySqlUrl = "###";
+    private const string MySqlUsername = "###";
+    private const string MySqlPassword = "###";
+    private const string MySqlDb = "###";
+    private const string MySqlTable = "###";
 }
 ```
 

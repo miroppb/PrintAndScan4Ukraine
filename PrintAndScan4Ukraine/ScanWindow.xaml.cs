@@ -89,7 +89,7 @@ namespace PrintAndScan4Ukraine
 			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
-				libmiroppb.UploadLog(Secrets.MySqlUrl, Secrets.MySqlUsername, Secrets.MySqlPassword, Secrets.MySqlDb, "logs", true);
+				libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", true);
 			};
 			timer.Start();
 		}

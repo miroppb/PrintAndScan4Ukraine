@@ -25,7 +25,7 @@ namespace PrintAndScan4Ukraine.Data
 			IEnumerable<Package> packages = new List<Package>();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlTable} WHERE removed = 0");
+				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable} WHERE removed = 0");
 				packages = temp.ToList().Select(x =>
 				{
 					x.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(x.Contents!)!;
@@ -41,7 +41,7 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-				string sql = $"INSERT INTO {Secrets.MySqlTable}(id, packageid, cost, insurance, delivery, other, date_added) VALUES(NULL, @packageId, 0, 0, 0, 0, @date_added)";
+				string sql = $"INSERT INTO {Secrets.GetMySQLTable}(id, packageid, cost, insurance, delivery, other, date_added) VALUES(NULL, @packageId, 0, 0, 0, 0, @date_added)";
 				await db.ExecuteAsync(sql, new { package.PackageId, date_added = package.Date_Added.ToString("yyyy-MM-dd HH:mm:ss") });
 			}
 			return true;
@@ -53,7 +53,7 @@ namespace PrintAndScan4Ukraine.Data
 			{
 				packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
 				libmiroppb.Log($"Updating Record: {JsonConvert.SerializeObject(packages)}");
-				DapperPlusManager.Entity<Package>().Table(Secrets.MySqlTable).Identity(x => x.Id);
+				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLTable()).Identity(x => x.Id);
 				db.BulkUpdate(packages);
 			}
 			return true;
