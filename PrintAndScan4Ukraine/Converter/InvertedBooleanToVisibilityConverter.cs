@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace PrintAndScan4Ukraine.Converter
 {
-	public class ListCountToVisibility : IValueConverter
+	public class InvertedBooleanToVisibilityConverter : IValueConverter
 	{
 		private object GetVisibility(object value)
 		{
@@ -13,10 +13,9 @@ namespace PrintAndScan4Ukraine.Converter
 				return Visibility.Collapsed;
 			bool objValue = (bool)value;
 			if (objValue)
-			{
+				return Visibility.Collapsed;
+			else
 				return Visibility.Visible;
-			}
-			return Visibility.Collapsed;
 		}
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

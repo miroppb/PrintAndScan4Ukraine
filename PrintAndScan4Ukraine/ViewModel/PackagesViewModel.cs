@@ -28,7 +28,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public ObservableCollection<Package> Packages { get; } = new();
 		public DelegateCommand SaveCommand { get; }
 
-		public bool CanSave => SelectedPackage != null;
+		public bool CanSave => (SelectedPackage != null && IsOnline);
 
 		public PackagesViewModel(IPackageDataProvider packageDataProvider)
 		{
@@ -54,30 +54,39 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public async Task LoadAsync()
 		{
-			if (Packages.Any())
-				Packages.Clear();
+			if (IsOnline)
+			{
+				if (Packages.Any())
+					Packages.Clear();
 
-			var packages = await _packageDataProvider.GetAllAsync();
-			if (packages != null)
-				packages.ToList().ForEach(p => Packages.Add(p));
+				var packages = await _packageDataProvider.GetAllAsync();
+				if (packages != null)
+					packages.ToList().ForEach(p => Packages.Add(p));
+			}
 		}
 
 		public void Save()
 		{
-			if (SelectedPackage != null)
-				_packageDataProvider.UpdateRecord(new List<Package>() { SelectedPackage });
+			if (SelectedPackage != null && IsOnline)
+			{
+				if (_packageDataProvider.UpdateRecord(new List<Package>() { SelectedPackage }))
+					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+			}
 		}
 
 		public bool UpdateRecord(List<Package> packages)
 		{
-			if (SelectedPackage != null)
+			if (SelectedPackage != null && IsOnline)
 				return _packageDataProvider.UpdateRecord(packages);
 			return false;
 		}
 
 		public async Task<bool> InsertAsync(Package package)
 		{
-			return await _packageDataProvider.InsertRecordAsync(package);
+			if (!IsOnline)
+				return await _packageDataProvider.InsertRecordAsync(package);
+			else
+				return false;
 		}
 
 		public bool Export(IEnumerable<Package> packages)
@@ -131,5 +140,29 @@ namespace PrintAndScan4Ukraine.ViewModel
 			MessageBox.Show($"Exported to: {sfd.FileName}");
 			return true;
 		}
+
+		private bool _isOnline = true;
+
+		public bool IsOnline
+		{
+			get => _isOnline;
+			set {
+				_isOnline = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private string _lastSaved = string.Empty;
+
+		public string LastSaved
+		{
+			get => _lastSaved;
+			set {
+				_lastSaved = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
 	}
 }

@@ -78,8 +78,8 @@ namespace PrintAndScan4Ukraine.Model
 
 		public DateTime? Date_Shipped { get; set; }
 		public DateTime Date_Added { get; set; }
-		private double? _Total = 0;
-		public double? Total
+		private string? _Total = "$0.00";
+		public string? Total
 		{
 			get => _Total;
 			set
@@ -98,7 +98,7 @@ namespace PrintAndScan4Ukraine.Model
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		private void CalcTotal() => Total = (double)(Cost! + Delivery! + Insurance! + Other!);
+		private void CalcTotal() => Total = ((double)(Cost! + Delivery! + Insurance! + Other!)).ToString("$0.00");
 	}
 
 	public class Package_less

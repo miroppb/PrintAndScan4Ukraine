@@ -25,7 +25,7 @@ namespace PrintAndScan4Ukraine.Data
 			IEnumerable<Package> packages = new List<Package>();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable} WHERE removed = 0");
+				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE removed = 0");
 				packages = temp.ToList().Select(x =>
 				{
 					x.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(x.Contents!)!;
@@ -41,10 +41,9 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-				string sql = $"INSERT INTO {Secrets.GetMySQLTable}(id, packageid, cost, insurance, delivery, other, date_added) VALUES(NULL, @packageId, 0, 0, 0, 0, @date_added)";
-				await db.ExecuteAsync(sql, new { package.PackageId, date_added = package.Date_Added.ToString("yyyy-MM-dd HH:mm:ss") });
+				string sql = $"INSERT INTO {Secrets.GetMySQLTable()}(id, packageid, cost, insurance, delivery, other, date_added) VALUES(NULL, @packageId, 0, 0, 0, 0, @date_added)";
+				return (await db.ExecuteAsync(sql, new { package.PackageId, date_added = package.Date_Added.ToString("yyyy-MM-dd HH:mm:ss") }) > 0); //return if inserted row
 			}
-			return true;
 		}
 
 		public bool UpdateRecord(List<Package> packages)

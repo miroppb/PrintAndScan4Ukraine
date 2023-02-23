@@ -2,6 +2,7 @@
 using miroppb;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.ViewModel;
+using PrintAndScan4Ukraine.Connection;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -30,11 +31,13 @@ namespace PrintAndScan4Ukraine
 
 		private async void ScanWindow_Loaded(object sender, RoutedEventArgs e)
 		{
+			_viewModel.IsOnline = InternetAvailability.IsInternetAvailable();
 			await Task.Delay(20);
 			await _viewModel.LoadAsync();
 			SetupUpdater();
 			SetupLogUploader();
 			SetupSavingOften();
+			SetupOnlineCheck();
 			PreviewKeyDown += labelBarCode_PreviewKeyDown; //iffy
 		}
 
@@ -102,6 +105,18 @@ namespace PrintAndScan4Ukraine
 			{
 				if (_viewModel.SelectedPackage != null)
 					_viewModel.Save();
+			};
+			timer.Start();
+		}
+
+		private void SetupOnlineCheck()
+		{
+			int minutes = 1;
+			libmiroppb.Log($"Setting up checking Internet every {minutes} minutes");
+			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
+			timer.Tick += delegate
+			{
+				_viewModel.IsOnline = InternetAvailability.IsInternetAvailable();
 			};
 			timer.Start();
 		}
