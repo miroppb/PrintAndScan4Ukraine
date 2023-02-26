@@ -13,7 +13,7 @@ namespace PrintAndScan4Ukraine.Data
 	public interface IPackageDataProvider
 	{
 		Task<IEnumerable<Package>?> GetAllAsync();
-		Task<bool> InsertRecordAsync(Package package);
+		bool InsertRecord(Package package);
 		bool UpdateRecord(List<Package> package);
 	}
 
@@ -28,7 +28,7 @@ namespace PrintAndScan4Ukraine.Data
 				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE removed = 0");
 				packages = temp.ToList().Select(x =>
 				{
-					x.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(x.Contents!)!;
+					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
 					return x;
 				}).ToList();
 			}
@@ -36,13 +36,14 @@ namespace PrintAndScan4Ukraine.Data
 			return packages;
 		}
 
-		public async Task<bool> InsertRecordAsync(Package package)
+		public bool InsertRecord(Package package)
 		{
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-				string sql = $"INSERT INTO {Secrets.GetMySQLTable()}(id, packageid, cost, insurance, delivery, other, date_added) VALUES(NULL, @packageId, 0, 0, 0, 0, @date_added)";
-				return (await db.ExecuteAsync(sql, new { package.PackageId, date_added = package.Date_Added.ToString("yyyy-MM-dd HH:mm:ss") }) > 0); //return if inserted row
+				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLTable()).Identity(x => x.Id);
+				db.BulkInsert(package);
+				return true;
 			}
 		}
 

@@ -1,7 +1,9 @@
-﻿using PrintAndScan4Ukraine.Data;
+﻿using Newtonsoft.Json;
+using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 
@@ -26,11 +28,13 @@ namespace PrintAndScan4Ukraine
 			PreviewKeyDown += labelBarCode_PreviewKeyDown;
 		}
 
-		private async void labelBarCode_PreviewKeyDown(object sender, KeyEventArgs e)
+		private void labelBarCode_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter)
 			{
-				await _viewModel.InsertAsync(new Package() { PackageId = Convert.ToInt32(barCode.TrimStart('\0')), Date_Added = DateTime.Now });
+				if (barCode.Replace("\0", "") != string.Empty) //make sure that the barcode is an actual alphanumeric string
+					_viewModel.Insert(new Package() { PackageId = barCode.Replace("\0", ""), Date_Added = DateTime.Now, Contents = JsonConvert.SerializeObject(new List<Contents>() { }) });
+				
 				barCode = string.Empty;
 				e.Handled = true;
 				Close();

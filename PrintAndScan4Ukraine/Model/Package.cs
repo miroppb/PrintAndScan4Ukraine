@@ -8,7 +8,7 @@ namespace PrintAndScan4Ukraine.Model
 	public class Package : INotifyPropertyChanged
 	{
 		public int? Id { get; set; }
-		public int PackageId { get; set; }
+		public string PackageId { get; set; } = string.Empty;
 		public string? Sender_Name { get; set; } = string.Empty;
 		public string? Sender_Address { get; set; } = string.Empty;
 		public string? Sender_Phone { get; set; } = string.Empty;
@@ -16,47 +16,14 @@ namespace PrintAndScan4Ukraine.Model
 		public string? Recipient_Address { get; set; } = string.Empty;
 		public string? Recipient_Phone { get; set; } = string.Empty;
 		public double? Weight { get; set; }
-		private double? _Cost = 0;
-		public double? Cost
+		private double? _Value = null;
+		public double? Value
 		{
-			get => _Cost;
+			get => _Value;
 			set
 			{
-				_Cost = value;
-				CalcTotal();
-				RaisePropertyChanged();
-			}
-		}
-		private double? _Delivery = 0;
-		public double? Delivery
-		{
-			get => _Delivery;
-			set
-			{
-				_Delivery = value;
-				CalcTotal();
-				RaisePropertyChanged();
-			}
-		}
-		private double? _Insurance = 0;
-		public double? Insurance
-		{
-			get => _Insurance;
-			set
-			{
-				_Insurance = value;
-				CalcTotal();
-				RaisePropertyChanged();
-			}
-		}
-		private double? _Other = 0;
-		public double? Other
-		{
-			get => _Other;
-			set
-			{
-				_Other = value;
-				CalcTotal();
+				_Value = value;
+				Total = ((double)value!).ToString("$0.00");
 				RaisePropertyChanged();
 			}
 		}
@@ -98,27 +65,29 @@ namespace PrintAndScan4Ukraine.Model
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		private void CalcTotal() => Total = ((double)(Cost! + Delivery! + Insurance! + Other!)).ToString("$0.00");
+		//private void CalcTotal() => Total = ((double)(Value! + Delivery! + Insurance! + Other!)).ToString("$0.00");
 	}
 
 	public class Package_less
 	{
-		public int PackageId { get; set; }
+		public string PackageId { get; set; } = string.Empty;
 		public string? Sender_Name { get; set; } = string.Empty;
 		public string? Sender_Address { get; set; } = string.Empty;
 		public string? Sender_Phone { get; set; } = string.Empty;
+		[Description("Имя Получателя")]
 		public string? Recipient_Name { get; set; } = string.Empty;
+		[Description("Адрес Получателя")]
 		public string? Recipient_Address { get; set; } = string.Empty;
+		[Description("Телефон Получателя")]
 		public string? Recipient_Phone { get; set; } = string.Empty;
+		[Description("Наименование Вложений/Количество")]
 		public string? Contents { get; set; } = string.Empty;
+		[Description("Общий Вес")]
 		public double? Weight { get; set; }
-		public double? Cost { get; set; }
-		public double? Delivery { get; set; }
-		public double? Insurance { get; set; }
-		public double? Other { get; set; }
+		[Description("Ценность")]
+		public double? Value { get; set; }
 		public DateTime? Date_Shipped { get; set; }
 		public DateTime Date_Added { get; set; }
-		public double Total { get; set; }
 	}
 
 	public class Contents

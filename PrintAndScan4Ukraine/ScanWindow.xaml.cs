@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Windows.Controls;
 
 namespace PrintAndScan4Ukraine
 {
@@ -39,14 +40,20 @@ namespace PrintAndScan4Ukraine
 			SetupSavingOften();
 			SetupOnlineCheck();
 			PreviewKeyDown += labelBarCode_PreviewKeyDown; //iffy
+
+			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 		}
 
 		private void labelBarCode_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.Key == Key.Enter)
+			var CurrentElement = Keyboard.FocusedElement as ListViewItem;
+			if (CurrentElement == null)
 			{
-				MnuNew_Click(sender, e);
-				e.Handled = true;
+				if (e.Key == Key.Enter)
+				{
+					MnuNew_Click(sender, e);
+					e.Handled = true;
+				}
 			}
 		}
 
@@ -64,6 +71,7 @@ namespace PrintAndScan4Ukraine
 		{
 			ScanNewWindow scanNewWindow = new ScanNewWindow();
 			scanNewWindow.ShowDialog();
+			_viewModel.Save();
 			await _viewModel.LoadAsync();
 			try { _viewModel.SelectedPackage = _viewModel.Packages[_viewModel.Packages.Count - 1]; } catch { }
 		}
@@ -80,9 +88,15 @@ namespace PrintAndScan4Ukraine
 			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
-				AutoUpdater.Start(Secrets.GetFTPURL(), Secrets.GetFTPCredentials());
+				libmiroppb.Log("Checking for update...");
+				AutoUpdater.Start(Secrets.GetUpdateURL());
 			};
 			timer.Start();
+		}
+
+		private void AutoUpdater_ApplicationExitEvent()
+		{
+			Application.Current.Shutdown();
 		}
 
 		private void SetupLogUploader()
@@ -103,8 +117,8 @@ namespace PrintAndScan4Ukraine
 			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
 			timer.Tick += delegate
 			{
-				if (_viewModel.SelectedPackage != null)
-					_viewModel.Save();
+				if (_viewModel.Packages != null)
+					_viewModel.SaveAll();
 			};
 			timer.Start();
 		}

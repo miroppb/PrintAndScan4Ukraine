@@ -1,4 +1,6 @@
-﻿using PrintAndScan4Ukraine.Model;
+﻿using miroppb;
+using Newtonsoft.Json;
+using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -31,7 +33,7 @@ namespace PrintAndScan4Ukraine
 		{
 			if (e.Key == Key.Enter)
 			{
-				barCodes.Add(barCode.Trim('\0'));
+				barCodes.Add(barCode.Replace("\0", ""));
 				barCode = string.Empty;
 				e.Handled = true;
 				LblCodes.Text = $"Barcodes scanned: {barCodes.Count}";
@@ -42,6 +44,7 @@ namespace PrintAndScan4Ukraine
 		private void BtnDone_Click(object sender, RoutedEventArgs e)
 		{
 			LblCodes.Text = "Sending codes to database. Please wait...";
+			libmiroppb.Log($"Scanned As Shipped: {JsonConvert.SerializeObject(barCodes)}");
 			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList();
 			packages.ForEach(x => x.Date_Shipped = DateTime.Now);
 			_viewModel.UpdateRecord(packages);

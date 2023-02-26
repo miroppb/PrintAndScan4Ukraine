@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:local="clr-namespace:PrintAndScan4Ukraine.Converter"
-        Title="ScanWindow" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
+        Title="Scan Packages" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
     <Window.Resources>
         <local:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
     </Window.Resources>
@@ -53,7 +53,7 @@
             </Grid.RowDefinitions>
 
             <ListView x:Name="LstUPCAndNames" Grid.Row="1" Margin="5,0,5,5" ItemsSource="{Binding Packages}"
-                      SelectedItem="{Binding SelectedPackage, Mode=TwoWay}" DisplayMemberPath="PackageId"/>
+                      SelectedItem="{Binding SelectedPackage, Mode=TwoWay}" DisplayMemberPath="PackageId" SelectionMode="Single"/>
 
             <TextBlock Grid.Row="2" Text="{Binding Packages.Count, StringFormat='Total: {0}'}" HorizontalAlignment="Center" />
         </Grid>
@@ -144,47 +144,47 @@
 
             <Rectangle Grid.Row="3" Grid.ColumnSpan="4" Fill="Black" Height="2"/>
 
-            <TextBlock Grid.Row="4">Recipient Name</TextBlock>
+            <TextBlock Grid.Row="4">Имя Получателя</TextBlock>
             <TextBox x:Name="TxtRecipientFName" Grid.Row="4" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Name,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-            <TextBlock Grid.Row="4" Grid.Column="2">Recipient Address</TextBlock>
+            <TextBlock Grid.Row="4" Grid.Column="2">Адрес Получателя</TextBlock>
             <TextBox x:Name="TxtRecipientLName" Grid.Row="4" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Address,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.RowSpan="2" Height="90" VerticalContentAlignment="Top" Padding="0,5,0,0"/>
 
-            <TextBlock Grid.Row="5">Recipient Phone</TextBlock>
+            <TextBlock Grid.Row="5">Телефон<LineBreak />Получателя</TextBlock>
             <TextBox x:Name="TxtRecipientPhone" Grid.Row="5" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Phone,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="6">Contents</TextBlock>
+            <TextBlock Grid.Row="6" Margin="0,15,0,0" Grid.RowSpan="2" VerticalAlignment="Top">Наименование<LineBreak />Вложений<LineBreak />Количество</TextBlock>
             <DataGrid x:Name="LstContents" Grid.Row="6" Grid.Column="1" Grid.RowSpan="4" Height="190" ItemsSource="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Contents,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" CanUserAddRows="True" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserResizeRows="False"
                       CanUserDeleteRows="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="Amount" Width="55" Binding="{Binding Amount}" />
+                    <DataGridTextColumn Header="Amount" Width="55" Binding="{Binding Amount}"  />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <TextBlock Grid.Row="6" Grid.Column="2">Weight</TextBlock>
+            <TextBlock Grid.Row="6" Grid.Column="2">Weight/Вес</TextBlock>
             <TextBox x:Name="TxtWeight" Grid.Row="6" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Weight,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="7" Grid.Column="2">Cost</TextBlock>
-            <TextBox x:Name="TxtCost" Grid.Row="7" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Cost,
+            <TextBlock Grid.Row="7" Grid.Column="2">Ценность/Value</TextBlock>
+            <TextBox x:Name="TxtCost" Grid.Row="7" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Value,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="8" Grid.Column="2">Delivery</TextBlock>
+            <TextBlock Grid.Row="8" Grid.Column="2" Visibility="Hidden">Delivery</TextBlock>
             <TextBox x:Name="TxtDelivery" Grid.Row="8" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Delivery,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>
 
-            <TextBlock Grid.Row="9" Grid.Column="2">Insurance</TextBlock>
+            <TextBlock Grid.Row="9" Grid.Column="2" Visibility="Hidden">Insurance</TextBlock>
             <TextBox x:Name="TxtInsurance" Grid.Row="9" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Insurance,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>
 
-            <TextBlock Grid.Row="10" Grid.Column="2">Other</TextBlock>
+            <TextBlock Grid.Row="10" Grid.Column="2" Visibility="Hidden">Other</TextBlock>
             <TextBox x:Name="TxtOther" Grid.Row="10" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Other,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>
 
             <Grid Grid.Row="10" Grid.Column="1">
                 <Grid.ColumnDefinitions>

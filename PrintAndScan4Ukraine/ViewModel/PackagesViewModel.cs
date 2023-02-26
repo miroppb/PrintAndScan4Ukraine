@@ -74,17 +74,28 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+		public void SaveAll()
+		{
+			if (IsOnline && Packages != null)
+				if (_packageDataProvider.UpdateRecord(Packages.ToList()))
+					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+
+		}
+
 		public bool UpdateRecord(List<Package> packages)
 		{
-			if (SelectedPackage != null && IsOnline)
+			if (IsOnline)
 				return _packageDataProvider.UpdateRecord(packages);
 			return false;
 		}
 
-		public async Task<bool> InsertAsync(Package package)
+		public bool Insert(Package package)
 		{
-			if (!IsOnline)
-				return await _packageDataProvider.InsertRecordAsync(package);
+			if (IsOnline)
+			{
+				_packageDataProvider.InsertRecord(package);
+				return true;
+			}
 			else
 				return false;
 		}
@@ -107,7 +118,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 						List<Contents> t = package.Recipient_Contents.CreateCopy();
 						List<string> output = new List<string>();
 						foreach (var item in t) { output.Add($"{item.Name}: {item.Amount}"); }
-
+						
 						var jsonParent = JsonConvert.SerializeObject(temp);
 						Package_less c = JsonConvert.DeserializeObject<Package_less>(jsonParent)!;
 						c.Contents = output.Join(Environment.NewLine);
@@ -128,8 +139,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 					}
 					ws.Cells.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
 					ws.Cells[$"H2:H{ws.Dimension.End.Row + 1}"].Style.WrapText = true;
-					ws.Cells[$"N2:N{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
-					ws.Cells[$"O2:O{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
+					ws.Cells[$"K2:N{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
+					ws.Cells[$"L2:O{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
 					ws.Cells[ws.Dimension.Address].AutoFitColumns();
 
 					excelPack.Save();

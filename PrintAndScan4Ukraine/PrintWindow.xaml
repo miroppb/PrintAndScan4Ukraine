@@ -4,17 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="PrintWindow" Height="149" Width="393" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Print Window" Height="200" Width="450" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" ResizeMode="NoResize">
     <Grid>
-        <ComboBox x:Name="CmbListOfPrinters" HorizontalAlignment="Left" VerticalAlignment="Top" Width="240" Margin="123,23,0,0"/>
-        <Label Content="List of Printers" HorizontalAlignment="Left" Margin="33,21,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="TxtFrom" HorizontalAlignment="Left" Margin="123,50,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="58"/>
-        <TextBox x:Name="TxtTo" HorizontalAlignment="Left" Margin="202,50,0,0" TextWrapping="Wrap" Text="1000" VerticalAlignment="Top" Width="58"/>
-        <Label Content="Print labels from" HorizontalAlignment="Left" Margin="21,46,0,0" VerticalAlignment="Top"/>
-        <Label Content="to" HorizontalAlignment="Left" Margin="181,46,0,0" VerticalAlignment="Top"/>
-        <Label Content="Copies of each label" HorizontalAlignment="Left" Margin="2,72,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="TxtCopies" HorizontalAlignment="Left" Margin="123,77,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="58"/>
-        <Button x:Name="BtnPrint" Content="Print" HorizontalAlignment="Left" Margin="312,75,0,0" VerticalAlignment="Top" Width="51" Click="BtnPrint_Click"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="30" />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Label Content="List of Printers" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Center" />
+        <ComboBox x:Name="CmbListOfPrinters" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                  ItemsSource="{Binding Printers}" SelectedItem="{Binding SelectedPrinter, Mode=TwoWay}" Width="308" />
+        <Label Grid.Row="2" Content="Print labels from" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <Label Grid.Row="2" Grid.Column="2" Content="to" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox x:Name="TxtFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Starting}" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center"/>
+        <TextBox x:Name="TxtTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" Text="{Binding Ending}" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center" />
+        <Label Grid.Row="3" Content="Copies of each label" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <TextBox x:Name="TxtCopies" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Copies}" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center" />
+        <Button x:Name="BtnPrint" Grid.Row="3" Grid.Column="4" Content="Print" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" FontWeight="Bold" Command="{Binding PrintCommand, Mode=OneWay}"/>
 
     </Grid>
 </Window>
