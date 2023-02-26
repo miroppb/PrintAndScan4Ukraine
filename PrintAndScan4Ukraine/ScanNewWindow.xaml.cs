@@ -32,8 +32,8 @@ namespace PrintAndScan4Ukraine
 		{
 			if (e.Key == Key.Enter)
 			{
-				if (barCode.Replace("\0", "") != string.Empty) //make sure that the barcode is an actual alphanumeric string
-					_viewModel.Insert(new Package() { PackageId = barCode.Replace("\0", ""), Date_Added = DateTime.Now, Contents = JsonConvert.SerializeObject(new List<Contents>() { }) });
+				if (barCode.Replace("\0", "").Trim() != string.Empty) //make sure that the barcode is an actual alphanumeric string
+					_viewModel.Insert(new Package() { PackageId = barCode.Replace("\0", "").Trim(), Date_Added = DateTime.Now, Contents = JsonConvert.SerializeObject(new List<Contents>() { }) });
 				
 				barCode = string.Empty;
 				e.Handled = true;
