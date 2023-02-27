@@ -1,3 +1,7 @@
+v. 1.2.5.2
+
+- Upload logs when closing the main window
+
 v. 1.2.5.1
 
 - Resized Sender Address box

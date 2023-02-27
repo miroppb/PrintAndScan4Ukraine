@@ -1,16 +1,16 @@
 ﻿using AutoUpdaterDotNET;
 using miroppb;
+using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.ViewModel;
-using PrintAndScan4Ukraine.Connection;
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using System.Windows.Controls;
 
 namespace PrintAndScan4Ukraine
 {
@@ -42,6 +42,13 @@ namespace PrintAndScan4Ukraine
 			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
+			Closing += ScanWindow_Closing;
+		}
+
+		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+		{
+			libmiroppb.Log("Application closing");
+			UploadLogs(true);
 		}
 
 		private void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -100,6 +107,7 @@ namespace PrintAndScan4Ukraine
 
 		private void AutoUpdater_ApplicationExitEvent()
 		{
+			UploadLogs(true);
 			Application.Current.Shutdown();
 		}
 
@@ -110,7 +118,7 @@ namespace PrintAndScan4Ukraine
 			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
-				libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", true);
+				UploadLogs(true);
 			};
 			timer.Start();
 		}
@@ -137,6 +145,11 @@ namespace PrintAndScan4Ukraine
 				_viewModel.IsOnline = InternetAvailability.IsInternetAvailable();
 			};
 			timer.Start();
+		}
+
+		private void UploadLogs(bool deleteAfter)
+		{
+			libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", deleteAfter);
 		}
 	}
 }
