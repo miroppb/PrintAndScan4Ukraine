@@ -1,4 +1,4 @@
-v. 1.2.5.2
+v. 1.2.5.3
 
 - Upload logs when closing the main window
 
