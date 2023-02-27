@@ -18,10 +18,6 @@ public class Secrets
 {
     public static MySqlConnection GetConnectionString() => new MySqlConnection($"Server={MySqlUrl};Database={MySqlDb};Uid={MySqlUsername};Pwd={MySqlPassword};");
 
-    internal static NetworkCredential GetFTPCredentials() => new NetworkCredential("###", "###");
-
-    internal static string GetFTPURL() => "ftp://ftp/url/to/update.zip";
-
     internal static string GetMySQLTable() => MySqlTable;
 
     private const string MySqlUrl = "###";
@@ -48,13 +44,10 @@ CREATE TABLE IF NOT EXISTS `packages` (
   `recipient_phone` varchar(15) DEFAULT '0',
   `weight` text DEFAULT NULL,
   `contents` text DEFAULT NULL,
-  `cost` int(11) DEFAULT NULL,
-  `delivery` int(11) DEFAULT NULL,
-  `insurance` int(11) DEFAULT NULL,
-  `other` int(11) DEFAULT NULL,
+  `value` int(11) DEFAULT NULL,
   `date_shipped` datetime DEFAULT NULL,
   `date_added` datetime DEFAULT NULL,
-  `removed` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `removed` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 ```

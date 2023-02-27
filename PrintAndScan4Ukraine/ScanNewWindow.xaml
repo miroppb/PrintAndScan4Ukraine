@@ -8,5 +8,6 @@
         Title="ScanNewWindow" Height="400" Width="500" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Loaded="Window_Loaded" Icon="/barcode.png">
     <Grid>
         <TextBlock Text="Scan Barcode&#x0a;to Add..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
+        <TextBlock Text="Or Press Enter to Close" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" TextAlignment="Center" Margin="0,268,0,0" />
     </Grid>
 </Window>

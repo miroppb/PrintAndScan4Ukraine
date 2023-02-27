@@ -16,6 +16,7 @@ namespace PrintAndScan4Ukraine
 	{
 		private string barCode = string.Empty;
 		private PackagesViewModel _viewModel;
+		public bool WasSomethingSet = false;
 
 		public ScanNewWindow()
 		{
@@ -33,7 +34,10 @@ namespace PrintAndScan4Ukraine
 			if (e.Key == Key.Enter)
 			{
 				if (barCode.Replace("\0", "").Trim() != string.Empty) //make sure that the barcode is an actual alphanumeric string
+				{
 					_viewModel.Insert(new Package() { PackageId = barCode.Replace("\0", "").Trim(), Date_Added = DateTime.Now, Contents = JsonConvert.SerializeObject(new List<Contents>() { }) });
+					WasSomethingSet = true;
+				}
 				
 				barCode = string.Empty;
 				e.Handled = true;

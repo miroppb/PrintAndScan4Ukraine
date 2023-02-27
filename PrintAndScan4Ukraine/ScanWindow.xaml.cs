@@ -39,15 +39,16 @@ namespace PrintAndScan4Ukraine
 			SetupLogUploader();
 			SetupSavingOften();
 			SetupOnlineCheck();
-			PreviewKeyDown += labelBarCode_PreviewKeyDown; //iffy
+			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 		}
 
-		private void labelBarCode_PreviewKeyDown(object sender, KeyEventArgs e)
+		private void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
-			var CurrentElement = Keyboard.FocusedElement as ListViewItem;
-			if (CurrentElement == null)
+			ListViewItem? lvi = Keyboard.FocusedElement as ListViewItem;
+			TextBox? tb = Keyboard.FocusedElement as TextBox;
+			if (lvi == null && !tb!.Name.Contains("Address"))
 			{
 				if (e.Key == Key.Enter)
 				{
@@ -71,9 +72,12 @@ namespace PrintAndScan4Ukraine
 		{
 			ScanNewWindow scanNewWindow = new ScanNewWindow();
 			scanNewWindow.ShowDialog();
-			_viewModel.Save();
-			await _viewModel.LoadAsync();
-			try { _viewModel.SelectedPackage = _viewModel.Packages[_viewModel.Packages.Count - 1]; } catch { }
+			if (scanNewWindow.WasSomethingSet)
+			{
+				_viewModel.Save();
+				await _viewModel.LoadAsync();
+				try { _viewModel.SelectedPackage = _viewModel.Packages[_viewModel.Packages.Count - 1]; } catch { }
+			}
 		}
 
 		private void MnuExport_Click(object sender, RoutedEventArgs e)
