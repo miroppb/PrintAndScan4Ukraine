@@ -12,7 +12,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding SenderName, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding SenderName, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
         <ListView x:Name="LstItems" Grid.Row="1" Margin="20,0,20,5" ItemsSource="{Binding PreviousShipments, Mode=TwoWay}" SelectedItem="{Binding SelectedShipment, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
