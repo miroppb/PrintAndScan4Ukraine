@@ -123,7 +123,7 @@
                     <ColumnDefinition Width="195" />
                 </Grid.ColumnDefinitions>
 
-                
+
 
                 <TextBlock Grid.Column="0">Date Shipped</TextBlock>
                 <TextBlock Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Date_Shipped,
@@ -133,6 +133,7 @@
             <TextBlock Grid.Row="1">Sender Name</TextBlock>
             <TextBox x:Name="TxtSenderName" Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Show History" Grid.Column="1" Grid.Row="1" Height="22" Width="80" HorizontalAlignment="Left" Margin="311,14,0,14" Command="{Binding ShowHistoryCommand}" />
 
             <TextBlock Grid.Column="2" Grid.Row="1">Sender Address</TextBlock>
             <TextBox x:Name="TxtSenderAddress" Grid.Row="1" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Address,
@@ -200,7 +201,8 @@
                 <Button x:Name="BtnSave" Content="Save" Width="105" Height="25" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"
                         Margin="6,6,0,6" Padding="0,-2,0,0" Command="{Binding SaveCommand, Mode=OneTime}" />
                 <TextBlock Grid.Column="1" Text="We're Offline!" Margin="10,0,0,0" FontSize="18" HorizontalAlignment="Left" TextWrapping="Wrap"
-                           Visibility="{Binding IsOnline, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" Foreground="Red"/> <!--Internet-->
+                           Visibility="{Binding IsOnline, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" Foreground="Red"/>
+                <!--Internet-->
                 <TextBlock Grid.Column="2" Text="Total" FontSize="18" />
                 <TextBlock Grid.Column="3" FontSize="18" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Total,
                 Mode=OneWay}" Margin="0,0,16,0" />

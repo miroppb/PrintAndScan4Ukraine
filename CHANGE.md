@@ -1,3 +1,7 @@
+v. 1.3.0.0
+
+- Implemented a history window, to search for previous shipments from a sender
+
 v. 1.2.5.3
 
 - Upload logs when closing the main window

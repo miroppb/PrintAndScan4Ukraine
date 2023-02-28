@@ -12,10 +12,53 @@ namespace PrintAndScan4Ukraine.Model
 		public string? Sender_Name { get; set; } = string.Empty;
 		public string? Sender_Address { get; set; } = string.Empty;
 		public string? Sender_Phone { get; set; } = string.Empty;
-		public string? Recipient_Name { get; set; } = string.Empty;
-		public string? Recipient_Address { get; set; } = string.Empty;
-		public string? Recipient_Phone { get; set; } = string.Empty;
-		public double? Weight { get; set; }
+		private string? _recipient_Name = string.Empty;
+
+		public string? Recipient_Name
+		{
+			get =>_recipient_Name;
+			set {
+				_recipient_Name = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private string? _recipient_Address = string.Empty;
+
+		public string? Recipient_Address
+		{
+			get =>_recipient_Address;
+			set {
+				_recipient_Address = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private string? _recipient_Phone = string.Empty;
+
+		public string? Recipient_Phone
+		{
+			get =>_recipient_Phone;
+			set {
+				_recipient_Phone = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
+		private double? _Weight = null;
+
+		public double? Weight
+		{
+			get => _Weight;
+			set
+			{
+				_Weight = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
 		private double? _Value = null;
 		public double? Value
 		{

@@ -55,14 +55,19 @@ namespace PrintAndScan4Ukraine
 		{
 			ListViewItem? lvi = Keyboard.FocusedElement as ListViewItem;
 			TextBox? tb = Keyboard.FocusedElement as TextBox;
-			if (lvi == null && !tb!.Name.Contains("Address"))
+			try
 			{
-				if (e.Key == Key.Enter)
+				if (lvi == null && !tb!.Name.Contains("Address"))
 				{
-					MnuNew_Click(sender, e);
-					e.Handled = true;
+					if (e.Key == Key.Enter)
+					{
+						MnuNew_Click(sender, e);
+						e.Handled = true;
+					}
 				}
 			}
+			catch { }
+			
 		}
 
 		private async void MnuShipped_Click(object sender, RoutedEventArgs e)

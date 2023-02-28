@@ -13,6 +13,7 @@ namespace PrintAndScan4Ukraine.Data
 	public interface IPackageDataProvider
 	{
 		Task<IEnumerable<Package>?> GetAllAsync();
+		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName);
 		bool InsertRecord(Package package);
 		bool UpdateRecord(List<Package> package);
 	}
@@ -26,6 +27,23 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE removed = 0");
+				packages = temp.ToList().Select(x =>
+				{
+					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
+					return x;
+				}).ToList();
+			}
+			libmiroppb.Log(JsonConvert.SerializeObject(packages));
+			return packages;
+		}
+
+		public async Task<IEnumerable<Package>?> GetByNameAsync(string SenderName)
+		{
+			libmiroppb.Log($"Get List of Packages for {SenderName}");
+			IEnumerable<Package> packages = new List<Package>();
+			using (MySqlConnection db = Secrets.GetConnectionString())
+			{
+				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE sender_name = @SenderName", new {SenderName});
 				packages = temp.ToList().Select(x =>
 				{
 					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };

@@ -27,13 +27,16 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public ObservableCollection<Package> Packages { get; } = new();
 		public DelegateCommand SaveCommand { get; }
+		public DelegateCommand ShowHistoryCommand { get; }
 
 		public bool CanSave => (SelectedPackage != null && IsOnline);
+		public bool CanShowHistory => (SelectedPackage != null && IsOnline);
 
 		public PackagesViewModel(IPackageDataProvider packageDataProvider)
 		{
 			_packageDataProvider = packageDataProvider;
 			SaveCommand = new DelegateCommand(Save, () => CanSave);
+			ShowHistoryCommand = new DelegateCommand(ShowHistory, () => CanShowHistory);
 		}
 
 		public Package SelectedPackage
@@ -44,6 +47,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				_selectedPackage = value;
 				RaisePropertyChanged();
 				SaveCommand.RaiseCanExecuteChanged();
+				ShowHistoryCommand.RaiseCanExecuteChanged();
 			}
 		}
 
@@ -61,8 +65,23 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				var packages = await _packageDataProvider.GetAllAsync();
 				if (packages != null)
-					packages.ToList().ForEach(p => Packages.Add(p));
+					packages.ToList().ForEach(Packages.Add);
 			}
+		}
+
+		public async Task<List<Package>?> LoadByNameAsync(string SenderName)
+		{
+			if (IsOnline)
+			{
+				List<Package> ListOfPackages = new List<Package>();
+
+				var packages = await _packageDataProvider.GetByNameAsync(SenderName);
+				if (packages != null)
+					packages.ToList().ForEach(ListOfPackages.Add);
+
+				return ListOfPackages;
+			}
+			return null;
 		}
 
 		public void Save()
@@ -102,8 +121,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public bool Export(IEnumerable<Package> packages)
 		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filter = "Excel File|*.xlsx";
+			SaveFileDialog sfd = new SaveFileDialog
+			{
+				Filter = "Excel File|*.xlsx"
+			};
 			if ((bool)sfd.ShowDialog()!)
 			{
 				libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
@@ -118,7 +139,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 						List<Contents> t = package.Recipient_Contents.CreateCopy();
 						List<string> output = new List<string>();
 						foreach (var item in t) { output.Add($"{item.Name}: {item.Amount}"); }
-						
+
 						var jsonParent = JsonConvert.SerializeObject(temp);
 						Package_less c = JsonConvert.DeserializeObject<Package_less>(jsonParent)!;
 						c.Contents = output.Join(Environment.NewLine);
@@ -157,7 +178,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public bool IsOnline
 		{
 			get => _isOnline;
-			set {
+			set
+			{
 				_isOnline = value;
 				RaisePropertyChanged();
 			}
@@ -168,12 +190,29 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public string LastSaved
 		{
 			get => _lastSaved;
-			set {
+			set
+			{
 				_lastSaved = value;
 				RaisePropertyChanged();
 			}
 		}
 
+		private async void ShowHistory()
+		{
+			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
+			HistoryWindow historyWindow = new HistoryWindow(SelectedPackage.Sender_Name!, PreviousPackages);
+			historyWindow.ShowDialog();
 
+			if (historyWindow.SelectedPackageToUse != null)
+			{
+				Package p = historyWindow.SelectedPackageToUse;
+				SelectedPackage.Recipient_Name = p.Recipient_Name;
+				SelectedPackage.Recipient_Address = p.Recipient_Address;
+				SelectedPackage.Recipient_Phone = p.Recipient_Phone;
+				SelectedPackage.Recipient_Contents = p.Recipient_Contents.Count > 0 ? p.Recipient_Contents : SelectedPackage.Recipient_Contents;
+				SelectedPackage.Weight = p.Weight != null ? p.Weight : SelectedPackage.Weight;
+				SelectedPackage.Value = p.Value != null ? p.Value : SelectedPackage.Value;
+			}
+		}
 	}
 }
