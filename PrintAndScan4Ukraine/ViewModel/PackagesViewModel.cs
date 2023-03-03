@@ -201,10 +201,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
 			HistoryWindow historyWindow = new HistoryWindow(SelectedPackage.Sender_Name!, PreviousPackages);
+			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages)}");
 			historyWindow.ShowDialog();
 
 			if (historyWindow.SelectedPackageToUse != null)
 			{
+				libmiroppb.Log($"Replacing current Package {SelectedPackage.Id} with {JsonConvert.SerializeObject(historyWindow.SelectedPackageToUse)}");
 				Package p = historyWindow.SelectedPackageToUse;
 				SelectedPackage.Recipient_Name = p.Recipient_Name;
 				SelectedPackage.Recipient_Address = p.Recipient_Address;

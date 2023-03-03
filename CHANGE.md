@@ -1,3 +1,9 @@
+v. 1.3.0.1
+
+- Updates to Updater and EPPlus
+- Added some more logging
+- Allowing only one instance to be opened
+
 v. 1.3.0.0
 
 - Implemented a history window, to search for previous shipments from a sender
