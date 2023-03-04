@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using miroppb;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Model;
 using System.Collections.Generic;

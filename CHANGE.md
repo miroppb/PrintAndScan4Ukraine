@@ -1,3 +1,7 @@
+v. 1.3.0.2
+
+- Changed MySql.Data to MySqlConnector
+
 v. 1.3.0.1
 
 - Updates to Updater and EPPlus
