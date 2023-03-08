@@ -24,7 +24,7 @@ namespace PrintAndScan4Ukraine
 		public ScanWindow()
 		{
 			InitializeComponent();
-			libmiroppb.Log("Welcome to Print And Scan 4 Ukraine. v" + Assembly.GetEntryAssembly()!.GetName().Version);
+			libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
 			_viewModel = new PackagesViewModel(new PackageDataProvider());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
@@ -67,7 +67,7 @@ namespace PrintAndScan4Ukraine
 				}
 			}
 			catch { }
-			
+
 		}
 
 		private async void MnuShipped_Click(object sender, RoutedEventArgs e)
@@ -108,6 +108,9 @@ namespace PrintAndScan4Ukraine
 				AutoUpdater.Start(Secrets.GetUpdateURL());
 			};
 			timer.Start();
+
+			libmiroppb.Log("Checking for update...");
+			AutoUpdater.Start(Secrets.GetUpdateURL()); //Checking for update on start
 		}
 
 		private void AutoUpdater_ApplicationExitEvent()

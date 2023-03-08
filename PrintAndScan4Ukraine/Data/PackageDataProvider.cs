@@ -43,7 +43,7 @@ namespace PrintAndScan4Ukraine.Data
 			IEnumerable<Package> packages = new List<Package>();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE sender_name = @SenderName", new {SenderName});
+				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE sender_name = @SenderName", new { SenderName });
 				packages = temp.ToList().Select(x =>
 				{
 					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };

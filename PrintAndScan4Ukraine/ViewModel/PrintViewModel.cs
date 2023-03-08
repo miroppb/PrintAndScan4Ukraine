@@ -1,14 +1,10 @@
-﻿using PrintAndScan4Ukraine.Command;
+﻿using miroppb;
+using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
@@ -28,7 +24,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public string SelectedPrinter
 		{
 			get => _selectedPrinter;
-			set {
+			set
+			{
 				_selectedPrinter = value;
 				RaisePropertyChanged();
 			}
@@ -39,7 +36,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public int Starting
 		{
 			get => _starting;
-			set {
+			set
+			{
 				_starting = value;
 				RaisePropertyChanged();
 			}
@@ -83,6 +81,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private async void Print()
 		{
 			CanPrint = false;
+			libmiroppb.Log($"Printing from {Starting} to {Ending}, {Copies} copies, to printer {SelectedPrinter}");
 			_dataProvider.PrintBarcodes(Starting, Ending, Copies, SelectedPrinter);
 			await Task.Delay(2000);
 			CanPrint = true;

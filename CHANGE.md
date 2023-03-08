@@ -1,3 +1,8 @@
+v. 1.3.0.3
+
+- Added logging to Print window
+- Checks for updates at start of the Scan window
+
 v. 1.3.0.2
 
 - Changed MySql.Data to MySqlConnector

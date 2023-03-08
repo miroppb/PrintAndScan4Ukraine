@@ -16,8 +16,9 @@ namespace PrintAndScan4Ukraine.Model
 
 		public string? Recipient_Name
 		{
-			get =>_recipient_Name;
-			set {
+			get => _recipient_Name;
+			set
+			{
 				_recipient_Name = value;
 				RaisePropertyChanged();
 			}
@@ -27,8 +28,9 @@ namespace PrintAndScan4Ukraine.Model
 
 		public string? Recipient_Address
 		{
-			get =>_recipient_Address;
-			set {
+			get => _recipient_Address;
+			set
+			{
 				_recipient_Address = value;
 				RaisePropertyChanged();
 			}
@@ -38,8 +40,9 @@ namespace PrintAndScan4Ukraine.Model
 
 		public string? Recipient_Phone
 		{
-			get =>_recipient_Phone;
-			set {
+			get => _recipient_Phone;
+			set
+			{
 				_recipient_Phone = value;
 				RaisePropertyChanged();
 			}
