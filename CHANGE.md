@@ -1,3 +1,7 @@
+v. 1.3.0.5
+
+- Changed url for db
+
 v. 1.3.0.4
 
 - If initial loading of packages fails, logs attempt
