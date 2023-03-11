@@ -1,3 +1,7 @@
+v. 1.3.0.4
+
+- If initial loading of packages fails, logs attempt
+
 v. 1.3.0.3
 
 - Added logging to Print window
