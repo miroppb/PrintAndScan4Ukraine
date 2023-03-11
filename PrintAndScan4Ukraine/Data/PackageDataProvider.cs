@@ -41,7 +41,6 @@ namespace PrintAndScan4Ukraine.Data
 			catch {
 				libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl}");
 				MessageBox.Show($"There is no connection to: {Secrets.GetMySQLUrl}");
-				libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", true);
 			}
 			return packages;
 		}
