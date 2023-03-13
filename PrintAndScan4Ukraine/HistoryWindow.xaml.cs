@@ -1,4 +1,5 @@
-﻿using PrintAndScan4Ukraine.Model;
+﻿using CodingSeb.Localization;
+using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace PrintAndScan4Ukraine
 			_viewmodel = new HistoryViewModel();
 			DataContext = _viewmodel;
 
-			_viewmodel.SenderName = $"Select a previous shipment from: {NameOfSender}.{Environment.NewLine}Double-click to use for current package";
+			_viewmodel.SenderName = $"{String.Format(Loc.Tr("PAS4U.HistoryWindow.TopText", "Barcodes Scanned"), NameOfSender)}";
 			ObservableCollection<Package> obp = new();
 			if (ListOfPreviousPackages != null)
 				ListOfPreviousPackages.ForEach(obp.Add);

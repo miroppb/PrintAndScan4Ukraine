@@ -1,4 +1,5 @@
-﻿using miroppb;
+﻿using CodingSeb.Localization;
+using miroppb;
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.ViewModel;
@@ -36,7 +37,7 @@ namespace PrintAndScan4Ukraine
 				barCodes.Add(barCode.Replace("\0", ""));
 				barCode = string.Empty;
 				e.Handled = true;
-				LblCodes.Text = $"Barcodes scanned: {barCodes.Count}";
+				LblCodes.Text = $"{Loc.Tr("PAS4U.ScanShippedWindow.BarcodesScanned", "Barcodes Scanned")}: {barCodes.Count}";
 			}
 			barCode += ToChar(e.Key);
 		}

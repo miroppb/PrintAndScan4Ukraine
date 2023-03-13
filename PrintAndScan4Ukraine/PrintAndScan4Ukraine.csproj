@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <None Remove="barcode.png" />
+    <None Remove="Language\Translations.loc.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,10 +20,13 @@
 
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.7" />
+    <PackageReference Include="CodingSeb.Localization" Version="1.2.0" />
+    <PackageReference Include="CodingSeb.Localization.JsonFileLoader" Version="1.2.0" />
+    <PackageReference Include="CodingSeb.Localization.WPF" Version="1.2.0" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="EPPlus" Version="6.1.3" />
     <PackageReference Include="MySqlConnector" Version="2.2.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="ServiceStack.Text.Core" Version="6.6.0" />
     <PackageReference Include="Z.Dapper.Plus" Version="5.0.0" />
   </ItemGroup>
@@ -35,6 +39,9 @@
 
   <ItemGroup>
     <Resource Include="barcode.png" />
+    <Content Include="Language\Translations.loc.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +50,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +62,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

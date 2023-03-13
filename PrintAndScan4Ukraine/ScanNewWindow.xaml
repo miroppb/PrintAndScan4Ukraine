@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
-        Title="ScanNewWindow" Height="400" Width="500" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Loaded="Window_Loaded" Icon="/barcode.png">
+        Title="{Tr 'PAS4U.ScanNewWindow.Title', DefaultText='Scan New Window'}" Height="400" Width="500" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Loaded="Window_Loaded" Icon="/barcode.png">
     <Grid>
-        <TextBlock Text="Scan Barcode&#x0a;to Add..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
-        <TextBlock Text="Or Press Enter to Close" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" TextAlignment="Center" Margin="0,268,0,0" />
+        <TextBlock Text="{Tr 'PAS4U.ScanNewWindow.TopText', DefaultText='Scan New Barcode to Add'}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
+        <TextBlock Text="{Tr 'PAS4U.ScanNewWindow.BottomText', DefaultText='Or Press Enter to Close'}" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" TextAlignment="Center" Margin="0,280,0,0" />
     </Grid>
 </Window>

@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
-        Title="ScannerWindow" Height="400" Width="500" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="/barcode.png">
+        Title="{Tr 'PAS4U.ScanShippedWindow.Title', DefaultText='Scan Shipped Window'}" Height="400" Width="500" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="/barcode.png">
     <Grid>
-        <TextBlock x:Name="LblCodes" Text="Barcodes scanned: " HorizontalAlignment="Center" />
-        <TextBlock Text="Scan Barcodes to&#x0a;Mark As Shipped..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
-        <Button x:Name="BtnDone" Content="Done" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="40" Margin="0,310,0,0" Click="BtnDone_Click" />
+        <TextBlock x:Name="LblCodes" Text="{Tr 'PAS4U.ScanShippedWindow.BarcodesScanned', {Binding barCodes.Count}, DefaultText='Barcodes Scanned...'}" HorizontalAlignment="Center" />
+        <TextBlock Text="{Tr 'PAS4U.ScanShippedWindow.TopText', DefaultText='Scan Barcodes that were shipped'}" TextWrapping="Wrap" HorizontalAlignment="Center"
+                   VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
+        <Button x:Name="BtnDone" Content="{Tr 'PAS4U.ScanShippedWindow.DoneText', DefaultText='Done'}" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="40" Margin="0,310,0,0" Click="BtnDone_Click" />
     </Grid>
 </Window>

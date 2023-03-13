@@ -1,7 +1,11 @@
 ﻿using AutoUpdaterDotNET;
+using CodingSeb.Localization;
+using CodingSeb.Localization.Loaders;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
+using PrintAndScan4Ukraine.Model;
+using PrintAndScan4Ukraine.Properties;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Linq;
@@ -28,6 +32,11 @@ namespace PrintAndScan4Ukraine
 			_viewModel = new PackagesViewModel(new PackageDataProvider());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
+
+			LocalizationLoader.Instance.FileLanguageLoaders.Add(new JsonFileLoader());
+			LocalizationLoader.Instance.AddDirectory(@"Language");
+
+			Loc.Instance.CurrentLanguage = Settings.Default.Language;
 		}
 
 		private async void ScanWindow_Loaded(object sender, RoutedEventArgs e)
@@ -37,12 +46,25 @@ namespace PrintAndScan4Ukraine
 			await _viewModel.LoadAsync();
 			SetupUpdater();
 			SetupLogUploader();
-			SetupSavingOften();
+			//SetupSavingOften();
 			SetupOnlineCheck();
 			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 			Closing += ScanWindow_Closing;
+
+			LstUPCAndNames.SelectionChanged += LstUPCAndNames_SelectionChanged;
+		}
+
+		private void LstUPCAndNames_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (LstUPCAndNames.SelectedItem != null)
+			{
+				TxtTotal.Visibility = Visibility.Visible;
+				TxtDateAdded.Visibility = Visibility.Visible;
+				if (((Package)LstUPCAndNames.SelectedItem).Date_Shipped != null)
+					TxtDateShipped.Visibility = Visibility.Visible;
+			}
 		}
 
 		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -72,8 +94,7 @@ namespace PrintAndScan4Ukraine
 
 		private async void MnuShipped_Click(object sender, RoutedEventArgs e)
 		{
-			int current = 0;
-			try { current = (int)_viewModel.SelectedPackage.Id!; } catch { }
+			int current = (_viewModel.SelectedPackage != null ? (int)_viewModel.SelectedPackage.Id! : 0);
 			MarkAsShippedWindow shippedWindow = new MarkAsShippedWindow(_viewModel);
 			shippedWindow.ShowDialog();
 			await _viewModel.LoadAsync();
@@ -158,6 +179,20 @@ namespace PrintAndScan4Ukraine
 		private void UploadLogs(bool deleteAfter)
 		{
 			libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", deleteAfter);
+		}
+
+		private void MnuEnglish_Click(object sender, RoutedEventArgs e)
+		{
+			Loc.Instance.CurrentLanguage = "en";
+			Settings.Default.Language = Loc.Instance.CurrentLanguage;
+			Settings.Default.Save();
+        }
+
+		private void MnuRussian_Click(object sender, RoutedEventArgs e)
+		{
+			Loc.Instance.CurrentLanguage = "ru";
+			Settings.Default.Language = Loc.Instance.CurrentLanguage;
+			Settings.Default.Save();
 		}
 	}
 }

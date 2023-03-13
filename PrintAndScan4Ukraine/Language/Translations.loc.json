@@ -1,0 +1,155 @@
+{
+  "LanguageName": {
+    "en": "English",
+    "ru": "Русский"
+  },
+
+  "PAS4U": {
+    "MainMenu": {
+      "FileMenuItem": {
+        "Header": {
+          "en": "_File",
+          "ru": "_Файл"
+        },
+        "ScanShippedItem": {
+          "Header": {
+            "en": "Scan _Shipped",
+            "ru": "_Сканировать Отправленное"
+          }
+        },
+        "ScanNewItem": {
+          "Header": {
+            "en": "Scan _New",
+            "ru": "Сканировать _Новое"
+          }
+        },
+        "ExportItem": {
+          "Header": {
+            "en": "_Export to Excel",
+            "ru": "_Экспорт в Excel"
+          }
+        }
+      },
+      "Language": {
+        "en": "Language",
+        "ru": "Язык"
+      }
+    },
+    "MainWindow": {
+      "PackageId": {
+        "en": "Package ID",
+        "ru": "Номер посылки"
+      },
+      "SenderName": {
+        "en": "Sender Name",
+        "ru": "Имя отправителя"
+      },
+      "SenderPhone": {
+        "en": "Sender Name",
+        "ru": "Имя отправителя"
+      },
+      "SenderAddress": {
+        "en": "Sender Name",
+        "ru": "Имя отправителя"
+      },
+      "ReceiverName": {
+        "en": "Receiver Name",
+        "ru": "Имя Получателя"
+      },
+      "ReceiverPhone": {
+        "en": "Receiver Phone",
+        "ru": "Телефон Получателя"
+      },
+      "ReceiverAddress": {
+        "en": "Receiver Address",
+        "ru": "Адрес Получателя"
+      },
+      "Contents": {
+        "en": "Contents/Amount",
+        "ru": "Наименование Вложений/Количество"
+      },
+      "ContentsName": {
+        "en": "Name",
+        "ru": "Название"
+      },
+      "ContentsAmount": {
+        "en": "Amount",
+        "ru": "Количество"
+      },
+      "Weight": {
+        "en": "Weight",
+        "ru": "Вес"
+      },
+      "Value": {
+        "en": "Value",
+        "ru": "Ценность"
+      },
+      "DateAdded": {
+        "en": "Date Added {0}",
+        "ru": "Дата Добавления {0}"
+      },
+      "DateShipped": {
+        "en": "Date Shipped {0}",
+        "ru": "Дата Отправления {0}"
+      },
+      "SaveButton": {
+        "en": "Save",
+        "ru": "Сохранить"
+      },
+      "Offline": {
+        "en": "We're Offline'",
+        "ru": "Мы не в сети"
+      },
+      "Total": {
+        "en": "Total: {0}",
+        "ru": "Итого: {0}"
+      },
+      "ShowHistoryButton": {
+        "en": "Show History",
+        "ru": "Показать Историю"
+      }
+    },
+    "ScanNewWindow": {
+      "Title": {
+        "en": "Scan New",
+        "ru": "Сканировать Новую Посылку"
+      },
+      "TopText": {
+        "en": "Scan Barcode to Add...",
+        "ru": "Сканируйте Баркод который нада добавить..."
+      },
+      "BottomText": {
+        "en": "Or Press Enter to Close",
+        "ru": "Или нажмите Enter, чтобы закрыть"
+      }
+    },
+    "ScanShippedWindow": {
+      "Title": {
+        "en": "Scan Shipped Window",
+        "ru": "Сканировать Отправленые Посылки"
+      },
+      "BarcodesScanned": {
+        "en": "Barcodes Scanned",
+        "ru": "Сканированые Баркоды"
+      },
+      "TopText": {
+        "en": "Scan Barcodes to Mark As Shipped...",
+        "ru": "Сканируйте Баркоды которые отправлены..."
+      },
+      "DoneText": {
+        "en": "Done",
+        "ru": "Закончить"
+      }
+    },
+    "HistoryWindow": {
+      "Title": {
+        "en": "History",
+        "ru": "История"
+      },
+      "TopText": {
+        "en": "Select a previous shipment from: {0}.\nDouble-click to use for current package.",
+        "ru": "Выберите предыдущую доставку от: {0}.\nДважды щелкните, чтобы использовать для текущей посылки"
+      }
+    }
+  }
+}

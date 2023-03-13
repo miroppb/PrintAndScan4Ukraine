@@ -23,10 +23,14 @@
 
         <DockPanel Grid.ColumnSpan="2" >
             <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_File">
-                    <MenuItem x:Name="MnuShipped" Header="Scan _Shipped" Click="MnuShipped_Click" />
-                    <MenuItem x:Name="MnuNew" Header="Scan _New" Click="MnuNew_Click" />
-                    <MenuItem x:Name="MnuExport" Header="_Export to Excel" Click="MnuExport_Click" />
+                <MenuItem Header="{Tr 'PAS4U.MainMenu.FileMenuItem.Header', DefaultText='_File'}">
+                    <MenuItem x:Name="MnuShipped" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanShippedItem.Header', DefaultText='Scan _Shipped'}" Click="MnuShipped_Click" />
+                    <MenuItem x:Name="MnuNew" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanNewItem.Header', DefaultText='Scan _New'}" Click="MnuNew_Click" />
+                    <MenuItem x:Name="MnuExport" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ExportItem.Header', DefaultText='_Export to Excel'}" Click="MnuExport_Click" />
+                </MenuItem>
+                <MenuItem Header="{Tr 'PAS4U.MainMenu.Language', DefaultText='_Language'}">
+                    <MenuItem x:Name="MnuEnglish" Header="{Tr 'LanguageName', DefaultText='_English', LanguageId='en'}" Click="MnuEnglish_Click" />
+                    <MenuItem x:Name="MnuRussian" Header="{Tr 'LanguageName', DefaultText='_Russian', LanguageId='ru'}" Click="MnuRussian_Click" />
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -55,7 +59,7 @@
             <ListView x:Name="LstUPCAndNames" Grid.Row="1" Margin="5,0,5,5" ItemsSource="{Binding Packages}"
                       SelectedItem="{Binding SelectedPackage, Mode=TwoWay}" DisplayMemberPath="PackageId" SelectionMode="Single"/>
 
-            <TextBlock Grid.Row="2" Text="{Binding Packages.Count, StringFormat='Total: {0}'}" HorizontalAlignment="Center" />
+            <TextBlock Grid.Row="2" Text="{Tr 'PAS4U.MainWindow.Total', {Binding Packages.Count}, DefaultText='Total'}" HorizontalAlignment="Center" />
         </Grid>
 
         <!--Middle info section-->
@@ -110,68 +114,59 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <TextBlock>Package ID</TextBlock>
+            <TextBlock Text="{Tr 'PAS4U.MainWindow.PackageId', DefaultText='Package ID'}" />
             <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.PackageId,
                 Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,0,0" FontSize="20" />
 
-            <TextBlock Grid.Column="1" FontSize="14" Grid.ColumnSpan="2" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Date_Added,
-                Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat='Date Added {0}'}" HorizontalAlignment="Right" Margin="0,0,15,0" />
-
-            <Grid Grid.Column="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="195" />
-                </Grid.ColumnDefinitions>
+            <TextBlock x:Name="TxtDateAdded" Grid.Column="1" Grid.ColumnSpan="2" Text="{Tr 'PAS4U.MainWindow.DateAdded', {Binding SelectedPackage.Date_Added}, DefaultText='Date Added'}"
+                       HorizontalAlignment="Right" Margin="0,0,15,0" FontSize="14" Visibility="Hidden" />
 
 
+            <TextBlock x:Name="TxtDateShipped" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.DateShipped', {Binding SelectedPackage.Date_Shipped}, DefaultText='Date Shipped'}"
+                       HorizontalAlignment="Right" Margin="0,0,0,0" Foreground="Green" FontSize="15" Visibility="Hidden" />
 
-                <TextBlock Grid.Column="0">Date Shipped</TextBlock>
-                <TextBlock Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Date_Shipped,
-                Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,0,0,0" Foreground="Green" FontSize="15" />
-            </Grid>
-
-            <TextBlock Grid.Row="1">Sender Name</TextBlock>
+            <TextBlock Grid.Row="1" Text="{Tr 'PAS4U.MainWindow.SenderName', DefaultText='Sender Name'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtSenderName" Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <Button Content="Show History" Grid.Column="1" Grid.Row="1" Height="22" Width="80" HorizontalAlignment="Left" Margin="311,14,0,14" Command="{Binding ShowHistoryCommand}" />
+            <Button Content="{Tr 'PAS4U.MainWindow.ShowHistoryButton', DefaultText='Show History'}" Grid.Column="1" Grid.Row="1" Height="22" Width="Auto" HorizontalAlignment="Right" Margin="0,14,26,14" Command="{Binding ShowHistoryCommand}" />
 
-            <TextBlock Grid.Column="2" Grid.Row="1">Sender Address</TextBlock>
+            <TextBlock Grid.Column="2" Grid.Row="1" Text="{Tr 'PAS4U.MainWindow.SenderAddress', DefaultText='Sender Address'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtSenderAddress" Grid.Row="1" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Address,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.RowSpan="2" Height="90" VerticalContentAlignment="Top" Padding="0,5,0,0" AcceptsReturn="True"/>
 
-            <TextBlock Grid.Row="2">Sender Phone</TextBlock>
+            <TextBlock Grid.Row="2" Text="{Tr 'PAS4U.MainWindow.SenderPhone', DefaultText='Sender Phone'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtSenderPhone" Grid.Row="2" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Phone,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Rectangle Grid.Row="3" Grid.ColumnSpan="4" Fill="Black" Height="2"/>
 
-            <TextBlock Grid.Row="4">Имя Получателя</TextBlock>
+            <TextBlock Grid.Row="4" Text="{Tr 'PAS4U.MainWindow.ReceiverName', DefaultText='Receiver Name'}" />
             <TextBox x:Name="TxtRecipientFName" Grid.Row="4" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Name,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-            <TextBlock Grid.Row="4" Grid.Column="2">Адрес Получателя</TextBlock>
+            <TextBlock Grid.Row="4" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.ReceiverAddress', DefaultText='Receiver Address'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtRecipientAddress" Grid.Row="4" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Address,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.RowSpan="2" Height="90" VerticalContentAlignment="Top" Padding="0,5,0,0" AcceptsReturn="True"/>
 
-            <TextBlock Grid.Row="5">Телефон<LineBreak />Получателя</TextBlock>
+            <TextBlock Grid.Row="5" Text="{Tr 'PAS4U.MainWindow.ReceiverPhone', DefaultText='Receiver Phone'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtRecipientPhone" Grid.Row="5" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Phone,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="6" Margin="0,15,0,0" Grid.RowSpan="2" VerticalAlignment="Top">Наименование<LineBreak />Вложений/<LineBreak />Количество</TextBlock>
+            <TextBlock Grid.Row="6" Margin="0,15,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Text="{Tr 'PAS4U.MainWindow.Contents', DefaultText='Contents/Amount'}" TextWrapping="Wrap" />
             <DataGrid x:Name="LstContents" Grid.Row="6" Grid.Column="1" Grid.RowSpan="4" Height="190" ItemsSource="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Contents,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" CanUserAddRows="True" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserResizeRows="False"
                       CanUserDeleteRows="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="Amount" Width="55" Binding="{Binding Amount}"  />
+                    <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsName', DefaultText='Name'}" Width="*" Binding="{Binding Name}" />
+                    <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsAmount', DefaultText='Amount'}" Width="60" Binding="{Binding Amount}"  />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <TextBlock Grid.Row="6" Grid.Column="2">Weight/Вес</TextBlock>
+            <TextBlock Grid.Row="6" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Weight', DefaultText='Weight'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtWeight" Grid.Row="6" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Weight,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="7" Grid.Column="2">Ценность/Value</TextBlock>
+            <TextBlock Grid.Row="7" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Value', DefaultText='Value'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtCost" Grid.Row="7" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Value,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -190,22 +185,19 @@
             <Grid Grid.Row="10" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="115" />
+                    <ColumnDefinition Width="170" />
                     <ColumnDefinition />
-                    <ColumnDefinition Width="45" />
-                    <ColumnDefinition Width="100" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <Button x:Name="BtnSave" Content="Save" Width="105" Height="25" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"
+                <Button x:Name="BtnSave" Content="{Tr 'PAS4U.MainWindow.SaveButton', DefaultText='Save'}" Width="105" Height="25" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"
                         Margin="6,6,0,6" Padding="0,-2,0,0" Command="{Binding SaveCommand, Mode=OneTime}" />
-                <TextBlock Grid.Column="1" Text="We're Offline!" Margin="10,0,0,0" FontSize="18" HorizontalAlignment="Left" TextWrapping="Wrap"
+                <TextBlock Grid.Column="1" Text="{Tr 'PAS4U.MainWindow.Offline', DefaultText='We`re Offline'}" Margin="10,0,0,0" FontSize="18" HorizontalAlignment="Left" TextWrapping="Wrap"
                            Visibility="{Binding IsOnline, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" Foreground="Red"/>
                 <!--Internet-->
-                <TextBlock Grid.Column="2" Text="Total" FontSize="18" />
-                <TextBlock Grid.Column="3" FontSize="18" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Total,
-                Mode=OneWay}" Margin="0,0,16,0" />
+                <TextBlock x:Name="TxtTotal" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Total', {Binding SelectedPackage.Total}, DefaultText='Total'}" FontSize="18" Visibility="Hidden"/>
             </Grid>
 
         </Grid>
