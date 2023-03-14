@@ -163,6 +163,22 @@
       "TopText": {
         "en": "Select a previous shipment from: {0}.\nDouble-click to use for current package.",
         "ru": "Выберите предыдущую доставку от: {0}.\nДважды щелкните, чтобы использовать для текущей посылки"
+      },
+      "AreYouSureText": {
+        "en": "Are you sure you want to overwrite the current package with these parameters?",
+        "ru": "Вы уверены, что хотите перезаписать текущую посылку с этими параметрами?"
+      },
+      "ContentsText": {
+        "en": "Contents too?",
+        "ru": "Содержимое тоже?"
+      },
+      "WeightText": {
+        "en": "Weight?",
+        "ru": "Вес?"
+      },
+      "ValueText": {
+        "en": "Value?",
+        "ru": "Ценность?"
       }
     }
   }

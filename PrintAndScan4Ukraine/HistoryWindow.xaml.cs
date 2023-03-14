@@ -34,17 +34,17 @@ namespace PrintAndScan4Ukraine
 		{
 			if (_viewmodel.SelectedShipment != null)
 			{
-				if (MessageBox.Show("Are you sure you want to overwrite the current package with these parameters?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+				if (MessageBox.Show(Loc.Tr("PAS4U.HistoryWindow.AreYouSureText", "Are you sure?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
 				{
-					if (MessageBox.Show("Contents too?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+					if (MessageBox.Show(Loc.Tr("PAS4U.HistoryWindow.ContentsText", "Contents?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
 					{
 						_viewmodel.SelectedShipment.Recipient_Contents = new();
 					}
-					if (MessageBox.Show("Weight?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+					if (MessageBox.Show(Loc.Tr("PAS4U.HistoryWindow.WeightText", "Weight?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
 					{
 						_viewmodel.SelectedShipment.Weight = null;
 					}
-					if (MessageBox.Show("Value?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+					if (MessageBox.Show(Loc.Tr("PAS4U.HistoryWindow.ValueText", "Weight?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
 					{
 						_viewmodel.SelectedShipment.Value = null;
 					}
