@@ -24,7 +24,8 @@
         <DockPanel Grid.ColumnSpan="2" >
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.FileMenuItem.Header', DefaultText='_File'}">
-                    <MenuItem x:Name="MnuShipped" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanShippedItem.Header', DefaultText='Scan _Shipped'}" Click="MnuShipped_Click" />
+                    <MenuItem x:Name="MnuSaveAll" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.SaveAllItem.Header', DefaultText='_Save All'}" Command="{Binding SaveAllCommand}" />
+                    <MenuItem x:Name="MnuShipped" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanShippedItem.Header', DefaultText='Scan S_hipped'}" Click="MnuShipped_Click" />
                     <MenuItem x:Name="MnuNew" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanNewItem.Header', DefaultText='Scan _New'}" Click="MnuNew_Click" />
                     <MenuItem x:Name="MnuExport" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ExportItem.Header', DefaultText='_Export to Excel'}" Click="MnuExport_Click" />
                 </MenuItem>
@@ -158,7 +159,7 @@
                       CanUserDeleteRows="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsName', DefaultText='Name'}" Width="*" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsAmount', DefaultText='Amount'}" Width="60" Binding="{Binding Amount}"  />
+                    <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsAmount', DefaultText='Amount'}" Width="80" Binding="{Binding Amount}"  />
                 </DataGrid.Columns>
             </DataGrid>
 

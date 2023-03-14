@@ -1,6 +1,7 @@
 ﻿using AutoUpdaterDotNET;
 using CodingSeb.Localization;
 using CodingSeb.Localization.Loaders;
+using Microsoft.Win32;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
@@ -8,6 +9,7 @@ using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.Properties;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -46,7 +48,8 @@ namespace PrintAndScan4Ukraine
 			await _viewModel.LoadAsync();
 			SetupUpdater();
 			SetupLogUploader();
-			//SetupSavingOften();
+			SetupSavingOften();
+			SetupReloadingPackages();
 			SetupOnlineCheck();
 			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
@@ -103,13 +106,20 @@ namespace PrintAndScan4Ukraine
 
 		private async void MnuNew_Click(object sender, RoutedEventArgs e)
 		{
-			ScanNewWindow scanNewWindow = new ScanNewWindow();
+			ScanNewWindow scanNewWindow = new ScanNewWindow(_viewModel.Packages.Select(x => x.PackageId).ToList());
 			scanNewWindow.ShowDialog();
 			if (scanNewWindow.WasSomethingSet)
 			{
 				_viewModel.Save();
 				await _viewModel.LoadAsync();
-				try { _viewModel.SelectedPackage = _viewModel.Packages[_viewModel.Packages.Count - 1]; } catch { }
+			}
+			if (scanNewWindow.BarCodeThatWasSet != string.Empty)
+			{
+				try
+				{
+					_viewModel.SelectedPackage = _viewModel.Packages.FirstOrDefault(x => x.PackageId == scanNewWindow.BarCodeThatWasSet)!;
+				}
+				catch { }
 			}
 		}
 
@@ -158,8 +168,20 @@ namespace PrintAndScan4Ukraine
 			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
 			timer.Tick += delegate
 			{
-				if (_viewModel.Packages != null)
-					_viewModel.SaveAll();
+				if (_viewModel.SelectedPackage != null) //only saving current package
+					_viewModel.Save();
+			};
+			timer.Start();
+		}
+
+		private void SetupReloadingPackages()
+		{
+			int minutes = 2;
+			libmiroppb.Log($"Setting up refreshing packages every {minutes} minute(s)");
+			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
+			timer.Tick += delegate
+			{
+				ReloadPackagesAndUpdateIfChanged();
 			};
 			timer.Start();
 		}
@@ -194,5 +216,10 @@ namespace PrintAndScan4Ukraine
 			Settings.Default.Language = Loc.Instance.CurrentLanguage;
 			Settings.Default.Save();
 		}
-	}
+
+		private void ReloadPackagesAndUpdateIfChanged()
+		{
+			_viewModel.ReloadPackagesAndUpdateIfChanged();
+		}
+    }
 }

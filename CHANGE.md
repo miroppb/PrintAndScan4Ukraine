@@ -1,3 +1,10 @@
+v. 1.4.0.0
+
+- Added Localization (Russian)
+- Prevent duplicate records from being added
+- Save in strategic places, to lower the amount of data being sent
+- Refreshes content in background if it was updated in the db/other instances
+
 v. 1.3.0.5
 
 - Changed url for db

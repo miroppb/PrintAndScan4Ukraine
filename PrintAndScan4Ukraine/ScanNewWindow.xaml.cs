@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using CodingSeb.Localization;
+using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -17,11 +19,14 @@ namespace PrintAndScan4Ukraine
 		private string barCode = string.Empty;
 		private PackagesViewModel _viewModel;
 		public bool WasSomethingSet = false;
+		private List<string> Packages = new List<string>();
+		public string BarCodeThatWasSet = string.Empty;
 
-		public ScanNewWindow()
+		public ScanNewWindow(List<string> packages)
 		{
 			InitializeComponent();
 			_viewModel = new PackagesViewModel(new PackageDataProvider());
+			Packages = packages;
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -35,10 +40,20 @@ namespace PrintAndScan4Ukraine
 			{
 				if (barCode.Replace("\0", "").Trim() != string.Empty) //make sure that the barcode is an actual alphanumeric string
 				{
-					_viewModel.Insert(new Package() { PackageId = barCode.Replace("\0", "").Trim(), Date_Added = DateTime.Now, Contents = JsonConvert.SerializeObject(new List<Contents>() { }) });
-					WasSomethingSet = true;
+					if (Packages.FirstOrDefault(x => x == barCode.Replace("\0", "").Trim()) == null)
+					{
+						_viewModel.Insert(new Package() { PackageId = barCode.Replace("\0", "").Trim(), Date_Added = DateTime.Now, Contents = JsonConvert.SerializeObject(new List<Contents>() { }) });
+						WasSomethingSet = true;
+						BarCodeThatWasSet = barCode.Replace("\0", "").Trim();
+					}
+					else
+					{
+						WasSomethingSet = false;
+						MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
+						BarCodeThatWasSet = barCode.Replace("\0", "").Trim();
+					}
 				}
-				
+
 				barCode = string.Empty;
 				e.Handled = true;
 				Close();
@@ -51,12 +66,12 @@ namespace PrintAndScan4Ukraine
 			char c = '\0';
 			if ((key >= Key.A) && (key <= Key.Z))
 			{
-				c = (char)((int)'a' + (int)(key - Key.A)); //Ignore letters
+				c = (char)('a' + (key - Key.A)); //Ignore letters
 			}
 
 			else if ((key >= Key.D0) && (key <= Key.D9))
 			{
-				c = (char)((int)'0' + (int)(key - Key.D0));
+				c = (char)('0' + (key - Key.D0));
 			}
 
 			return c;

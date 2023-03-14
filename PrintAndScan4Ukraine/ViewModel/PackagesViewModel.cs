@@ -28,6 +28,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public ObservableCollection<Package> Packages { get; } = new();
 		public DelegateCommand SaveCommand { get; }
 		public DelegateCommand ShowHistoryCommand { get; }
+		public DelegateCommand SaveAllCommand { get; }
 
 		public bool CanSave => (SelectedPackage != null && IsOnline);
 		public bool CanShowHistory => (SelectedPackage != null && IsOnline);
@@ -37,6 +38,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			_packageDataProvider = packageDataProvider;
 			SaveCommand = new DelegateCommand(Save, () => CanSave);
 			ShowHistoryCommand = new DelegateCommand(ShowHistory, () => CanShowHistory);
+			SaveAllCommand = new DelegateCommand(SaveAll);
 		}
 
 		public Package SelectedPackage
@@ -44,6 +46,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 			get => _selectedPackage!;
 			set
 			{
+				if (_selectedPackage != null)
+					Save(_selectedPackage); //save previous package before changing to new package
 				_selectedPackage = value;
 				RaisePropertyChanged();
 				SaveCommand.RaiseCanExecuteChanged();
@@ -88,7 +92,16 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			if (SelectedPackage != null && IsOnline)
 			{
-				if (_packageDataProvider.UpdateRecord(new List<Package>() { SelectedPackage }))
+				if (_packageDataProvider.UpdateRecords(new List<Package>() { SelectedPackage }))
+					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+			}
+		}
+
+		public void Save(Package package)
+		{
+			if (IsOnline)
+			{
+				if (_packageDataProvider.UpdateRecords(new List<Package>() { package }))
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 			}
 		}
@@ -96,15 +109,15 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public void SaveAll()
 		{
 			if (IsOnline && Packages != null)
-				if (_packageDataProvider.UpdateRecord(Packages.ToList()))
+				if (_packageDataProvider.UpdateRecords(Packages.ToList()))
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 
 		}
 
-		public bool UpdateRecord(List<Package> packages)
+		public bool UpdateRecords(List<Package> packages)
 		{
 			if (IsOnline)
-				return _packageDataProvider.UpdateRecord(packages);
+				return _packageDataProvider.UpdateRecords(packages);
 			return false;
 		}
 
@@ -215,6 +228,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 				SelectedPackage.Weight = p.Weight != null ? p.Weight : SelectedPackage.Weight;
 				SelectedPackage.Value = p.Value != null ? p.Value : SelectedPackage.Value;
 			}
+		}
+
+		public void ReloadPackagesAndUpdateIfChanged()
+		{
+			if (IsOnline)
+				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
 		}
 	}
 }

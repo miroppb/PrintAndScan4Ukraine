@@ -11,9 +11,15 @@
           "en": "_File",
           "ru": "_Файл"
         },
+        "SaveAllItem": {
+          "Header": {
+            "en": "_Save All",
+            "ru": "Сохранить _Все"
+          }
+        },
         "ScanShippedItem": {
           "Header": {
-            "en": "Scan _Shipped",
+            "en": "Scan S_hipped",
             "ru": "_Сканировать Отправленное"
           }
         },
@@ -107,6 +113,10 @@
       "ShowHistoryButton": {
         "en": "Show History",
         "ru": "Показать Историю"
+      },
+      "RefreshCurrentPackage": {
+        "en": "Current Package was updated outside of the application. Reload it?",
+        "ru": "Текущая посылка была обновлена вне приложения. Перезагрузить?"
       }
     },
     "ScanNewWindow": {
@@ -121,6 +131,10 @@
       "BottomText": {
         "en": "Or Press Enter to Close",
         "ru": "Или нажмите Enter, чтобы закрыть"
+      },
+      "AlreadyExistsText": {
+        "en": "Package already exists",
+        "ru": "Посылка уже есть"
       }
     },
     "ScanShippedWindow": {

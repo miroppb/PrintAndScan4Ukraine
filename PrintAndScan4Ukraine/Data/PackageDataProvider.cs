@@ -1,10 +1,13 @@
-﻿using Dapper;
+﻿using CodingSeb.Localization;
+using Dapper;
 using miroppb;
 using MySqlConnector;
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Model;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using Z.Dapper.Plus;
@@ -16,7 +19,8 @@ namespace PrintAndScan4Ukraine.Data
 		Task<IEnumerable<Package>?> GetAllAsync();
 		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName);
 		bool InsertRecord(Package package);
-		bool UpdateRecord(List<Package> package);
+		Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected);
+		bool UpdateRecords(List<Package> package);
 	}
 
 	public class PackageDataProvider : IPackageDataProvider
@@ -38,9 +42,10 @@ namespace PrintAndScan4Ukraine.Data
 				}
 				libmiroppb.Log(JsonConvert.SerializeObject(packages));
 			}
-			catch {
+			catch
+			{
 				libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
-				MessageBox.Show($"There is no connection to: {Secrets.GetMySQLUrl()}");
+				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
 			}
 			return packages;
 		}
@@ -73,7 +78,58 @@ namespace PrintAndScan4Ukraine.Data
 			}
 		}
 
-		public bool UpdateRecord(List<Package> packages)
+		public async Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected)
+		{
+			IEnumerable<Package>? RefreshedPackages = await GetAllAsync();
+			if (RefreshedPackages != null)
+			{
+				foreach (Package package in RefreshedPackages.ToList())
+				{
+					Package? FromPrevious = packages.FirstOrDefault(x => x.Id == package.Id);
+					if (FromPrevious != null)
+					{
+						(bool, List<Variance>) Ret = ComparePackages(FromPrevious, package);
+						if (!Ret.Item1)
+						{
+							if (package.Id == CurrentlySelected.Id)
+							{
+								if (MessageBox.Show(Loc.Tr("PAS4U.MainWindow.RefreshCurrentPackage", "Current Package was updated outside of the application. Reload it?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+									ReplaceProperties(FromPrevious, Ret.Item2);
+							}
+							else
+								ReplaceProperties(FromPrevious, Ret.Item2);
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+		private static void ReplaceProperties(Package? FromPrevious, List<Variance> Variances)
+		{
+			foreach (Variance v in Variances)
+			{
+				PropertyInfo pi = FromPrevious!.GetType().GetProperty(v.Prop!)!;
+				pi.SetValue(FromPrevious, v.ValB, null);
+			}
+		}
+
+		private static (bool, List<Variance>) ComparePackages(Package p, Package n)
+		{
+			bool same = true;
+
+			List<Variance> rt = p.Compare(n);
+			foreach (Variance v in rt)
+			{
+				if (v.Prop == "Recipient_Contents") { } //Doesn't compare well the Recipient Contents for some reason
+				else
+					same = false;
+			}
+
+			return (same, rt);
+		}
+
+		public bool UpdateRecords(List<Package> packages)
 		{
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{

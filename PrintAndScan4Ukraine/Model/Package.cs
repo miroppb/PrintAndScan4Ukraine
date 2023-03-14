@@ -9,9 +9,45 @@ namespace PrintAndScan4Ukraine.Model
 	{
 		public int? Id { get; set; }
 		public string PackageId { get; set; } = string.Empty;
-		public string? Sender_Name { get; set; } = string.Empty;
-		public string? Sender_Address { get; set; } = string.Empty;
-		public string? Sender_Phone { get; set; } = string.Empty;
+
+		private string _Sender_Name = string.Empty;
+
+		public string Sender_Name
+		{
+			get => _Sender_Name;
+			set
+			{
+				_Sender_Name = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
+		private string _Sender_Address = string.Empty;
+
+		public string Sender_Address
+		{
+			get => _Sender_Address;
+			set
+			{
+				_Sender_Address = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
+		private string _Sender_Phone = string.Empty;
+
+		public string Sender_Phone
+		{
+			get => _Sender_Phone;
+			set
+			{
+				_Sender_Phone = value;
+				RaisePropertyChanged();
+			}
+		}
+
 		private string? _recipient_Name = string.Empty;
 
 		public string? Recipient_Name

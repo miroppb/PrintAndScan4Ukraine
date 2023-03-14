@@ -48,14 +48,14 @@ namespace PrintAndScan4Ukraine
 			libmiroppb.Log($"Scanned As Shipped: {JsonConvert.SerializeObject(barCodes)}");
 			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList();
 			packages.ForEach(x => x.Date_Shipped = DateTime.Now);
-			_viewModel.UpdateRecord(packages);
+			_viewModel.UpdateRecords(packages);
 			if (barCodes.Count > 0)
 			{
 				_viewModel.Export(packages);
 				if (MessageBox.Show("Should we remove these packages from the list?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 				{
 					packages.ForEach(x => x.Removed = true);
-					_viewModel.UpdateRecord(packages);
+					_viewModel.UpdateRecords(packages);
 				}
 			}
 			Close();
