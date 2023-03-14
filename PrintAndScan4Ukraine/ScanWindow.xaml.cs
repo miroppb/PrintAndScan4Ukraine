@@ -1,7 +1,6 @@
 ﻿using AutoUpdaterDotNET;
 using CodingSeb.Localization;
 using CodingSeb.Localization.Loaders;
-using Microsoft.Win32;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
@@ -9,7 +8,6 @@ using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.Properties;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -181,7 +179,7 @@ namespace PrintAndScan4Ukraine
 			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
-				ReloadPackagesAndUpdateIfChanged();
+				_viewModel.ReloadPackagesAndUpdateIfChanged();
 			};
 			timer.Start();
 		}
@@ -208,7 +206,7 @@ namespace PrintAndScan4Ukraine
 			Loc.Instance.CurrentLanguage = "en";
 			Settings.Default.Language = Loc.Instance.CurrentLanguage;
 			Settings.Default.Save();
-        }
+		}
 
 		private void MnuRussian_Click(object sender, RoutedEventArgs e)
 		{
@@ -216,10 +214,5 @@ namespace PrintAndScan4Ukraine
 			Settings.Default.Language = Loc.Instance.CurrentLanguage;
 			Settings.Default.Save();
 		}
-
-		private void ReloadPackagesAndUpdateIfChanged()
-		{
-			_viewModel.ReloadPackagesAndUpdateIfChanged();
-		}
-    }
+	}
 }
