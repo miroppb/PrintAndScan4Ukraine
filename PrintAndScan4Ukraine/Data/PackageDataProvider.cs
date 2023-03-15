@@ -18,9 +18,12 @@ namespace PrintAndScan4Ukraine.Data
 	{
 		Task<IEnumerable<Package>?> GetAllAsync();
 		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName);
+		IEnumerable<Package_Status>? GetAllStatuses();
+		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
 		bool InsertRecord(Package package);
 		Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected);
 		bool UpdateRecords(List<Package> package);
+		bool InsertRecordStatus(List<Package_Status> package_statuses);
 	}
 
 	public class PackageDataProvider : IPackageDataProvider
@@ -65,6 +68,44 @@ namespace PrintAndScan4Ukraine.Data
 			}
 			libmiroppb.Log(JsonConvert.SerializeObject(packages));
 			return packages;
+		}
+
+		public IEnumerable<Package_Status>? GetAllStatuses()
+		{
+			libmiroppb.Log("Get List of Packages Statuses");
+			IEnumerable<Package_Status> statuses = new List<Package_Status>();
+			try
+			{
+				using (MySqlConnection db = Secrets.GetConnectionString())
+					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.GetMySQLPackageStatusTable()} ORDER BY id");
+
+				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
+			}
+			catch
+			{
+				libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
+				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
+			}
+			return statuses;
+		}
+
+		public IEnumerable<Package_Status>? GetStatusByPackage(string packageid)
+		{
+			libmiroppb.Log($"Get List of Packages Statuses for {packageid}");
+			IEnumerable<Package_Status> statuses = new List<Package_Status>();
+			try
+			{
+				using (MySqlConnection db = Secrets.GetConnectionString())
+					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.GetMySQLPackageStatusTable()} WHERE packageid = @packageid ORDER BY id", new { packageid });
+
+				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
+			}
+			catch
+			{
+				libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
+				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
+			}
+			return statuses;
 		}
 
 		public bool InsertRecord(Package package)
@@ -137,6 +178,17 @@ namespace PrintAndScan4Ukraine.Data
 				libmiroppb.Log($"Updating Record: {JsonConvert.SerializeObject(packages)}");
 				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLTable()).Identity(x => x.Id);
 				db.BulkUpdate(packages);
+			}
+			return true;
+		}
+
+		public bool InsertRecordStatus(List<Package_Status> package_statuses)
+		{
+			using (MySqlConnection db = Secrets.GetConnectionString())
+			{
+				libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
+				DapperPlusManager.Entity<Package_Status>().Table(Secrets.GetMySQLPackageStatusTable()).Identity(x => x.Id);
+				db.BulkInsert(package_statuses);
 			}
 			return true;
 		}

@@ -1,3 +1,7 @@
+v. 1.4.5.0
+
+- Moved statuses to separate table, to make any updates be tracked
+
 v. 1.4.0.0
 
 - Added Localization (Russian)

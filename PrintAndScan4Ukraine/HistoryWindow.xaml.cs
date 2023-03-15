@@ -1,7 +1,6 @@
 ﻿using CodingSeb.Localization;
 using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.ViewModel;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -21,7 +20,7 @@ namespace PrintAndScan4Ukraine
 			_viewmodel = new HistoryViewModel();
 			DataContext = _viewmodel;
 
-			_viewmodel.SenderName = $"{String.Format(Loc.Tr("PAS4U.HistoryWindow.TopText", "Barcodes Scanned"), NameOfSender)}";
+			_viewmodel.SenderName = $"{string.Format(Loc.Tr("PAS4U.HistoryWindow.TopText", "Barcodes Scanned"), NameOfSender)}";
 			ObservableCollection<Package> obp = new();
 			if (ListOfPreviousPackages != null)
 				ListOfPreviousPackages.ForEach(obp.Add);

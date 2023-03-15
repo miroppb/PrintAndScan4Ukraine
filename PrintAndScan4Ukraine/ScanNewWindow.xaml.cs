@@ -42,7 +42,17 @@ namespace PrintAndScan4Ukraine
 				{
 					if (Packages.FirstOrDefault(x => x == barCode.Replace("\0", "").Trim()) == null)
 					{
-						_viewModel.Insert(new Package() { PackageId = barCode.Replace("\0", "").Trim(), Date_Added = DateTime.Now, Contents = JsonConvert.SerializeObject(new List<Contents>() { }) });
+						_viewModel.Insert(new()
+						{
+							PackageId = barCode.Replace("\0", "").Trim(),
+							Contents = JsonConvert.SerializeObject(new List<Contents>() { })
+						});
+						_viewModel.InsertRecordStatus(new()
+						{
+							new() {
+								PackageId = barCode.Replace("\0", "").Trim(), CreatedDate = DateTime.Now, Status = "Package Added"
+							}
+						});
 						WasSomethingSet = true;
 						BarCodeThatWasSet = barCode.Replace("\0", "").Trim();
 					}

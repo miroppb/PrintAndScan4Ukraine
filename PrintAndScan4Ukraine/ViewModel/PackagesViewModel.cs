@@ -46,9 +46,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 			get => _selectedPackage!;
 			set
 			{
-				if (_selectedPackage != null)
+				if (_selectedPackage != null && _selectedPackage.Modified) //if package was modified
 					Save(_selectedPackage); //save previous package before changing to new package
 				_selectedPackage = value;
+				SelectedPackageLastStatus = _packageDataProvider.GetStatusByPackage(_selectedPackage.PackageId)!.LastOrDefault()!;
 				RaisePropertyChanged();
 				SaveCommand.RaiseCanExecuteChanged();
 				ShowHistoryCommand.RaiseCanExecuteChanged();
@@ -132,6 +133,17 @@ namespace PrintAndScan4Ukraine.ViewModel
 				return false;
 		}
 
+		public bool InsertRecordStatus(List<Package_Status> package_statuses)
+		{
+			if (IsOnline)
+			{
+				_packageDataProvider.InsertRecordStatus(package_statuses);
+				return true;
+			}
+			else
+				return false;
+		}
+
 		public bool Export(IEnumerable<Package> packages)
 		{
 			SaveFileDialog sfd = new SaveFileDialog
@@ -140,6 +152,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 			};
 			if ((bool)sfd.ShowDialog()!)
 			{
+				//lets get all statuses
+				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses()!.ToList();
+
 				libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
 				ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
@@ -156,6 +171,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 						var jsonParent = JsonConvert.SerializeObject(temp);
 						Package_less c = JsonConvert.DeserializeObject<Package_less>(jsonParent)!;
 						c.Contents = output.Join(Environment.NewLine);
+
+						List<Package_Status> s = statuses.Where(s => s.PackageId == c.PackageId).ToList();
+						List<string> so = new List<string>();
+						s.ForEach(x => so.Add(x.ToString()));
+						c.Statuses = so.Join(Environment.NewLine);
+
 						list.Add(c);
 					}
 
@@ -235,5 +256,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (IsOnline)
 				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
 		}
+
+		private Package_Status _SelectedPackageStatus = new Package_Status();
+
+		public Package_Status SelectedPackageLastStatus
+		{
+			get => _SelectedPackageStatus;
+			set
+			{
+				_SelectedPackageStatus = value;
+				RaisePropertyChanged();
+			}
+		}
+
 	}
 }

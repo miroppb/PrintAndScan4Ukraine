@@ -125,8 +125,6 @@ namespace PrintAndScan4Ukraine.Model
 			}
 		}
 
-		public DateTime? Date_Shipped { get; set; }
-		public DateTime Date_Added { get; set; }
 		private string? _Total = "$0.00";
 		public string? Total
 		{
@@ -140,11 +138,14 @@ namespace PrintAndScan4Ukraine.Model
 
 		public bool Removed { get; set; } = false;
 
+		public bool Modified { get; set; } = false;
+
 		public event PropertyChangedEventHandler? PropertyChanged;
 
 		protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			Modified = true;
 		}
 
 		//private void CalcTotal() => Total = ((double)(Value! + Delivery! + Insurance! + Other!)).ToString("$0.00");
@@ -168,8 +169,8 @@ namespace PrintAndScan4Ukraine.Model
 		public double? Weight { get; set; }
 		[Description("Ценность")]
 		public double? Value { get; set; }
-		public DateTime? Date_Shipped { get; set; }
-		public DateTime Date_Added { get; set; }
+		[Description("Статусы")]
+		public string? Statuses { get; set; }
 	}
 
 	public class Contents

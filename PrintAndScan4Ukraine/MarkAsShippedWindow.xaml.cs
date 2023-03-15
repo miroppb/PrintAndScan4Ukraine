@@ -46,9 +46,11 @@ namespace PrintAndScan4Ukraine
 		{
 			LblCodes.Text = "Sending codes to database. Please wait...";
 			libmiroppb.Log($"Scanned As Shipped: {JsonConvert.SerializeObject(barCodes)}");
+			List<Package_Status> statuses = new List<Package_Status>();
+			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, CreatedDate = DateTime.Now, Status = "Package Shipped" }));
 			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList();
-			packages.ForEach(x => x.Date_Shipped = DateTime.Now);
-			_viewModel.UpdateRecords(packages);
+
+			_viewModel.InsertRecordStatus(statuses);
 			if (barCodes.Count > 0)
 			{
 				_viewModel.Export(packages);
@@ -66,12 +68,12 @@ namespace PrintAndScan4Ukraine
 			char c = '\0';
 			if ((key >= Key.A) && (key <= Key.Z))
 			{
-				c = (char)((int)'a' + (int)(key - Key.A)); //Ignore letters
+				c = (char)('a' + (key - Key.A)); //Ignore letters
 			}
 
 			else if ((key >= Key.D0) && (key <= Key.D9))
 			{
-				c = (char)((int)'0' + (int)(key - Key.D0));
+				c = (char)('0' + (key - Key.D0));
 			}
 
 			return c;

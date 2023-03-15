@@ -4,7 +4,6 @@ using CodingSeb.Localization.Loaders;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
-using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.Properties;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
@@ -62,9 +61,7 @@ namespace PrintAndScan4Ukraine
 			if (LstUPCAndNames.SelectedItem != null)
 			{
 				TxtTotal.Visibility = Visibility.Visible;
-				TxtDateAdded.Visibility = Visibility.Visible;
-				if (((Package)LstUPCAndNames.SelectedItem).Date_Shipped != null)
-					TxtDateShipped.Visibility = Visibility.Visible;
+				TxtLastStatus.Visibility = Visibility.Visible;
 			}
 		}
 

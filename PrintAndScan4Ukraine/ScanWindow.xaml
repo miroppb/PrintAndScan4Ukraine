@@ -119,12 +119,14 @@
             <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.PackageId,
                 Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,0,0" FontSize="20" />
 
-            <TextBlock x:Name="TxtDateAdded" Grid.Column="1" Grid.ColumnSpan="2" Text="{Tr 'PAS4U.MainWindow.DateAdded', {Binding SelectedPackage.Date_Added}, DefaultText='Date Added'}"
+            <TextBlock x:Name="TxtLastStatus" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.LastStatus', {Binding SelectedPackageLastStatus.Status}, {Binding SelectedPackageLastStatus.CreatedDate}, DefaultText='Last Status'}"
+                       Margin="0 0 33 0" TextAlignment="Right" Visibility="Hidden"/>
+
+            <!--<TextBlock x:Name="TxtDateAdded" Grid.Column="1" Grid.ColumnSpan="2" Text="{Tr 'PAS4U.MainWindow.DateAdded', {Binding SelectedPackage.Date_Added}, DefaultText='Date Added'}"
                        HorizontalAlignment="Right" Margin="0,0,15,0" FontSize="14" Visibility="Hidden" />
 
-
             <TextBlock x:Name="TxtDateShipped" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.DateShipped', {Binding SelectedPackage.Date_Shipped}, DefaultText='Date Shipped'}"
-                       HorizontalAlignment="Right" Margin="0,0,0,0" Foreground="Green" FontSize="15" Visibility="Hidden" />
+                       HorizontalAlignment="Right" Margin="0,0,0,0" Foreground="Green" FontSize="15" Visibility="Hidden" />-->
 
             <TextBlock Grid.Row="1" Text="{Tr 'PAS4U.MainWindow.SenderName', DefaultText='Sender Name'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtSenderName" Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name,
@@ -171,7 +173,7 @@
             <TextBox x:Name="TxtCost" Grid.Row="7" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Value,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="8" Grid.Column="2" Visibility="Hidden">Delivery</TextBlock>
+            <!--<TextBlock Grid.Row="8" Grid.Column="2" Visibility="Hidden">Delivery</TextBlock>
             <TextBox x:Name="TxtDelivery" Grid.Row="8" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Delivery,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>
 
@@ -181,7 +183,7 @@
 
             <TextBlock Grid.Row="10" Grid.Column="2" Visibility="Hidden">Other</TextBlock>
             <TextBox x:Name="TxtOther" Grid.Row="10" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Other,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>-->
 
             <Grid Grid.Row="10" Grid.Column="1">
                 <Grid.ColumnDefinitions>

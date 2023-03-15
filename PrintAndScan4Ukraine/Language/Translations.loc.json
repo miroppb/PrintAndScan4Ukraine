@@ -117,6 +117,10 @@
       "RefreshCurrentPackage": {
         "en": "Current Package was updated outside of the application. Reload it?",
         "ru": "Текущая посылка была обновлена вне приложения. Перезагрузить?"
+      },
+      "LastStatus": {
+        "en": "Last Status: {0} on {1}",
+        "ru": "Последний статус: {0} {1}"
       }
     },
     "ScanNewWindow": {
