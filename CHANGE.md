@@ -1,3 +1,7 @@
+v. 1.4.5.1
+
+- Prevent duplicates from being scanned as shipped
+
 v. 1.4.5.0
 
 - Moved statuses to separate table, to make any updates be tracked

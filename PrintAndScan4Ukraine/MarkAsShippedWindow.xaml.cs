@@ -48,6 +48,8 @@ namespace PrintAndScan4Ukraine
 			libmiroppb.Log($"Scanned As Shipped: {JsonConvert.SerializeObject(barCodes)}");
 			List<Package_Status> statuses = new List<Package_Status>();
 			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, CreatedDate = DateTime.Now, Status = "Package Shipped" }));
+			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
+
 			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList();
 
 			_viewModel.InsertRecordStatus(statuses);
