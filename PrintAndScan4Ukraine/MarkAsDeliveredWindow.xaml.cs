@@ -61,15 +61,7 @@ namespace PrintAndScan4Ukraine
 			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList(); //this will remove any duplicates and not select any packages that don't exist
 
 			_viewModel.InsertRecordStatus(statuses);
-			if (barCodes.Count > 0)
-			{
-				_viewModel.Export(packages);
-				if (MessageBox.Show("Should we remove these packages from the list?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-				{
-					packages.ForEach(x => x.Removed = true);
-					_viewModel.UpdateRecords(packages);
-				}
-			}
+
 			Close();
 		}
 

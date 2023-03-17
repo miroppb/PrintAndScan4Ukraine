@@ -1,3 +1,7 @@
+v. 1.5.0.1
+
+- Removed exporting from Delivered screen
+
 v. 1.5.0.0
 
 - Massive update
