@@ -6,20 +6,28 @@ using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace PrintAndScan4Ukraine
 {
 	/// <summary>
-	/// Interaction logic for ScannerWindow.xaml
+	/// Interaction logic for MarkAsDeliveredWindow.xaml
 	/// </summary>
-	public partial class MarkAsShippedWindow : Window
+	public partial class MarkAsDeliveredWindow : Window
 	{
 		private string barCode = string.Empty;
 		private List<string> barCodes = new List<string>();
 		public PackagesViewModel _viewModel;
-		public MarkAsShippedWindow(PackagesViewModel viewModel)
+		public MarkAsDeliveredWindow(PackagesViewModel viewModel)
 		{
 			InitializeComponent();
 			_viewModel = viewModel;
@@ -47,7 +55,7 @@ namespace PrintAndScan4Ukraine
 			LblCodes.Text = "Sending codes to database. Please wait...";
 			libmiroppb.Log($"Scanned As Shipped: {JsonConvert.SerializeObject(barCodes)}");
 			List<Package_Status> statuses = new List<Package_Status>();
-			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, CreatedDate = DateTime.Now, Status = 2 }));
+			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, CreatedDate = DateTime.Now, Status = 4 }));
 			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
 
 			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList(); //this will remove any duplicates and not select any packages that don't exist

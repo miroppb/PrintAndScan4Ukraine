@@ -1,3 +1,17 @@
+v. 1.5.0.0
+
+- Massive update
+- Moved status updates to separate table
+- Added ability to mark packages that have arrived and were delivered
+- Added access to application by computer name
+	- If you don't have any access, the main Print/Scan buttons are disabled
+	- Types: None, SeeSender, EditSender, EditRecipient, AddNew, Ship, Arrive, Deliver, Print(Labels)
+	- Could be used to separate different 
+- Moved some Menu items around to be more intuative and not hard-to-find
+- Ability to Export packages that were shipped but haven't arrived
+- Fixes to hiding some fields that were showing wrong text when a package wasn't selected
+	-TODO: Still need to fix the status not updating when changing language
+
 v. 1.4.5.1
 
 - Prevent duplicates from being scanned as shipped

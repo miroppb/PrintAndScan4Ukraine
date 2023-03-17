@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PrintAndScan4Ukraine.Data;
+using System;
 
 namespace PrintAndScan4Ukraine.Model
 {
@@ -7,10 +8,10 @@ namespace PrintAndScan4Ukraine.Model
 		public int? Id { get; set; }
 		public string PackageId { get; set; } = string.Empty;
 		public DateTime CreatedDate { get; set; }
-		public string Status { get; set; } = string.Empty;
+		public int Status { get; set; }
 		public override string ToString()
 		{
-			return $"{Status}: {CreatedDate}";
+			return $"{PackageDataProvider.StatusToText(Status)}: {CreatedDate.ToShortDateString()} {CreatedDate.ToShortTimeString()}";
 		}
 	}
 }

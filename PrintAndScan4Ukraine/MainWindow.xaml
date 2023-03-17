@@ -5,14 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+    <Window.Visibility>
+        <Binding Path="isVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibilityConverter}" />
+    </Window.Visibility>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400" />
             <ColumnDefinition Width="*"  />
         </Grid.ColumnDefinitions>
 
-        <Button x:Name="BtnPrint" Grid.Column="0" Content="Print" Click="BtnPrint_Click" FontSize="40" FontWeight="Bold" />
-        <Button x:Name="BtnScan" Grid.Column="1" Content="Scan" Click="BtnScan_Click" FontSize="40" FontWeight="Bold" />
+        <Button x:Name="BtnPrint" Grid.Column="0" Content="Print" FontSize="40" FontWeight="Bold" Command="{Binding PrintCommand}" />
+        <Button x:Name="BtnScan" Grid.Column="1" Content="Scan" FontSize="40" FontWeight="Bold" Command="{Binding ScanCommand}" />
 
     </Grid>
 </Window>

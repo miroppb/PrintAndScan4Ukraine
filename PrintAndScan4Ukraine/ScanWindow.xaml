@@ -8,6 +8,9 @@
         Title="Scan Packages" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
     <Window.Resources>
         <local:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
+        <local:BoolToGridRowHeightConverter x:Key="BoolToGridRowHeightConverter" />
+        <local:StatusToTextConverter x:Key="StatusToTextConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
     <Grid Background="#FFD500">
         <Grid.ColumnDefinitions>
@@ -25,9 +28,18 @@
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.FileMenuItem.Header', DefaultText='_File'}">
                     <MenuItem x:Name="MnuSaveAll" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.SaveAllItem.Header', DefaultText='_Save All'}" Command="{Binding SaveAllCommand}" />
-                    <MenuItem x:Name="MnuShipped" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanShippedItem.Header', DefaultText='Scan S_hipped'}" Click="MnuShipped_Click" />
-                    <MenuItem x:Name="MnuNew" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanNewItem.Header', DefaultText='Scan _New'}" Click="MnuNew_Click" />
-                    <MenuItem x:Name="MnuExport" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ExportItem.Header', DefaultText='_Export to Excel'}" Click="MnuExport_Click" />
+                    <MenuItem x:Name="MnuNew" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanNewItem.Header', DefaultText='Scan _New'}" Command="{Binding AddNewCommand}"
+                              Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <MenuItem x:Name="MnuShipped" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanShippedItem.Header', DefaultText='Scan S_hipped'}" Command="{Binding ShipCommand}"
+                              Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <MenuItem x:Name="MnuArrive" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanArriveItem.Header', DefaultText='Scan _Arrived'}" Command="{Binding ArriveCommand}"
+                              Visibility="{Binding AccessToArrive, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <MenuItem x:Name="MnuDeliver" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanDeliverItem.Header', DefaultText='Scan _Delivered'}" Command="{Binding DeliverCommand}"
+                              Visibility="{Binding AccessToDeliver, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </MenuItem>
+                <MenuItem Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.Header', DefaultText='_Export'}">
+                    <MenuItem x:Name="MnuExport" Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.ExportExcel.Header', DefaultText='E_xport to Excel'}" Command="{Binding ExportCommand}" />
+                    <MenuItem x:Name="MnuExportShippedNotArrived" Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.ExportShippedNotArrivedItem.Header', DefaultText='Ex_port Shipped but Not Arrived to Excel'}" Command="{Binding ExportShippedNotArrivedCommand}" />
                 </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.Language', DefaultText='_Language'}">
                     <MenuItem x:Name="MnuEnglish" Header="{Tr 'LanguageName', DefaultText='_English', LanguageId='en'}" Click="MnuEnglish_Click" />
@@ -103,8 +115,8 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="{Binding AccessToSeeSender, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToGridRowHeightConverter}}" />
+                <RowDefinition Height="{Binding AccessToSeeSender, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToGridRowHeightConverter}}" />
                 <RowDefinition Height="20" />
                 <RowDefinition />
                 <RowDefinition />
@@ -119,46 +131,48 @@
             <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.PackageId,
                 Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,0,0" FontSize="20" />
 
-            <TextBlock x:Name="TxtLastStatus" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.LastStatus', {Binding SelectedPackageLastStatus.Status}, {Binding SelectedPackageLastStatus.CreatedDate}, DefaultText='Last Status'}"
-                       Margin="0 0 33 0" TextAlignment="Right" Visibility="Hidden"/>
+            <TextBlock x:Name="TxtLastStatus" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.LastStatus', {Binding SelectedPackageLastStatus.Status, Mode=TwoWay, Converter={StaticResource StatusToTextConverter}}, {Binding SelectedPackageLastStatus.CreatedDate}, DefaultText='Last Status'}"
+                       Margin="0 0 33 0" TextAlignment="Right" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <!--<TextBlock x:Name="TxtDateAdded" Grid.Column="1" Grid.ColumnSpan="2" Text="{Tr 'PAS4U.MainWindow.DateAdded', {Binding SelectedPackage.Date_Added}, DefaultText='Date Added'}"
-                       HorizontalAlignment="Right" Margin="0,0,15,0" FontSize="14" Visibility="Hidden" />
+                       HorizontalAlignment="Right" Margin="0,0,15,0" FontSize="14" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <TextBlock x:Name="TxtDateShipped" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.DateShipped', {Binding SelectedPackage.Date_Shipped}, DefaultText='Date Shipped'}"
-                       HorizontalAlignment="Right" Margin="0,0,0,0" Foreground="Green" FontSize="15" Visibility="Hidden" />-->
+                       HorizontalAlignment="Right" Margin="0,0,0,0" Foreground="Green" FontSize="15" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
 
             <TextBlock Grid.Row="1" Text="{Tr 'PAS4U.MainWindow.SenderName', DefaultText='Sender Name'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtSenderName" Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditSender, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Button Content="{Tr 'PAS4U.MainWindow.ShowHistoryButton', DefaultText='Show History'}" Grid.Column="1" Grid.Row="1" Height="22" Width="Auto" HorizontalAlignment="Right" Margin="0,14,26,14" Command="{Binding ShowHistoryCommand}" />
 
             <TextBlock Grid.Column="2" Grid.Row="1" Text="{Tr 'PAS4U.MainWindow.SenderAddress', DefaultText='Sender Address'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtSenderAddress" Grid.Row="1" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Address,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.RowSpan="2" Height="90" VerticalContentAlignment="Top" Padding="0,5,0,0" AcceptsReturn="True"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditSender, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.RowSpan="2" Height="90" VerticalContentAlignment="Top" Padding="0,5,0,0" AcceptsReturn="True"/>
 
             <TextBlock Grid.Row="2" Text="{Tr 'PAS4U.MainWindow.SenderPhone', DefaultText='Sender Phone'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtSenderPhone" Grid.Row="2" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Phone,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditSender, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Rectangle Grid.Row="3" Grid.ColumnSpan="4" Fill="Black" Height="2"/>
 
             <TextBlock Grid.Row="4" Text="{Tr 'PAS4U.MainWindow.ReceiverName', DefaultText='Receiver Name'}" />
             <TextBox x:Name="TxtRecipientFName" Grid.Row="4" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Name,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <TextBlock Grid.Row="4" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.ReceiverAddress', DefaultText='Receiver Address'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtRecipientAddress" Grid.Row="4" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Address,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.RowSpan="2" Height="90" VerticalContentAlignment="Top" Padding="0,5,0,0" AcceptsReturn="True"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.RowSpan="2" Height="90" VerticalContentAlignment="Top" Padding="0,5,0,0" AcceptsReturn="True"/>
 
             <TextBlock Grid.Row="5" Text="{Tr 'PAS4U.MainWindow.ReceiverPhone', DefaultText='Receiver Phone'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtRecipientPhone" Grid.Row="5" Grid.Column="1" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Phone,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <TextBlock Grid.Row="6" Margin="0,15,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Text="{Tr 'PAS4U.MainWindow.Contents', DefaultText='Contents/Amount'}" TextWrapping="Wrap" />
             <DataGrid x:Name="LstContents" Grid.Row="6" Grid.Column="1" Grid.RowSpan="4" Height="190" ItemsSource="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Contents,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" CanUserAddRows="True" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserResizeRows="False"
-                      CanUserDeleteRows="True">
+                      CanUserDeleteRows="True" IsReadOnly="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsName', DefaultText='Name'}" Width="*" Binding="{Binding Name}" />
                     <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsAmount', DefaultText='Amount'}" Width="80" Binding="{Binding Amount}"  />
@@ -167,23 +181,23 @@
 
             <TextBlock Grid.Row="6" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Weight', DefaultText='Weight'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtWeight" Grid.Row="6" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Weight,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <TextBlock Grid.Row="7" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Value', DefaultText='Value'}" TextWrapping="Wrap" />
             <TextBox x:Name="TxtCost" Grid.Row="7" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Value,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <!--<TextBlock Grid.Row="8" Grid.Column="2" Visibility="Hidden">Delivery</TextBlock>
+            <!--<TextBlock Grid.Row="8" Grid.Column="2" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Delivery</TextBlock>
             <TextBox x:Name="TxtDelivery" Grid.Row="8" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Delivery,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="9" Grid.Column="2" Visibility="Hidden">Insurance</TextBlock>
+            <TextBlock Grid.Row="9" Grid.Column="2" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Insurance</TextBlock>
             <TextBox x:Name="TxtInsurance" Grid.Row="9" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Insurance,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <TextBlock Grid.Row="10" Grid.Column="2" Visibility="Hidden">Other</TextBlock>
+            <TextBlock Grid.Row="10" Grid.Column="2" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Other</TextBlock>
             <TextBox x:Name="TxtOther" Grid.Row="10" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Other,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Hidden"/>-->
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>-->
 
             <Grid Grid.Row="10" Grid.Column="1">
                 <Grid.ColumnDefinitions>
@@ -200,7 +214,7 @@
                 <TextBlock Grid.Column="1" Text="{Tr 'PAS4U.MainWindow.Offline', DefaultText='We`re Offline'}" Margin="10,0,0,0" FontSize="18" HorizontalAlignment="Left" TextWrapping="Wrap"
                            Visibility="{Binding IsOnline, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" Foreground="Red"/>
                 <!--Internet-->
-                <TextBlock x:Name="TxtTotal" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Total', {Binding SelectedPackage.Total}, DefaultText='Total'}" FontSize="18" Visibility="Hidden"/>
+                <TextBlock x:Name="TxtTotal" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Total', {Binding SelectedPackage.Total}, DefaultText='Total'}" FontSize="18" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
 
         </Grid>

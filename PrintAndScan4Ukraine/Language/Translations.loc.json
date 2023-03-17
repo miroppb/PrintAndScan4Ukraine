@@ -20,19 +20,55 @@
         "ScanShippedItem": {
           "Header": {
             "en": "Scan S_hipped",
-            "ru": "_Сканировать Отправленное"
+            "ru": "_Скан Отправленное"
           }
         },
         "ScanNewItem": {
           "Header": {
             "en": "Scan _New",
-            "ru": "Сканировать _Новое"
+            "ru": "Скан _Новое"
+          }
+        },
+        "ScanArriveItem": {
+          "Header": {
+            "en": "Scan _Arrived",
+            "ru": "Скан _Полученное"
+          }
+        },
+        "ScanDeliverItem": {
+          "Header": {
+            "en": "Scan _Delivered",
+            "ru": "Скан _Доставленное"
           }
         },
         "ExportItem": {
           "Header": {
             "en": "_Export to Excel",
             "ru": "_Экспорт в Excel"
+          }
+        },
+        "ExportShippedNotArrivedItem": {
+          "Header": {
+            "en": "_Export Shipped but Not Arrived to Excel",
+            "ru": "_Экспорт Отправленных но не прибытых в Excel"
+          }
+        }
+      },
+      "ExportMenuItem": {
+        "Header": {
+          "en": "_Export",
+          "ru": "_Экспорт"
+        },
+        "ExportExcel": {
+          "Header": {
+            "en": "_Export to Excel",
+            "ru": "_Экспорт в Эксель"
+          }
+        },
+        "ExportShippedNotArrivedItem": {
+          "Header": {
+            "en": "Ex_port Shipped but Not Arrived to Excel",
+            "ru": "_Экспорт Отправленные но не Прибытые в Эксель"
           }
         }
       },
@@ -144,7 +180,7 @@
     "ScanShippedWindow": {
       "Title": {
         "en": "Scan Shipped Window",
-        "ru": "Сканировать Отправленые Посылки"
+        "ru": "Скан Отправленых Посылок"
       },
       "BarcodesScanned": {
         "en": "Barcodes Scanned",
@@ -157,6 +193,26 @@
       "DoneText": {
         "en": "Done",
         "ru": "Закончить"
+      }
+    },
+    "ScanArrivedWindow": {
+      "Title": {
+        "en": "Scan Arrived Window",
+        "ru": "Скан Прибытых Посылок"
+      },
+      "TopText": {
+        "en": "Scan Barcodes that arrived...",
+        "ru": "Сканируйте Баркоды которые прибыли..."
+      }
+    },
+    "ScanDelivereddWindow": {
+      "Title": {
+        "en": "Scan Delivered Window",
+        "ru": "Скан Доставленнйх Посылок"
+      },
+      "TopText": {
+        "en": "Scan Barcodes that were delivered...",
+        "ru": "Сканируйте Баркоды которые были доставленны..."
       }
     },
     "HistoryWindow": {
@@ -183,6 +239,26 @@
       "ValueText": {
         "en": "Value?",
         "ru": "Ценность?"
+      }
+    },
+    "Export": {
+      "Status": {
+        "1": {
+          "en": "New Scan",
+          "ru": "Новый Скан"
+        },
+        "2": {
+          "en": "Shipped Scanned",
+          "ru": "Отправленный Скан"
+        },
+        "3": {
+          "en": "Arrived Scanned",
+          "ru": "Прибыл Скан"
+        },
+        "4": {
+          "en": "Delivered Scanned",
+          "ru": "Доставленный Скан"
+        }
       }
     }
   }

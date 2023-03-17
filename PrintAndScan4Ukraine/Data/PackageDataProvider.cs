@@ -192,5 +192,22 @@ namespace PrintAndScan4Ukraine.Data
 			}
 			return true;
 		}
+
+		public static string StatusToText(int status)
+		{
+			switch (status)
+			{
+				case 1:
+					return Loc.Tr("PAS4U.Export.Status.1", "Scanned New");
+				case 2:
+					return Loc.Tr("PAS4U.Export.Status.2", "Scanned Shipped");
+				case 3:
+					return Loc.Tr("PAS4U.Export.Status.3", "Scanned Arrived");
+				case 4:
+					return Loc.Tr("PAS4U.Export.Status.4", "Scanned Delivered");
+				default:
+					return "";
+			}
+		}
 	}
 }

@@ -25,7 +25,7 @@ namespace PrintAndScan4Ukraine
 		public ScanNewWindow(List<string> packages)
 		{
 			InitializeComponent();
-			_viewModel = new PackagesViewModel(new PackageDataProvider());
+			_viewModel = new PackagesViewModel(new PackageDataProvider(), Access.None);
 			Packages = packages;
 		}
 
@@ -50,7 +50,7 @@ namespace PrintAndScan4Ukraine
 						_viewModel.InsertRecordStatus(new()
 						{
 							new() {
-								PackageId = barCode.Replace("\0", "").Trim(), CreatedDate = DateTime.Now, Status = "Package Added"
+								PackageId = barCode.Replace("\0", "").Trim(), CreatedDate = DateTime.Now, Status = 1
 							}
 						});
 						WasSomethingSet = true;

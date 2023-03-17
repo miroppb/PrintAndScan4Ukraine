@@ -12,14 +12,14 @@ using System.Windows.Input;
 namespace PrintAndScan4Ukraine
 {
 	/// <summary>
-	/// Interaction logic for ScannerWindow.xaml
+	/// Interaction logic for MarkAsArrivedWindow.xaml
 	/// </summary>
-	public partial class MarkAsShippedWindow : Window
+	public partial class MarkAsArrivedWindow : Window
 	{
 		private string barCode = string.Empty;
 		private List<string> barCodes = new List<string>();
 		public PackagesViewModel _viewModel;
-		public MarkAsShippedWindow(PackagesViewModel viewModel)
+		public MarkAsArrivedWindow(PackagesViewModel viewModel)
 		{
 			InitializeComponent();
 			_viewModel = viewModel;
@@ -37,7 +37,7 @@ namespace PrintAndScan4Ukraine
 				barCodes.Add(barCode.Replace("\0", ""));
 				barCode = string.Empty;
 				e.Handled = true;
-				LblCodes.Text = $"{Loc.Tr("PAS4U.ScanShippedWindow.BarcodesScanned", "Barcodes Scanned")}: {barCodes.Count}";
+				LblCodes.Text = $"{Loc.Tr("PAS4U.ScanArrivedWindow.BarcodesScanned", "Barcodes Scanned")}: {barCodes.Count}";
 			}
 			barCode += ToChar(e.Key);
 		}
@@ -45,23 +45,15 @@ namespace PrintAndScan4Ukraine
 		private void BtnDone_Click(object sender, RoutedEventArgs e)
 		{
 			LblCodes.Text = "Sending codes to database. Please wait...";
-			libmiroppb.Log($"Scanned As Shipped: {JsonConvert.SerializeObject(barCodes)}");
+			libmiroppb.Log($"Scanned As Arrived: {JsonConvert.SerializeObject(barCodes)}");
 			List<Package_Status> statuses = new List<Package_Status>();
-			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, CreatedDate = DateTime.Now, Status = 2 }));
+			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, CreatedDate = DateTime.Now, Status = 3 }));
 			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
 
 			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList(); //this will remove any duplicates and not select any packages that don't exist
 
 			_viewModel.InsertRecordStatus(statuses);
-			if (barCodes.Count > 0)
-			{
-				_viewModel.Export(packages);
-				if (MessageBox.Show("Should we remove these packages from the list?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-				{
-					packages.ForEach(x => x.Removed = true);
-					_viewModel.UpdateRecords(packages);
-				}
-			}
+
 			Close();
 		}
 

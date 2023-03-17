@@ -4,6 +4,7 @@ using CodingSeb.Localization.Loaders;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
+using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.Properties;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
@@ -22,13 +23,13 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class ScanWindow : Window
 	{
-		private PackagesViewModel _viewModel;
+		private readonly PackagesViewModel _viewModel;
 
-		public ScanWindow()
+		public ScanWindow(Access UserAccess)
 		{
 			InitializeComponent();
 			libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
-			_viewModel = new PackagesViewModel(new PackageDataProvider());
+			_viewModel = new PackagesViewModel(new PackageDataProvider(), UserAccess);
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
 
@@ -36,6 +37,8 @@ namespace PrintAndScan4Ukraine
 			LocalizationLoader.Instance.AddDirectory(@"Language");
 
 			Loc.Instance.CurrentLanguage = Settings.Default.Language;
+			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en" ? true : false;
+			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru" ? true : false;
 		}
 
 		private async void ScanWindow_Loaded(object sender, RoutedEventArgs e)
@@ -52,17 +55,6 @@ namespace PrintAndScan4Ukraine
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 			Closing += ScanWindow_Closing;
-
-			LstUPCAndNames.SelectionChanged += LstUPCAndNames_SelectionChanged;
-		}
-
-		private void LstUPCAndNames_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (LstUPCAndNames.SelectedItem != null)
-			{
-				TxtTotal.Visibility = Visibility.Visible;
-				TxtLastStatus.Visibility = Visibility.Visible;
-			}
 		}
 
 		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -75,52 +67,20 @@ namespace PrintAndScan4Ukraine
 		{
 			ListViewItem? lvi = Keyboard.FocusedElement as ListViewItem;
 			TextBox? tb = Keyboard.FocusedElement as TextBox;
+			ScanWindow? sw = Keyboard.FocusedElement as ScanWindow;
 			try
 			{
-				if (lvi == null && !tb!.Name.Contains("Address"))
+				if (sw == null || lvi == null || !tb!.Name.Contains("Address"))
 				{
 					if (e.Key == Key.Enter)
 					{
-						MnuNew_Click(sender, e);
+						_viewModel.AddNewCommand.Execute(null);
 						e.Handled = true;
 					}
 				}
 			}
 			catch { }
 
-		}
-
-		private async void MnuShipped_Click(object sender, RoutedEventArgs e)
-		{
-			int current = (_viewModel.SelectedPackage != null ? (int)_viewModel.SelectedPackage.Id! : 0);
-			MarkAsShippedWindow shippedWindow = new MarkAsShippedWindow(_viewModel);
-			shippedWindow.ShowDialog();
-			await _viewModel.LoadAsync();
-			_viewModel.SelectedPackage = _viewModel.Packages.FirstOrDefault(x => x.Id == current)!;
-		}
-
-		private async void MnuNew_Click(object sender, RoutedEventArgs e)
-		{
-			ScanNewWindow scanNewWindow = new ScanNewWindow(_viewModel.Packages.Select(x => x.PackageId).ToList());
-			scanNewWindow.ShowDialog();
-			if (scanNewWindow.WasSomethingSet)
-			{
-				_viewModel.Save();
-				await _viewModel.LoadAsync();
-			}
-			if (scanNewWindow.BarCodeThatWasSet != string.Empty)
-			{
-				try
-				{
-					_viewModel.SelectedPackage = _viewModel.Packages.FirstOrDefault(x => x.PackageId == scanNewWindow.BarCodeThatWasSet)!;
-				}
-				catch { }
-			}
-		}
-
-		private void MnuExport_Click(object sender, RoutedEventArgs e)
-		{
-			_viewModel.Export(_viewModel.Packages);
 		}
 
 		private void SetupUpdater()
@@ -203,6 +163,8 @@ namespace PrintAndScan4Ukraine
 			Loc.Instance.CurrentLanguage = "en";
 			Settings.Default.Language = Loc.Instance.CurrentLanguage;
 			Settings.Default.Save();
+			MnuEnglish.IsChecked = true;
+			MnuRussian.IsChecked = false;
 		}
 
 		private void MnuRussian_Click(object sender, RoutedEventArgs e)
@@ -210,6 +172,8 @@ namespace PrintAndScan4Ukraine
 			Loc.Instance.CurrentLanguage = "ru";
 			Settings.Default.Language = Loc.Instance.CurrentLanguage;
 			Settings.Default.Save();
+			MnuEnglish.IsChecked = false;
+			MnuRussian.IsChecked = true;
 		}
 	}
 }

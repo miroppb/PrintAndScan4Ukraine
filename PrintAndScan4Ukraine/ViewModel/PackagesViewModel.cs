@@ -21,26 +21,59 @@ namespace PrintAndScan4Ukraine.ViewModel
 	public class PackagesViewModel : INotifyPropertyChanged
 	{
 		private readonly IPackageDataProvider _packageDataProvider;
-		private Package? _selectedPackage;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
+		protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 
 		public ObservableCollection<Package> Packages { get; } = new();
 		public DelegateCommand SaveCommand { get; }
 		public DelegateCommand ShowHistoryCommand { get; }
 		public DelegateCommand SaveAllCommand { get; }
+		public DelegateCommand ShipCommand { get; }
+		public DelegateCommand AddNewCommand { get; }
+		public DelegateCommand ArriveCommand { get; }
+		public DelegateCommand DeliverCommand { get; }
+		public DelegateCommand ExportCommand { get; }
+		public DelegateCommand ExportShippedNotArrivedCommand { get; }
 
-		public bool CanSave => (SelectedPackage != null && IsOnline);
-		public bool CanShowHistory => (SelectedPackage != null && IsOnline);
+		public bool CanSave => SelectedPackage != null && IsOnline;
+		public bool CanShowHistory => SelectedPackage != null && IsOnline;
+		public bool CanShip => CurrentUserAccess.HasFlag(Access.Ship) && IsOnline;
+		public bool CanAddNew => CurrentUserAccess.HasFlag(Access.AddNew) && IsOnline;
+		public bool CanArrive => CurrentUserAccess.HasFlag(Access.Arrive) && IsOnline;
+		public bool CanDeliver => CurrentUserAccess.HasFlag(Access.Deliver) && IsOnline;
 
-		public PackagesViewModel(IPackageDataProvider packageDataProvider)
+		private Visibility _IsSelectedPackageShowing = Visibility.Hidden;
+
+		public Visibility IsSelectedPackageShowing
+		{
+			get => _IsSelectedPackageShowing;
+			set
+			{
+				_IsSelectedPackageShowing = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		public PackagesViewModel(IPackageDataProvider packageDataProvider, Access UserAccess)
 		{
 			_packageDataProvider = packageDataProvider;
+			CurrentUserAccess = UserAccess;
 			SaveCommand = new DelegateCommand(Save, () => CanSave);
 			ShowHistoryCommand = new DelegateCommand(ShowHistory, () => CanShowHistory);
 			SaveAllCommand = new DelegateCommand(SaveAll);
+			ShipCommand = new DelegateCommand(ShowShipWindow, () => CanShip);
+			AddNewCommand = new DelegateCommand(ShowAddNewWindow, () => CanAddNew);
+			ArriveCommand = new DelegateCommand(ShowArriveWindow, () => CanArrive);
+			DeliverCommand = new DelegateCommand(ShowDeliverWindow, () => CanDeliver);
+			ExportCommand = new DelegateCommand(ExecuteExport);
+			ExportShippedNotArrivedCommand = new DelegateCommand(ExecuteExportShippedNotArrived);
 		}
 
+		private Package? _selectedPackage;
 		public Package SelectedPackage
 		{
 			get => _selectedPackage!;
@@ -48,18 +81,79 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				if (_selectedPackage != null && _selectedPackage.Modified) //if package was modified
 					Save(_selectedPackage); //save previous package before changing to new package
+
 				_selectedPackage = value;
-				SelectedPackageLastStatus = _packageDataProvider.GetStatusByPackage(_selectedPackage.PackageId)!.LastOrDefault()!;
 				RaisePropertyChanged();
+				if (_selectedPackage != null)
+				{
+					IsSelectedPackageShowing = Visibility.Visible;
+					SelectedPackageLastStatus = _packageDataProvider.GetStatusByPackage(_selectedPackage.PackageId)!.LastOrDefault()!;
+				}
+				else
+					IsSelectedPackageShowing = Visibility.Hidden;
 				SaveCommand.RaiseCanExecuteChanged();
 				ShowHistoryCommand.RaiseCanExecuteChanged();
 			}
 		}
 
-		protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
+		private Package_Status _SelectedPackageStatus = new Package_Status();
+
+		public Package_Status SelectedPackageLastStatus
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			get => _SelectedPackageStatus;
+			set
+			{
+				_SelectedPackageStatus = value;
+				RaisePropertyChanged();
+			}
 		}
+
+		private Access _CurrentUserAccess = Access.None;
+
+		public Access CurrentUserAccess
+		{
+			get => _CurrentUserAccess;
+			set
+			{
+				_CurrentUserAccess = value;
+				RaisePropertyChanged();
+				RaisePropertyChanged("AccessToSender");
+				RaisePropertyChanged("AccessToEditSender");
+				RaisePropertyChanged("AccessToEditReceipient");
+			}
+		}
+
+		private bool _isOnline = true;
+
+		public bool IsOnline
+		{
+			get => _isOnline;
+			set
+			{
+				_isOnline = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private string _lastSaved = string.Empty;
+
+		public string LastSaved
+		{
+			get => _lastSaved;
+			set
+			{
+				_lastSaved = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		public bool AccessToSeeSender => CurrentUserAccess.HasFlag(Access.SeeSender);
+		public bool AccessToEditSender => !CurrentUserAccess.HasFlag(Access.EditSender);
+		public bool AccessToEditReceipient => !CurrentUserAccess.HasFlag(Access.EditReceipient);
+		public bool AccessToAddNew => CurrentUserAccess.HasFlag(Access.AddNew);
+		public bool AccessToShip => CurrentUserAccess.HasFlag(Access.Ship);
+		public bool AccessToArrive => CurrentUserAccess.HasFlag(Access.Arrive);
+		public bool AccessToDeliver => CurrentUserAccess.HasFlag(Access.Deliver);
 
 		public async Task LoadAsync()
 		{
@@ -144,7 +238,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				return false;
 		}
 
-		public bool Export(IEnumerable<Package> packages)
+		public bool Export(IEnumerable<Package> packages, bool shippedButNotArrived = false)
 		{
 			SaveFileDialog sfd = new SaveFileDialog
 			{
@@ -177,7 +271,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 						s.ForEach(x => so.Add(x.ToString()));
 						c.Statuses = so.Join(Environment.NewLine);
 
-						list.Add(c);
+						if (shippedButNotArrived)
+						{
+							if (s.FirstOrDefault(x => x.Status == 2) != null && s.FirstOrDefault(x => x.Status == 3) == null) //if contains status 2 but not 3
+								list.Add(c);
+						}
+						else
+							list.Add(c);
 					}
 
 					ExcelWorksheet? ws;
@@ -193,9 +293,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 						ws.Cells[row + 1, 1].LoadFromCollection(list, false, OfficeOpenXml.Table.TableStyles.Light8);
 					}
 					ws.Cells.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
-					ws.Cells[$"H2:H{ws.Dimension.End.Row + 1}"].Style.WrapText = true;
-					ws.Cells[$"K2:N{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
-					ws.Cells[$"L2:O{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
+					ws.Cells[$"H2:C{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Sender Address
+					ws.Cells[$"H2:F{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Recipient Address
+					ws.Cells[$"H2:H{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Contents
+					ws.Cells[$"H2:K{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Statuses
+					//ws.Cells[$"K2:N{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy"; //we're not doing dates separately
+					//ws.Cells[$"L2:O{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
 					ws.Cells[ws.Dimension.Address].AutoFitColumns();
 
 					excelPack.Save();
@@ -205,30 +308,6 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 			MessageBox.Show($"Exported to: {sfd.FileName}");
 			return true;
-		}
-
-		private bool _isOnline = true;
-
-		public bool IsOnline
-		{
-			get => _isOnline;
-			set
-			{
-				_isOnline = value;
-				RaisePropertyChanged();
-			}
-		}
-
-		private string _lastSaved = string.Empty;
-
-		public string LastSaved
-		{
-			get => _lastSaved;
-			set
-			{
-				_lastSaved = value;
-				RaisePropertyChanged();
-			}
 		}
 
 		private async void ShowHistory()
@@ -251,23 +330,66 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+		private async void ShowShipWindow()
+		{
+			int current = (SelectedPackage != null ? (int)SelectedPackage.Id! : 0);
+			MarkAsShippedWindow shippedWindow = new MarkAsShippedWindow(this);
+			shippedWindow.ShowDialog();
+			await LoadAsync();
+			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
+		}
+
+		private async void ShowAddNewWindow()
+		{
+			ScanNewWindow scanNewWindow = new ScanNewWindow(Packages.Select(x => x.PackageId).ToList());
+			scanNewWindow.ShowDialog();
+			if (scanNewWindow.WasSomethingSet)
+			{
+				Save();
+				await LoadAsync();
+			}
+			if (scanNewWindow.BarCodeThatWasSet != string.Empty)
+			{
+				try
+				{
+					SelectedPackage = Packages.FirstOrDefault(x => x.PackageId == scanNewWindow.BarCodeThatWasSet)!;
+				}
+				catch { }
+			}
+		}
+
+		private async void ShowArriveWindow()
+		{
+			int current = (SelectedPackage != null ? (int)SelectedPackage.Id! : 0);
+			MarkAsArrivedWindow shippedWindow = new MarkAsArrivedWindow(this);
+			shippedWindow.ShowDialog();
+			await LoadAsync();
+			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
+		}
+
+		private async void ShowDeliverWindow()
+		{
+			int current = (SelectedPackage != null ? (int)SelectedPackage.Id! : 0);
+			MarkAsDeliveredWindow shippedWindow = new MarkAsDeliveredWindow(this);
+			shippedWindow.ShowDialog();
+			await LoadAsync();
+			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
+		}
+
+		private void ExecuteExport()
+		{
+			Export(Packages);
+		}
+
+		private void ExecuteExportShippedNotArrived()
+		{
+			Export(Packages, true);
+		}
+
 		public void ReloadPackagesAndUpdateIfChanged()
 		{
 			if (IsOnline)
 				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
 		}
-
-		private Package_Status _SelectedPackageStatus = new Package_Status();
-
-		public Package_Status SelectedPackageLastStatus
-		{
-			get => _SelectedPackageStatus;
-			set
-			{
-				_SelectedPackageStatus = value;
-				RaisePropertyChanged();
-			}
-		}
-
 	}
 }

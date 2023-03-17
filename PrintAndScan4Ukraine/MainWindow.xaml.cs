@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PrintAndScan4Ukraine.Connection;
+using PrintAndScan4Ukraine.Data;
+using PrintAndScan4Ukraine.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace PrintAndScan4Ukraine
 {
@@ -20,25 +10,20 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private readonly MainViewModel _viewmodel;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			_viewmodel = new MainViewModel(new MainDataProvider());
+			DataContext = _viewmodel;
+			Loaded += MainWindow_Loaded;
 		}
 
-		private void BtnPrint_Click(object sender, RoutedEventArgs e)
+		private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
 		{
-			this.Hide();
-			PrintWindow pw = new PrintWindow();
-			pw.ShowDialog();
-			this.Show();
-		}
-
-		private void BtnScan_Click(object sender, RoutedEventArgs e)
-		{
-			this.Hide();
-			ScanWindow sw = new ScanWindow();
-			sw.ShowDialog();
-			this.Show();
+			_viewmodel.IsOnline = InternetAvailability.IsInternetAvailable();
+			await _viewmodel.GetAccess();
 		}
 	}
 }
