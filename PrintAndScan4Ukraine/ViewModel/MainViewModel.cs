@@ -1,10 +1,12 @@
-﻿using PrintAndScan4Ukraine.Command;
+﻿using CodingSeb.Localization;
+using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Model;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
@@ -92,6 +94,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 				CurrentUserAccess = await _mainDataProvider.GetAccessFromComputerNameAsync(Environment.MachineName);
 			else
 				CurrentUserAccess = Access.None;
+			if (CurrentUserAccess == Access.None)
+				MessageBox.Show(Loc.Tr("PAS4U.NoAccess", "You don't have any access to this application, or you're offline. Please contact your administrator."));
 		}
 
 	}

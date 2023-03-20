@@ -33,10 +33,6 @@ namespace PrintAndScan4Ukraine
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
 
-			LocalizationLoader.Instance.FileLanguageLoaders.Add(new JsonFileLoader());
-			LocalizationLoader.Instance.AddDirectory(@"Language");
-
-			Loc.Instance.CurrentLanguage = Settings.Default.Language;
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en" ? true : false;
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru" ? true : false;
 		}

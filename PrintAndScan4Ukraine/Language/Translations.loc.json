@@ -260,6 +260,10 @@
           "ru": "Доставленный Скан"
         }
       }
+    },
+    "NoAccess": {
+      "en": "You don't have any access to this application, or you're offline. Please contact your administrator.",
+      "ru": "У вас нет доступа к этому приложению, или вы не в сети. Пожалуйста, свяжитесь с вашим администратором."
     }
   }
 }

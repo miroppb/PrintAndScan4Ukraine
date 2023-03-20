@@ -1,3 +1,8 @@
+v. 1.5.0.2
+
+- If the user has no access, or is offline, the application won't allow them to continue.
+- Application will save the computer name if it doesn't exist in the user's table
+
 v. 1.5.0.1
 
 - Removed exporting from Delivered screen
