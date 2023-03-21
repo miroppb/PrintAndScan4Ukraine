@@ -6,14 +6,15 @@ namespace PrintAndScan4Ukraine.Model
 	public enum Access : short
 	{
 		None,
+		SeePackages,
 		EditSender,
-		EditReceipient,
-		SeeSender = 4,
-		AddNew = 8,
-		Ship = 16,
-		Arrive = 32,
-		Deliver = 64,
-		Print = 128
+		EditReceipient = 4,
+		SeeSender = 8,
+		AddNew = 16,
+		Ship = 32,
+		Arrive = 64,
+		Deliver = 128,
+		Print = 256
 	}
 
 	public class Users

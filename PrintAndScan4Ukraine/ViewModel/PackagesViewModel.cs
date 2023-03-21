@@ -147,6 +147,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+		public bool AccessToSeePackagesr => CurrentUserAccess.HasFlag(Access.SeePackages);
 		public bool AccessToSeeSender => CurrentUserAccess.HasFlag(Access.SeeSender);
 		public bool AccessToEditSender => !CurrentUserAccess.HasFlag(Access.EditSender);
 		public bool AccessToEditReceipient => !CurrentUserAccess.HasFlag(Access.EditReceipient);

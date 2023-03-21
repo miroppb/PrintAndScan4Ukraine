@@ -86,7 +86,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public bool CanPrint => CurrentUserAccess.HasFlag(Access.Print);
 
-		public bool CanScan => CurrentUserAccess.HasFlag(Access.SeeSender | Access.EditSender | Access.EditReceipient | Access.AddNew | Access.Ship | Access.Deliver | Access.Arrive);
+		public bool CanScan => true;
 
 		public async Task GetAccess()
 		{

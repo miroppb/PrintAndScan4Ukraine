@@ -45,7 +45,7 @@ namespace PrintAndScan4Ukraine
 			SetupUpdater();
 			SetupLogUploader();
 			SetupSavingOften();
-			SetupReloadingPackages();
+			//SetupReloadingPackages();
 			SetupOnlineCheck();
 			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
@@ -66,7 +66,7 @@ namespace PrintAndScan4Ukraine
 			ScanWindow? sw = Keyboard.FocusedElement as ScanWindow;
 			try
 			{
-				if (sw == null || lvi == null || !tb!.Name.Contains("Address"))
+				if (sw == null && lvi == null && !tb!.Name.Contains("Address"))
 				{
 					if (e.Key == Key.Enter)
 					{

@@ -134,8 +134,9 @@ namespace PrintAndScan4Ukraine.Data
 						{
 							if (package.Id == CurrentlySelected.Id)
 							{
-								if (MessageBox.Show(Loc.Tr("PAS4U.MainWindow.RefreshCurrentPackage", "Current Package was updated outside of the application. Reload it?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-									ReplaceProperties(FromPrevious, Ret.Item2);
+								//if (MessageBox.Show(Loc.Tr("PAS4U.MainWindow.RefreshCurrentPackage", "Current Package was updated outside of the application. Reload it?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+								//	ReplaceProperties(FromPrevious, Ret.Item2);
+								//Need to play with this...
 							}
 							else
 								ReplaceProperties(FromPrevious, Ret.Item2);

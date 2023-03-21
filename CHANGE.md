@@ -1,3 +1,9 @@
+v. 1.5.0.3
+
+- Users can always open Scan now, but then fields are hidden depending on their access
+- Fixed bug with Address fields
+- Removed the package refresh for current package for now
+
 v. 1.5.0.2
 
 - If the user has no access, or is offline, the application won't allow them to continue.
