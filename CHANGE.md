@@ -1,3 +1,7 @@
+v. 1.5.0.4
+
+- Translation fix for sender
+
 v. 1.5.0.3
 
 - Users can always open Scan now, but then fields are hidden depending on their access

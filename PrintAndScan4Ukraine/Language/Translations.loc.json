@@ -87,12 +87,12 @@
         "ru": "Имя отправителя"
       },
       "SenderPhone": {
-        "en": "Sender Name",
-        "ru": "Имя отправителя"
+        "en": "Sender Phone",
+        "ru": "Телефон отправителя"
       },
       "SenderAddress": {
-        "en": "Sender Name",
-        "ru": "Имя отправителя"
+        "en": "Sender Address",
+        "ru": "Адрес отправителя"
       },
       "ReceiverName": {
         "en": "Receiver Name",
