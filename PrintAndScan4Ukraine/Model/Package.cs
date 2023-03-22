@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -17,6 +16,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _Sender_Name;
 			set
 			{
+				if (_Sender_Name != string.Empty && _Sender_Name != value)
+					Modified = true;
+
 				_Sender_Name = value;
 				RaisePropertyChanged();
 			}
@@ -30,6 +32,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _Sender_Address;
 			set
 			{
+				if (_Sender_Address != string.Empty && _Sender_Address != value)
+					Modified = true;
+
 				_Sender_Address = value;
 				RaisePropertyChanged();
 			}
@@ -43,6 +48,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _Sender_Phone;
 			set
 			{
+				if (_Sender_Phone != string.Empty && _Sender_Phone != value)
+					Modified = true;
+
 				_Sender_Phone = value;
 				RaisePropertyChanged();
 			}
@@ -55,6 +63,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _recipient_Name;
 			set
 			{
+				if (_recipient_Name != string.Empty && _recipient_Name != value)
+					Modified = true;
+
 				_recipient_Name = value;
 				RaisePropertyChanged();
 			}
@@ -67,6 +78,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _recipient_Address;
 			set
 			{
+				if (_recipient_Address != string.Empty && _recipient_Address != value)
+					Modified = true;
+
 				_recipient_Address = value;
 				RaisePropertyChanged();
 			}
@@ -79,6 +93,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _recipient_Phone;
 			set
 			{
+				if (_recipient_Phone != string.Empty && _recipient_Phone != value)
+					Modified = true;
+
 				_recipient_Phone = value;
 				RaisePropertyChanged();
 			}
@@ -92,6 +109,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _Weight;
 			set
 			{
+				if (_Weight != null && _Weight != value)
+					Modified = true;
+
 				_Weight = value;
 				RaisePropertyChanged();
 			}
@@ -104,6 +124,9 @@ namespace PrintAndScan4Ukraine.Model
 			get => _Value;
 			set
 			{
+				if (_Value != null && _Value != value)
+					Modified = true;
+
 				_Value = value;
 				Total = ((double)value!).ToString("$0.00");
 				RaisePropertyChanged();
@@ -137,15 +160,13 @@ namespace PrintAndScan4Ukraine.Model
 		}
 
 		public bool Removed { get; set; } = false;
-
-		public bool Modified { get; set; } = false;
+		public bool Modified { get; internal set; } = false;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
 		protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-			Modified = true;
 		}
 
 		//private void CalcTotal() => Total = ((double)(Value! + Delivery! + Insurance! + Other!)).ToString("$0.00");

@@ -121,6 +121,7 @@ namespace PrintAndScan4Ukraine.Data
 
 		public async Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected)
 		{
+			if (CurrentlySelected == null) return false;
 			IEnumerable<Package>? RefreshedPackages = await GetAllAsync();
 			if (RefreshedPackages != null)
 			{

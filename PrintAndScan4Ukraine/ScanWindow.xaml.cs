@@ -66,7 +66,7 @@ namespace PrintAndScan4Ukraine
 			ScanWindow? sw = Keyboard.FocusedElement as ScanWindow;
 			try
 			{
-				if (sw == null && lvi == null && !tb!.Name.Contains("Address"))
+				if (sw == null && lvi == null && !tb!.Name.Contains("Address") && !tb!.Parent.ToString()!.Contains("DataGridCell"))
 				{
 					if (e.Key == Key.Enter)
 					{

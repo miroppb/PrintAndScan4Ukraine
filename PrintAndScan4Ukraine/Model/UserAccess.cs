@@ -14,7 +14,8 @@ namespace PrintAndScan4Ukraine.Model
 		Ship = 32,
 		Arrive = 64,
 		Deliver = 128,
-		Print = 256
+		Export = 256,
+		Print = 512
 	}
 
 	public class Users

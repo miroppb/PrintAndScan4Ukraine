@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Dapper;
 using miroppb;
 using MySqlConnector;
 using PrintAndScan4Ukraine.Model;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Z.Dapper.Plus;
 
 namespace PrintAndScan4Ukraine.Data
@@ -28,7 +28,7 @@ namespace PrintAndScan4Ukraine.Data
 				{
 					libmiroppb.Log($"Inserting None User Access for: {Environment.MachineName}");
 					DapperPlusManager.Entity<Users>().Table(Secrets.GetMySQLUserAccessTable()).Identity(x => x.Id);
-					db.BulkInsert(new Users() { ComputerName = Environment.MachineName, Access = 0, Comment = "New"});
+					db.BulkInsert(new Users() { ComputerName = Environment.MachineName, Access = 0, Comment = "New" });
 				}
 			}
 			return access;

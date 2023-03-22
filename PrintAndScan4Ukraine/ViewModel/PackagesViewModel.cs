@@ -147,7 +147,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		public bool AccessToSeePackagesr => CurrentUserAccess.HasFlag(Access.SeePackages);
+		public bool AccessToSeePackages => CurrentUserAccess.HasFlag(Access.SeePackages);
 		public bool AccessToSeeSender => CurrentUserAccess.HasFlag(Access.SeeSender);
 		public bool AccessToEditSender => !CurrentUserAccess.HasFlag(Access.EditSender);
 		public bool AccessToEditReceipient => !CurrentUserAccess.HasFlag(Access.EditReceipient);
@@ -155,6 +155,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public bool AccessToShip => CurrentUserAccess.HasFlag(Access.Ship);
 		public bool AccessToArrive => CurrentUserAccess.HasFlag(Access.Arrive);
 		public bool AccessToDeliver => CurrentUserAccess.HasFlag(Access.Deliver);
+		public bool AccessToExport => CurrentUserAccess.HasFlag(Access.Export);
 
 		public async Task LoadAsync()
 		{

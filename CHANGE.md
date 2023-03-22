@@ -1,3 +1,8 @@
+v. 1.5.0.6
+
+- Bug fixes, more-or-less
+- Swapped spots of Value and Weight
+
 v. 1.5.0.5
 
 - Fixed no access being set
