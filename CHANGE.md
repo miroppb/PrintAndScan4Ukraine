@@ -1,3 +1,7 @@
+v. 1.5.0.7
+
+- Not save list of packages during refresh to log
+
 v. 1.5.0.6
 
 - Bug fixes, more-or-less

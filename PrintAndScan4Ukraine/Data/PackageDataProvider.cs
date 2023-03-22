@@ -16,7 +16,7 @@ namespace PrintAndScan4Ukraine.Data
 {
 	public interface IPackageDataProvider
 	{
-		Task<IEnumerable<Package>?> GetAllAsync();
+		Task<IEnumerable<Package>?> GetAllAsync(bool SaveToLog);
 		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName);
 		IEnumerable<Package_Status>? GetAllStatuses();
 		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
@@ -28,7 +28,7 @@ namespace PrintAndScan4Ukraine.Data
 
 	public class PackageDataProvider : IPackageDataProvider
 	{
-		public async Task<IEnumerable<Package>?> GetAllAsync()
+		public async Task<IEnumerable<Package>?> GetAllAsync(bool SaveToLog)
 		{
 			libmiroppb.Log("Get List of Packages");
 			IEnumerable<Package> packages = new List<Package>();
@@ -122,7 +122,7 @@ namespace PrintAndScan4Ukraine.Data
 		public async Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected)
 		{
 			if (CurrentlySelected == null) return false;
-			IEnumerable<Package>? RefreshedPackages = await GetAllAsync();
+			IEnumerable<Package>? RefreshedPackages = await GetAllAsync(false);
 			if (RefreshedPackages != null)
 			{
 				foreach (Package package in RefreshedPackages.ToList())

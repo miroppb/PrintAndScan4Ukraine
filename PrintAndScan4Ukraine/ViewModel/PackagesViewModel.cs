@@ -164,7 +164,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				if (Packages.Any())
 					Packages.Clear();
 
-				var packages = await _packageDataProvider.GetAllAsync();
+				var packages = await _packageDataProvider.GetAllAsync(true);
 				if (packages != null)
 					packages.ToList().ForEach(Packages.Add);
 			}
