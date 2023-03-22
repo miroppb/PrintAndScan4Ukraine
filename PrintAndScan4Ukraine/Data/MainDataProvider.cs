@@ -22,7 +22,7 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				var temp = await db.QueryAsync<Users>($"SELECT id, computername, access, comment FROM {Secrets.GetMySQLUserAccessTable()} WHERE computername = @computername", new { ComputerName });
-				if (temp != null)
+				if (temp != null && temp.Count() > 0)
 					access = (Access)temp.FirstOrDefault()!.Access;
 				else
 				{

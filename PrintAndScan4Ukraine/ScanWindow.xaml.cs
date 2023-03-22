@@ -45,7 +45,7 @@ namespace PrintAndScan4Ukraine
 			SetupUpdater();
 			SetupLogUploader();
 			SetupSavingOften();
-			//SetupReloadingPackages();
+			SetupReloadingPackages();
 			SetupOnlineCheck();
 			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
@@ -97,6 +97,7 @@ namespace PrintAndScan4Ukraine
 
 		private void AutoUpdater_ApplicationExitEvent()
 		{
+			libmiroppb.Log("Update starting");
 			UploadLogs(true);
 			Application.Current.Shutdown();
 		}

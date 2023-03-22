@@ -1,3 +1,7 @@
+v. 1.5.0.5
+
+- Fixed no access being set
+
 v. 1.5.0.4
 
 - Translation fix for sender
