@@ -30,7 +30,7 @@ namespace PrintAndScan4Ukraine.Data
 	{
 		public async Task<IEnumerable<Package>?> GetAllAsync(bool SaveToLog)
 		{
-			libmiroppb.Log($"Get List of Packages{(SaveToLog ? " for a refresh" : "")}");
+			libmiroppb.Log($"Get List of Packages{(SaveToLog ? "" : " for a refresh")}");
 			IEnumerable<Package> packages = new List<Package>();
 			try
 			{

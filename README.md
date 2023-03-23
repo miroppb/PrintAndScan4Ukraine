@@ -82,14 +82,16 @@ CREATE TABLE IF NOT EXISTS `access_type` (
 
 INSERT INTO `access_type` (`type`, `access`) VALUES
 	(0, 'None'),
-	(1, 'Edit Sender'),
-	(2, 'Edit Recipient'),
-  (4, 'See Sender'),
-	(8, 'Add New'),
-	(16, 'Mark As Shipped'),
-	(32, 'Mark As Arrived'),
-	(64, 'Mark As Delivered'),
-	(128, 'Print Labels');
+    (1, 'See Packages'),
+	(2, 'Edit Sender'),
+	(4, 'Edit Recipient'),
+    (8, 'See Sender'),
+	(16, 'Add New'),
+	(32, 'Mark As Shipped'),
+	(64, 'Mark As Arrived'),
+	(128, 'Mark As Delivered'),
+	(512, 'Print Labels'),
+	(256, 'Export');
 
 CREATE TABLE IF NOT EXISTS `status_type` (
   `id` int(1) unsigned NOT NULL DEFAULT 0,
