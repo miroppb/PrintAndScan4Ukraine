@@ -30,7 +30,7 @@ namespace PrintAndScan4Ukraine.Data
 	{
 		public async Task<IEnumerable<Package>?> GetAllAsync(bool SaveToLog)
 		{
-			libmiroppb.Log("Get List of Packages");
+			libmiroppb.Log($"Get List of Packages{(SaveToLog ? " for a refresh" : "")}");
 			IEnumerable<Package> packages = new List<Package>();
 			try
 			{
@@ -43,7 +43,8 @@ namespace PrintAndScan4Ukraine.Data
 						return x;
 					}).ToList();
 				}
-				libmiroppb.Log(JsonConvert.SerializeObject(packages));
+				if (SaveToLog)
+					libmiroppb.Log(JsonConvert.SerializeObject(packages));
 			}
 			catch
 			{
@@ -133,13 +134,7 @@ namespace PrintAndScan4Ukraine.Data
 						(bool, List<Variance>) Ret = ComparePackages(FromPrevious, package);
 						if (!Ret.Item1)
 						{
-							if (package.Id == CurrentlySelected.Id)
-							{
-								//if (MessageBox.Show(Loc.Tr("PAS4U.MainWindow.RefreshCurrentPackage", "Current Package was updated outside of the application. Reload it?"), "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-								//	ReplaceProperties(FromPrevious, Ret.Item2);
-								//Need to play with this...
-							}
-							else
+							if (package.Id != CurrentlySelected.Id) //Refresh only for non-current package. Otherwise could cause discrepencies
 								ReplaceProperties(FromPrevious, Ret.Item2);
 						}
 					}
