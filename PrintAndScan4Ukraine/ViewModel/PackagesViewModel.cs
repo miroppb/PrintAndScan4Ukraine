@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -147,6 +148,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+		public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+
 		public bool AccessToSeePackages => CurrentUserAccess.HasFlag(Access.SeePackages);
 		public bool AccessToSeeSender => CurrentUserAccess.HasFlag(Access.SeeSender);
 		public bool AccessToEditSender => !CurrentUserAccess.HasFlag(Access.EditSender);
@@ -190,7 +193,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (SelectedPackage != null && IsOnline)
 			{
 				if (_packageDataProvider.UpdateRecords(new List<Package>() { SelectedPackage }))
+				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+					SelectedPackage.Modified = false; //setting back as it was saved
+				}
 			}
 		}
 
@@ -199,7 +205,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (IsOnline)
 			{
 				if (_packageDataProvider.UpdateRecords(new List<Package>() { package }))
+				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+					package.Modified = false; //setting back as it was saved
+				}
 			}
 		}
 
@@ -207,7 +216,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			if (IsOnline && Packages != null)
 				if (_packageDataProvider.UpdateRecords(Packages.ToList()))
+				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+					foreach (var package in Packages)
+						package.Modified = false; //everything was saved
+				}
 
 		}
 

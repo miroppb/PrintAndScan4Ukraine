@@ -82,10 +82,10 @@ CREATE TABLE IF NOT EXISTS `access_type` (
 
 INSERT INTO `access_type` (`type`, `access`) VALUES
 	(0, 'None'),
-    (1, 'See Packages'),
+    	(1, 'See Packages'),
 	(2, 'Edit Sender'),
 	(4, 'Edit Recipient'),
-    (8, 'See Sender'),
+    	(8, 'See Sender'),
 	(16, 'Add New'),
 	(32, 'Mark As Shipped'),
 	(64, 'Mark As Arrived'),

@@ -1,3 +1,9 @@
+v. 1.5.0.9
+
+- Trying to minimize redunadant saves
+- Main window shows version number
+- Upon connection, saves version number to db
+
 v. 1.5.0.8
 
 - Previous change wasn't actually implemented :)

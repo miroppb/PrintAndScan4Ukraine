@@ -24,5 +24,6 @@ namespace PrintAndScan4Ukraine.Model
 		public string ComputerName { get; set; } = string.Empty;
 		public int Access { get; set; }
 		public string Comment { get; init; } = string.Empty;
+		public string LastConnectedVersion { get; set; } = string.Empty;
     }
 }

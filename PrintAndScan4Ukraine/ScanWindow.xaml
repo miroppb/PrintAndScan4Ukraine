@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:local="clr-namespace:PrintAndScan4Ukraine.Converter"
-        Title="Scan Packages" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
+        Title="{Binding Header}" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
     <Window.Resources>
         <local:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
         <local:BoolToGridRowHeightConverter x:Key="BoolToGridRowHeightConverter" />
