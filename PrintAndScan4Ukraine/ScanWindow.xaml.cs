@@ -120,7 +120,7 @@ namespace PrintAndScan4Ukraine
 			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
 			timer.Tick += delegate
 			{
-				if (_viewModel.SelectedPackage != null) //only saving current package
+				if (_viewModel.SelectedPackage != null && _viewModel.SelectedPackage.Modified) //only saving current package
 					_viewModel.Save();
 			};
 			timer.Start();

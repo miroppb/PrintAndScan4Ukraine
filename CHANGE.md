@@ -1,3 +1,8 @@
+v. 1.5.0.10
+
+- Still trying to minimize saving to db
+- Trying to make logs more clear :)
+
 v. 1.5.0.9
 
 - Trying to minimize redunadant saves

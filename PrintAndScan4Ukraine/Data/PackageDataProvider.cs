@@ -22,7 +22,7 @@ namespace PrintAndScan4Ukraine.Data
 		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
 		bool InsertRecord(Package package);
 		Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected);
-		bool UpdateRecords(List<Package> package);
+		bool UpdateRecords(List<Package> package, int type = 0);
 		bool InsertRecordStatus(List<Package_Status> package_statuses);
 	}
 
@@ -167,12 +167,12 @@ namespace PrintAndScan4Ukraine.Data
 			return (same, rt);
 		}
 
-		public bool UpdateRecords(List<Package> packages)
+		public bool UpdateRecords(List<Package> packages, int type = 0)
 		{
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
-				libmiroppb.Log($"Updating Record: {JsonConvert.SerializeObject(packages)}");
+				libmiroppb.Log($"Saving {(type==-1?"Previous":"Current")} Record: {JsonConvert.SerializeObject(packages)}");
 				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLTable()).Identity(x => x.Id);
 				db.BulkUpdate(packages);
 			}

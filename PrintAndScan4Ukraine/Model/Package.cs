@@ -56,47 +56,47 @@ namespace PrintAndScan4Ukraine.Model
 			}
 		}
 
-		private string? _recipient_Name = string.Empty;
+		private string? _Recipient_Name = string.Empty;
 
 		public string? Recipient_Name
 		{
-			get => _recipient_Name;
+			get => _Recipient_Name;
 			set
 			{
-				if (_recipient_Name != string.Empty && _recipient_Name != value)
+				if (_Recipient_Name != string.Empty && _Recipient_Name != value)
 					Modified = true;
 
-				_recipient_Name = value;
+				_Recipient_Name = value;
 				RaisePropertyChanged();
 			}
 		}
 
-		private string? _recipient_Address = string.Empty;
+		private string? _Recipient_Address = string.Empty;
 
 		public string? Recipient_Address
 		{
-			get => _recipient_Address;
+			get => _Recipient_Address;
 			set
 			{
-				if (_recipient_Address != string.Empty && _recipient_Address != value)
+				if (_Recipient_Address != string.Empty && _Recipient_Address != value)
 					Modified = true;
 
-				_recipient_Address = value;
+				_Recipient_Address = value;
 				RaisePropertyChanged();
 			}
 		}
 
-		private string? _recipient_Phone = string.Empty;
+		private string? _Recipient_Phone = string.Empty;
 
 		public string? Recipient_Phone
 		{
-			get => _recipient_Phone;
+			get => _Recipient_Phone;
 			set
 			{
-				if (_recipient_Phone != string.Empty && _recipient_Phone != value)
+				if (_Recipient_Phone != string.Empty && _Recipient_Phone != value)
 					Modified = true;
 
-				_recipient_Phone = value;
+				_Recipient_Phone = value;
 				RaisePropertyChanged();
 			}
 		}

@@ -26,9 +26,8 @@ namespace PrintAndScan4Ukraine.Data
 				if (temp != null && temp.Count() > 0)
 				{
 					access = (Access)temp.FirstOrDefault()!.Access;
-					DapperPlusManager.Entity<Users>().Table(Secrets.GetMySQLUserAccessTable()).Identity(x => x.Id);
-					temp.ToList()[0].LastConnectedVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
-					db.BulkUpdate(temp.ToList());
+					await db.ExecuteAsync($"UPDATE {Secrets.GetMySQLUserAccessTable()} SET lastconnectedversion = @lastconnectedversion WHERE id = @id",
+						new { lastconnectedversion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(), id = temp.ToList()[0].Id });
 				}
 				else
 				{

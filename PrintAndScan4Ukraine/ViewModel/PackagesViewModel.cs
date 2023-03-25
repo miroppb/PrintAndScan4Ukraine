@@ -81,7 +81,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			set
 			{
 				if (_selectedPackage != null && _selectedPackage.Modified) //if package was modified
-					Save(_selectedPackage); //save previous package before changing to new package
+					Save(_selectedPackage, -1); //save previous package before changing to new package
 
 				_selectedPackage = value;
 				RaisePropertyChanged();
@@ -190,21 +190,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public void Save()
 		{
-			if (SelectedPackage != null && IsOnline)
-			{
-				if (_packageDataProvider.UpdateRecords(new List<Package>() { SelectedPackage }))
-				{
-					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
-					SelectedPackage.Modified = false; //setting back as it was saved
-				}
-			}
+			Save(SelectedPackage);
 		}
 
-		public void Save(Package package)
+		public void Save(Package package, int type = 0)
 		{
 			if (IsOnline)
 			{
-				if (_packageDataProvider.UpdateRecords(new List<Package>() { package }))
+				if (_packageDataProvider.UpdateRecords(new List<Package>() { package }, type))
 				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 					package.Modified = false; //setting back as it was saved
