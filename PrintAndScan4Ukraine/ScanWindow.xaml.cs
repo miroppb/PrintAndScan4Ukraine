@@ -28,13 +28,16 @@ namespace PrintAndScan4Ukraine
 		public ScanWindow(Access UserAccess)
 		{
 			InitializeComponent();
+			//clearing log
+			libmiroppb.DeleteLog();
+
 			libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
 			_viewModel = new PackagesViewModel(new PackageDataProvider(), UserAccess);
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
 
-			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en" ? true : false;
-			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru" ? true : false;
+			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
+			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
 		}
 
 		private async void ScanWindow_Loaded(object sender, RoutedEventArgs e)

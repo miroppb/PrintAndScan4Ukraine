@@ -1,3 +1,8 @@
+v. 1.5.0.11
+
+- Testing for potential cause for a freeze
+	- STopping saving list of packages in beginning in the log
+
 v. 1.5.0.10
 
 - Still trying to minimize saving to db
