@@ -16,7 +16,7 @@ namespace PrintAndScan4Ukraine.Data
 {
 	public interface IPackageDataProvider
 	{
-		Task<IEnumerable<Package>?> GetAllAsync(bool SaveToLog);
+		Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad);
 		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName);
 		IEnumerable<Package_Status>? GetAllStatuses();
 		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
@@ -28,10 +28,9 @@ namespace PrintAndScan4Ukraine.Data
 
 	public class PackageDataProvider : IPackageDataProvider
 	{
-		public async Task<IEnumerable<Package>?> GetAllAsync(bool SaveToLog)
+		public async Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad)
 		{
-			SaveToLog = false;
-			libmiroppb.Log($"Get List of Packages{(SaveToLog ? "" : " for a refresh")}");
+			libmiroppb.Log($"Get List of Packages{(initialLoad ? "" : " for a refresh")}");
 			IEnumerable<Package> packages = new List<Package>();
 			try
 			{
@@ -44,8 +43,6 @@ namespace PrintAndScan4Ukraine.Data
 						return x;
 					}).ToList();
 				}
-				if (SaveToLog)
-					libmiroppb.Log(JsonConvert.SerializeObject(packages));
 			}
 			catch
 			{

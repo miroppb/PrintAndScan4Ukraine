@@ -1,7 +1,11 @@
+v. 1.5.0.12
+
+- Logging doesn't delete files for some reason
+
 v. 1.5.0.11
 
 - Testing for potential cause for a freeze
-	- STopping saving list of packages in beginning in the log
+	- Stopped logging list of packages in beginning
 
 v. 1.5.0.10
 
