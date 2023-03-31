@@ -139,8 +139,8 @@
         "ru": "Сохранить"
       },
       "Offline": {
-        "en": "We're Offline'",
-        "ru": "Мы не в сети"
+        "en": "You're Offline'",
+        "ru": "Вы не в сети"
       },
       "Total": {
         "en": "Total: {0}",
@@ -175,6 +175,10 @@
       "AlreadyExistsText": {
         "en": "Package already exists",
         "ru": "Посылка уже есть"
+      },
+      "WrongFormatText": {
+        "en": "Package number not in correct format",
+        "ru": "Номер посылки не в правильном формате"
       }
     },
     "ScanShippedWindow": {

@@ -21,6 +21,7 @@ namespace PrintAndScan4Ukraine.Data
 		IEnumerable<Package_Status>? GetAllStatuses();
 		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
 		bool InsertRecord(Package package);
+		bool VerifyIfExists(string packageid);
 		Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected);
 		bool UpdateRecords(List<Package> package, int type = 0);
 		bool InsertRecordStatus(List<Package_Status> package_statuses);
@@ -36,7 +37,7 @@ namespace PrintAndScan4Ukraine.Data
 			{
 				using (MySqlConnection db = Secrets.GetConnectionString())
 				{
-					var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE removed = 0");
+					var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLPackagesTable()} WHERE removed = 0");
 					packages = temp.ToList().Select(x =>
 					{
 						x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
@@ -58,7 +59,7 @@ namespace PrintAndScan4Ukraine.Data
 			IEnumerable<Package> packages = new List<Package>();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLTable()} WHERE sender_name = @SenderName", new { SenderName });
+				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLPackagesTable()} WHERE sender_name = @SenderName", new { SenderName });
 				packages = temp.ToList().Select(x =>
 				{
 					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
@@ -112,9 +113,17 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLTable()).Identity(x => x.Id);
+				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLPackagesTable()).Identity(x => x.Id);
 				db.BulkInsert(package);
 				return true;
+			}
+		}
+
+		public bool VerifyIfExists(string packageid)
+		{
+			using (MySqlConnection db = Secrets.GetConnectionString())
+			{
+				return db.Query<Package>($"SELECT id FROM {Secrets.GetMySQLPackagesTable()} WHERE packageid = @packageid", new { packageid }).FirstOrDefault() != null;
 			}
 		}
 
@@ -171,7 +180,7 @@ namespace PrintAndScan4Ukraine.Data
 			{
 				packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
 				libmiroppb.Log($"Saving {(type==-1?"Previous":"Current")} Record: {JsonConvert.SerializeObject(packages)}");
-				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLTable()).Identity(x => x.Id);
+				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLPackagesTable()).Identity(x => x.Id);
 				db.BulkUpdate(packages);
 			}
 			return true;

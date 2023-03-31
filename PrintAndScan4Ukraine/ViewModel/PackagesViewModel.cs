@@ -195,7 +195,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public void Save(Package package, int type = 0)
 		{
-			if (IsOnline)
+			if (IsOnline && package != null)
 			{
 				if (_packageDataProvider.UpdateRecords(new List<Package>() { package }, type))
 				{
@@ -349,20 +349,24 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowAddNewWindow()
 		{
+			Package Current = SelectedPackage;
 			ScanNewWindow scanNewWindow = new ScanNewWindow(Packages.Select(x => x.PackageId).ToList());
 			scanNewWindow.ShowDialog();
 			if (scanNewWindow.WasSomethingSet)
-			{
 				Save();
-				await LoadAsync();
-			}
+			
 			if (scanNewWindow.BarCodeThatWasSet != string.Empty)
 			{
+				await LoadAsync();
 				try
 				{
 					SelectedPackage = Packages.FirstOrDefault(x => x.PackageId == scanNewWindow.BarCodeThatWasSet)!;
 				}
-				catch { }
+				catch
+				{
+					if (Current != null)
+						SelectedPackage = Current;
+				}
 			}
 		}
 
@@ -398,6 +402,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			if (IsOnline)
 				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
+		}
+
+		internal bool? VerifyIfExists(string barCode)
+		{
+			if (IsOnline)
+				return _packageDataProvider.VerifyIfExists(barCode);
+			else
+				return null;
 		}
 	}
 }

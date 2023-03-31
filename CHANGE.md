@@ -1,3 +1,8 @@
+v. 1.5.1.0
+
+- Double-check package number before inserting New
+- Checks format CV#######US before inserting
+
 v. 1.5.0.12
 
 - Logging doesn't delete files for some reason
