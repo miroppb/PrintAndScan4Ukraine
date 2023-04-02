@@ -123,7 +123,7 @@ namespace PrintAndScan4Ukraine.Data
 		{
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				return db.Query<Package>($"SELECT id FROM {Secrets.GetMySQLPackagesTable()} WHERE packageid = @packageid", new { packageid }).FirstOrDefault() != null;
+				return db.Query<Package>($"SELECT id FROM {Secrets.GetMySQLPackagesTable()} WHERE packageid = @packageid AND removed = 0", new { packageid }).FirstOrDefault() != null;
 			}
 		}
 

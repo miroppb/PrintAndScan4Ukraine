@@ -1,6 +1,7 @@
 v. 1.5.1.1
 
 - Reverted Add New code
+- Added more specification to Verify If Exists
 
 v. 1.5.1.0
 
