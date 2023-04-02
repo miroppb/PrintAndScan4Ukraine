@@ -349,24 +349,20 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowAddNewWindow()
 		{
-			Package Current = SelectedPackage;
 			ScanNewWindow scanNewWindow = new ScanNewWindow(Packages.Select(x => x.PackageId).ToList());
 			scanNewWindow.ShowDialog();
 			if (scanNewWindow.WasSomethingSet)
+			{
 				Save();
-			
+				await LoadAsync();
+			}
 			if (scanNewWindow.BarCodeThatWasSet != string.Empty)
 			{
-				await LoadAsync();
 				try
 				{
 					SelectedPackage = Packages.FirstOrDefault(x => x.PackageId == scanNewWindow.BarCodeThatWasSet)!;
 				}
-				catch
-				{
-					if (Current != null)
-						SelectedPackage = Current;
-				}
+				catch { }
 			}
 		}
 

@@ -1,3 +1,7 @@
+v. 1.5.1.1
+
+- Reverted Add New code
+
 v. 1.5.1.0
 
 - Double-check package number before inserting New
