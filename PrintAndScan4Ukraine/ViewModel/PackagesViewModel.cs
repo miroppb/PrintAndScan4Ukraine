@@ -148,7 +148,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+#if DEBUG
+		public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString() + " -Debug";
+#else
 		public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+#endif
 
 		public bool AccessToSeePackages => CurrentUserAccess.HasFlag(Access.SeePackages);
 		public bool AccessToSeeSender => CurrentUserAccess.HasFlag(Access.SeeSender);

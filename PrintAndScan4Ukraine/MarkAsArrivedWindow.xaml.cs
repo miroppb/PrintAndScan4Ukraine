@@ -50,8 +50,6 @@ namespace PrintAndScan4Ukraine
 			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, CreatedDate = DateTime.Now, Status = 3 }));
 			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
 
-			List<Package> packages = _viewModel.Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList(); //this will remove any duplicates and not select any packages that don't exist
-
 			_viewModel.InsertRecordStatus(statuses);
 
 			Close();

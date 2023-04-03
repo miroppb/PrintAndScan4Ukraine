@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using System;
 
 namespace PrintAndScan4Ukraine.Model
 {
@@ -18,6 +19,7 @@ namespace PrintAndScan4Ukraine.Model
 		Print = 512
 	}
 
+	[Table("users")]
 	public class Users
 	{
         public int Id { get; set; }

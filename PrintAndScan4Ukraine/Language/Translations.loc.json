@@ -197,6 +197,14 @@
       "DoneText": {
         "en": "Done",
         "ru": "Закончить"
+      },
+      "ScannedButNotOnListText": {
+        "en": "Following barcodes were scanned but not on list of packages:{0}{0}{1}{0}{0}The new statuses will be added to the database.",
+        "ru": "Следующие штрих-коды были отсканированы, но их нет в списке посылок:{0}{0}{1}{0}{0}Новыe статусы будет добавлены в базу данных."
+      },
+      "RemoveFromListText": {
+        "en": "Should we remove these packages from the list?",
+        "ru": "Убрать эти посылки с списка?"
       }
     },
     "ScanArrivedWindow": {

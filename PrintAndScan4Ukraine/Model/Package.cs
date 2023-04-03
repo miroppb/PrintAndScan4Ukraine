@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Dapper.Contrib.Extensions;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace PrintAndScan4Ukraine.Model
 {
+	[Table(Secrets.MySqlPackagesTable)]
 	public class Package : INotifyPropertyChanged
 	{
 		public int? Id { get; set; }
@@ -135,6 +137,7 @@ namespace PrintAndScan4Ukraine.Model
 		public string? Contents { get; set; } = string.Empty;
 		private List<Contents> _recipient_contents = new() { };
 
+		[Computed]
 		public List<Contents> Recipient_Contents
 		{
 			get => _recipient_contents;
@@ -149,6 +152,8 @@ namespace PrintAndScan4Ukraine.Model
 		}
 
 		private string? _Total = "$0.00";
+
+		[Computed]
 		public string? Total
 		{
 			get => _Total;
@@ -160,6 +165,8 @@ namespace PrintAndScan4Ukraine.Model
 		}
 
 		public bool Removed { get; set; } = false;
+
+		[Computed]
 		public bool Modified { get; internal set; } = false;
 
 		public event PropertyChangedEventHandler? PropertyChanged;

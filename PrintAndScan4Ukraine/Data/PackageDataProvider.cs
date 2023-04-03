@@ -1,5 +1,6 @@
 ﻿using CodingSeb.Localization;
 using Dapper;
+using Dapper.Contrib.Extensions;
 using miroppb;
 using MySqlConnector;
 using Newtonsoft.Json;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using Z.Dapper.Plus;
 
 namespace PrintAndScan4Ukraine.Data
 {
@@ -37,7 +37,7 @@ namespace PrintAndScan4Ukraine.Data
 			{
 				using (MySqlConnection db = Secrets.GetConnectionString())
 				{
-					var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLPackagesTable()} WHERE removed = 0");
+					var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE removed = 0");
 					packages = temp.ToList().Select(x =>
 					{
 						x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
@@ -59,7 +59,7 @@ namespace PrintAndScan4Ukraine.Data
 			IEnumerable<Package> packages = new List<Package>();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.GetMySQLPackagesTable()} WHERE sender_name = @SenderName", new { SenderName });
+				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE sender_name = @SenderName", new { SenderName });
 				packages = temp.ToList().Select(x =>
 				{
 					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
@@ -77,7 +77,7 @@ namespace PrintAndScan4Ukraine.Data
 			try
 			{
 				using (MySqlConnection db = Secrets.GetConnectionString())
-					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.GetMySQLPackageStatusTable()} ORDER BY id");
+					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} ORDER BY id");
 
 				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 			}
@@ -96,7 +96,7 @@ namespace PrintAndScan4Ukraine.Data
 			try
 			{
 				using (MySqlConnection db = Secrets.GetConnectionString())
-					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.GetMySQLPackageStatusTable()} WHERE packageid = @packageid ORDER BY id", new { packageid });
+					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @packageid ORDER BY id", new { packageid });
 
 				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 			}
@@ -113,8 +113,7 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLPackagesTable()).Identity(x => x.Id);
-				db.BulkInsert(package);
+				db.Insert(package);
 				return true;
 			}
 		}
@@ -123,7 +122,7 @@ namespace PrintAndScan4Ukraine.Data
 		{
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				return db.Query<Package>($"SELECT id FROM {Secrets.GetMySQLPackagesTable()} WHERE packageid = @packageid AND removed = 0", new { packageid }).FirstOrDefault() != null;
+				return db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid AND removed = 0", new { packageid }).FirstOrDefault() != null;
 			}
 		}
 
@@ -180,8 +179,7 @@ namespace PrintAndScan4Ukraine.Data
 			{
 				packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
 				libmiroppb.Log($"Saving {(type==-1?"Previous":"Current")} Record: {JsonConvert.SerializeObject(packages)}");
-				DapperPlusManager.Entity<Package>().Table(Secrets.GetMySQLPackagesTable()).Identity(x => x.Id);
-				db.BulkUpdate(packages);
+				db.Insert(packages);
 			}
 			return true;
 		}
@@ -191,8 +189,7 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
-				DapperPlusManager.Entity<Package_Status>().Table(Secrets.GetMySQLPackageStatusTable()).Identity(x => x.Id);
-				db.BulkInsert(package_statuses);
+				db.Insert(package_statuses);
 			}
 			return true;
 		}

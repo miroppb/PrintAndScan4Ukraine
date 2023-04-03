@@ -1,3 +1,9 @@
+v. 1.5.2.0
+
+- Removed DapperPlus and started using Dapper.Contrib
+- Added some more translations (to Mark As Shipped Window)
+- Mark As Shipped checks which packages were scanned but aren't on list
+
 v. 1.5.1.2
 
 - Updated packages
