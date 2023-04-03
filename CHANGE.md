@@ -1,3 +1,7 @@
+v. 1.5.1.2
+
+- Updated packages
+
 v. 1.5.1.1
 
 - Reverted Add New code
