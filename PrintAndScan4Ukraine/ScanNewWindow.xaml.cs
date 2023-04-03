@@ -64,11 +64,11 @@ namespace PrintAndScan4Ukraine
 									Contents = JsonConvert.SerializeObject(new List<Contents>() { })
 								});
 								_viewModel.InsertRecordStatus(new()
-						{
-							new() {
-								PackageId = barCode, CreatedDate = DateTime.Now, Status = 1
-							}
-						});
+								{
+									new() {
+										PackageId = barCode, CreatedDate = DateTime.Now, Status = 1
+									}
+								});
 								WasSomethingSet = true;
 								BarCodeThatWasSet = barCode;
 							}

@@ -4,9 +4,10 @@ using System;
 
 namespace PrintAndScan4Ukraine.Model
 {
-	[Table("package_status")]
+	[Table(Secrets.MySqlPackageStatusTable)]
 	public class Package_Status
 	{
+		[Key]
 		public int? Id { get; set; }
 		public string PackageId { get; set; } = string.Empty;
 		public DateTime CreatedDate { get; set; }

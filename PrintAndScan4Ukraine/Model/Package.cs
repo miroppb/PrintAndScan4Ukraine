@@ -8,6 +8,7 @@ namespace PrintAndScan4Ukraine.Model
 	[Table(Secrets.MySqlPackagesTable)]
 	public class Package : INotifyPropertyChanged
 	{
+		[Key]
 		public int? Id { get; set; }
 		public string PackageId { get; set; } = string.Empty;
 

@@ -19,7 +19,7 @@ namespace PrintAndScan4Ukraine.Model
 		Print = 512
 	}
 
-	[Table("users")]
+	[Table(Secrets.MySqlUserAccessTable)]
 	public class Users
 	{
         public int Id { get; set; }

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>barcode.ico</ApplicationIcon>
-    <AssemblyVersion>1.5.2.0</AssemblyVersion>
+    <AssemblyVersion>1.5.2.1</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +29,7 @@
     <PackageReference Include="MySqlConnector" Version="2.2.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="ServiceStack.Text.Core" Version="6.8.0" />
+    <PackageReference Include="Z.Dapper.Plus" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>

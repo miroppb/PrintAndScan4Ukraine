@@ -1,3 +1,7 @@
+v. 1.5.2.1
+
+- Reverted back to DapperPlus for now
+
 v. 1.5.2.0
 
 - Removed DapperPlus and started using Dapper.Contrib
