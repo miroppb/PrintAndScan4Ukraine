@@ -138,6 +138,7 @@ namespace PrintAndScan4Ukraine.Model
 		public string? Contents { get; set; } = string.Empty;
 		private List<Contents> _recipient_contents = new() { };
 
+		[Write(false)]
 		[Computed]
 		public List<Contents> Recipient_Contents
 		{
@@ -154,6 +155,7 @@ namespace PrintAndScan4Ukraine.Model
 
 		private string? _Total = "$0.00";
 
+		[Write(false)]
 		[Computed]
 		public string? Total
 		{
@@ -167,6 +169,7 @@ namespace PrintAndScan4Ukraine.Model
 
 		public bool Removed { get; set; } = false;
 
+		[Write(false)]
 		[Computed]
 		public bool Modified { get; internal set; } = false;
 

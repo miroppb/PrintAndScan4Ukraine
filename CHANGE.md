@@ -1,3 +1,7 @@
+v. 1.5.2.2
+
+- Stopped using DapperPlus again...
+
 v. 1.5.2.1
 
 - Reverted back to DapperPlus for now

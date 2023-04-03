@@ -42,7 +42,11 @@ namespace PrintAndScan4Ukraine
 				barCode = barCode.Replace("\0", "").Trim();
 				if (barCode != string.Empty) //make sure that the barcode is an actual alphanumeric string
 				{
+#if DEBUG
+					Regex regex = new Regex("");
+#else
 					Regex regex = new Regex("cv\\d\\d\\d\\d\\d\\d\\dus");
+#endif
 					Match match = regex.Match(barCode);
 					if (match.Success)
 					{
