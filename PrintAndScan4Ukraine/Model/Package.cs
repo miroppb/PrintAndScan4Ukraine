@@ -5,11 +5,9 @@ using System.Runtime.CompilerServices;
 
 namespace PrintAndScan4Ukraine.Model
 {
-	[Table(Secrets.MySqlPackagesTable)]
 	public class Package : INotifyPropertyChanged
 	{
-		[Key]
-		public int? Id { get; set; }
+		public int Id { get; set; }
 		public string PackageId { get; set; } = string.Empty;
 
 		private string _Sender_Name = string.Empty;
@@ -104,7 +102,6 @@ namespace PrintAndScan4Ukraine.Model
 			}
 		}
 
-
 		private double? _Weight = null;
 
 		public double? Weight
@@ -119,7 +116,6 @@ namespace PrintAndScan4Ukraine.Model
 				RaisePropertyChanged();
 			}
 		}
-
 
 		private double? _Value = null;
 		public double? Value

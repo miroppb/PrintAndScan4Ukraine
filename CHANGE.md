@@ -1,3 +1,12 @@
+v. 1.5.2.4
+
+- One single ? can make the difference :D
+- DapperPlus is now gone
+
+v. 1.5.2.3
+
+- Dapper Contrib doesn't like Package.cs
+
 v. 1.5.2.2
 
 - Stopped using DapperPlus again...

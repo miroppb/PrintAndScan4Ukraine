@@ -113,9 +113,7 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-				//DapperPlusManager.Entity<Package>().Table(Secrets.MySqlPackagesTable).Identity(x => x.Id);
-				//db.BulkInsert(package);
-				db.InsertAsync(package);
+				db.Insert(package);
 				return true;
 			}
 		}
@@ -181,8 +179,6 @@ namespace PrintAndScan4Ukraine.Data
 			{
 				packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
 				libmiroppb.Log($"Saving {(type==-1?"Previous":"Current")} Record: {JsonConvert.SerializeObject(packages)}");
-				//DapperPlusManager.Entity<Package>().Table(Secrets.MySqlPackagesTable).Identity(x => x.Id);
-				//db.BulkUpdate(packages);
 				db.Update(packages);
 			}
 			return true;
@@ -193,8 +189,6 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
-				//DapperPlusManager.Entity<Package_Status>().Table(Secrets.MySqlPackageStatusTable).Identity(x => x.Id);
-				//db.BulkInsert(package_statuses);
 				db.Insert(package_statuses);
 			}
 			return true;
