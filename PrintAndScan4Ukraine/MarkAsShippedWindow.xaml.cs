@@ -61,7 +61,7 @@ namespace PrintAndScan4Ukraine
 			{
 				MessageBox.Show(string.Format($"{Loc.Tr("PAS4U.ScanShippedWindow.ScannedButNotOnListText", "Following barcodes were scanned but not on list of packages:{0}{0}{1}{0}{0}The new statuses will be added to the database.")}",
 					Environment.NewLine, string.Join(", ", BarcodesNotInPackages)));
-				StreamWriter w = new(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\Shipped_{DateTime.Now:MM/dd/yyyy}.txt");
+				StreamWriter w = new(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\Shipped_{DateTime.Now:MM-dd-yyyy}.txt");
 				w.WriteLine($"Barcodes scanned as shipped that weren't on the list on {DateTime.Now:MM/dd/yyyy}:");
 				BarcodesNotInPackages.ForEach(x => w.WriteLine(x));
 				w.Close();

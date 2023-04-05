@@ -305,11 +305,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 						ws.Cells[row + 1, 1].LoadFromCollection(list, false, OfficeOpenXml.Table.TableStyles.Light8);
 					}
 					ws.Cells.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
-					ws.Cells[$"H2:C{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Sender Address
-					ws.Cells[$"H2:F{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Recipient Address
+					ws.Cells[$"C2:C{ws.Dimension.End.Row}"].Style.WrapText = true; //Sender Address
+					ws.Cells[$"F2:F{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Recipient Address
 					ws.Cells[$"H2:H{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Contents
-					ws.Cells[$"H2:K{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Statuses
-					//ws.Cells[$"K2:N{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy"; //we're not doing dates separately
+					ws.Cells[$"K2:K{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Statuses
+					//ws.Cells[$"N2:N{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy"; //we're not doing dates separately
 					//ws.Cells[$"L2:O{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
 					ws.Cells[ws.Dimension.Address].AutoFitColumns();
 

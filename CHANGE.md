@@ -1,3 +1,7 @@
+v. 1.5.2.5
+
+- Fixed error during exporting to excel
+
 v. 1.5.2.4
 
 - One single ? can make the difference :D
