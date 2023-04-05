@@ -18,13 +18,23 @@ public class Secrets
 {
     public static MySqlConnection GetConnectionString() => new MySqlConnection($"Server={MySqlUrl};Database={MySqlDb};Uid={MySqlUsername};Pwd={MySqlPassword};");
 
-    internal static string GetMySQLTable() => MySqlTable;
+		internal static string GetUpdateURL() => @"###";
 
-    private const string MySqlUrl = "###";
-    private const string MySqlUsername = "###";
-    private const string MySqlPassword = "###";
-    private const string MySqlDb = "###";
-    private const string MySqlTable = "###";
+		internal static string GetMySQLUrl() => MySqlUrl;
+
+		private const string MySqlUrl = "###";
+		private const string MySqlUsername = "###";
+		private const string MySqlPassword = "###";
+
+#if DEBUG
+		private const string MySqlDb = "###";
+#else
+		private const string MySqlDb = "###";
+#endif
+
+		public const string MySqlPackagesTable = "###";
+		public const string MySqlPackageStatusTable = "###";
+		public const string MySqlUserAccessTable = "###";
 }
 ```
 
@@ -50,11 +60,6 @@ CREATE TABLE IF NOT EXISTS `packages` (
   `weight` text DEFAULT NULL,
   `contents` text DEFAULT NULL,
   `value` int(11) DEFAULT NULL,
-  `delivery` int(11) DEFAULT NULL,
-  `insurance` int(11) DEFAULT NULL,
-  `other` int(11) DEFAULT NULL,
-  `date_added` datetime DEFAULT NULL,
-  `date_shipped` datetime DEFAULT NULL,
   `removed` tinyint(3) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -82,10 +87,10 @@ CREATE TABLE IF NOT EXISTS `access_type` (
 
 INSERT INTO `access_type` (`type`, `access`) VALUES
 	(0, 'None'),
-    	(1, 'See Packages'),
+	(1, 'See Packages'),
 	(2, 'Edit Sender'),
 	(4, 'Edit Recipient'),
-    	(8, 'See Sender'),
+	(8, 'See Sender'),
 	(16, 'Add New'),
 	(32, 'Mark As Shipped'),
 	(64, 'Mark As Arrived'),
