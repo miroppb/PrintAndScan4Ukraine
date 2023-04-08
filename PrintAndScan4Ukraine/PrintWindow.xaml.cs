@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.ViewModel;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -35,8 +36,13 @@ namespace PrintAndScan4Ukraine
 			_viewmodel.Printers.Clear();
 			_viewmodel.LoadPrinters();
 			libmiroppb.Log($"Getting List of Printers: {JsonConvert.SerializeObject(_viewmodel.Printers)}");
-			if (_viewmodel.Printers.Count > 0)
-				_viewmodel.SelectedPrinter = _viewmodel.Printers.Where(x => x.Contains("ZPL")).FirstOrDefault()!;
+			try
+			{
+				if (_viewmodel.Printers.Count > 0)
+					_viewmodel.SelectedPrinter = _viewmodel.Printers.Where(x => x.Contains("ZPL")).FirstOrDefault()!;
+			}
+			catch (Exception ex) { libmiroppb.Log($"Exception: {ex.Message}"); }
+			
 		}
 
 		private void UploadLogs(bool deleteAfter)

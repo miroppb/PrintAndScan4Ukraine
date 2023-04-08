@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using miroppb;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
@@ -27,25 +30,29 @@ namespace PrintAndScan4Ukraine.Data
 
 		public bool PrintBarcodes(int starting, int ending, int copies, string printer)
 		{
-
-			for (int a = starting; a <= ending; a++)
+			try
 			{
-				for (int b = 0; b < copies; b++)
+				for (int a = starting; a <= ending; a++)
 				{
-					StringBuilder sb = new StringBuilder("^XA");
-					sb.AppendLine();
-					sb.AppendLine("^BY4,2,270");
-					sb.AppendLine($"^FO100,50^BC^FDCV{a.ToString("0000000")}US^FS");
-					sb.AppendLine();
-					sb.AppendLine("^XZ");
+					for (int b = 0; b < copies; b++)
+					{
+						StringBuilder sb = new StringBuilder("^XA");
+						sb.AppendLine();
+						sb.AppendLine("^BY4,2,270");
+						sb.AppendLine($"^FO100,50^BC^FDCV{a.ToString("0000000")}US^FS");
+						sb.AppendLine();
+						sb.AppendLine("^XZ");
 
-					PrintDialog prtDlg = new PrintDialog();
-					FlowDocument doc = new FlowDocument(new Paragraph(new Run(sb.ToString())));
-					prtDlg.PrintQueue = new PrintQueue(new PrintServer(), printer);
-					IDocumentPaginatorSource idpSource = doc;
-					prtDlg.PrintDocument(idpSource.DocumentPaginator, "Hello");
+						PrintDialog prtDlg = new PrintDialog();
+						FlowDocument doc = new FlowDocument(new Paragraph(new Run(sb.ToString())));
+						prtDlg.PrintQueue = new PrintQueue(new PrintServer(), printer);
+						IDocumentPaginatorSource idpSource = doc;
+						prtDlg.PrintDocument(idpSource.DocumentPaginator, "Hello");
+					}
 				}
 			}
+			catch (Exception ex) { libmiroppb.Log($"Exception: {ex.Message}"); }
+			
 			return true;
 		}
 	}

@@ -1,3 +1,7 @@
+v. 1.5.2.6
+
+- Try/Catch when opening Print in case ZPL doesn't exist
+
 v. 1.5.2.5
 
 - Fixed error during exporting to excel
