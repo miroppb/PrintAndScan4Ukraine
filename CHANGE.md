@@ -1,6 +1,6 @@
-v. 1.5.2.6
+v. 1.5.2.7
 
-- Try/Catch when opening Print in case ZPL doesn't exist
+- Print Button turned out to not be implemented :D
 
 v. 1.5.2.5
 

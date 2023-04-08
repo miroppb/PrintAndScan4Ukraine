@@ -42,7 +42,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private void ClickPrint()
 		{
-			throw new NotImplementedException();
+			isVisible = false;
+			PrintWindow win = new PrintWindow();
+			win.ShowDialog();
+			isVisible = true;
 		}
 
 		private bool _IsOnline = true;
