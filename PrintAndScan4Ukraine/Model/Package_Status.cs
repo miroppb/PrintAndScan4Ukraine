@@ -9,6 +9,7 @@ namespace PrintAndScan4Ukraine.Model
 	{
 		[Key]
 		public int? Id { get; set; }
+		public int? Createdbyuser { get; set; }
 		public string PackageId { get; set; } = string.Empty;
 		public DateTime CreatedDate { get; set; }
 		public int Status { get; set; }

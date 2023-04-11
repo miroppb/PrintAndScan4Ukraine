@@ -25,16 +25,17 @@ namespace PrintAndScan4Ukraine
 	{
 		private readonly PackagesViewModel _viewModel;
 
-		public ScanWindow(Access UserAccess)
+		public ScanWindow()
 		{
 			InitializeComponent();
 			//clearing log
 			libmiroppb.DeleteLog();
 
 			libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
-			_viewModel = new PackagesViewModel(new PackageDataProvider(), UserAccess);
+			_viewModel = new PackagesViewModel(new PackageDataProvider(), MainViewModel.GetUser());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
+			
 
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
@@ -124,7 +125,7 @@ namespace PrintAndScan4Ukraine
 			timer.Tick += delegate
 			{
 				if (_viewModel.SelectedPackage != null && _viewModel.SelectedPackage.Modified) //only saving current package
-					_viewModel.Save();
+					_viewModel.Save(new object { });
 			};
 			timer.Start();
 		}

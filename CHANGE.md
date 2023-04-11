@@ -1,3 +1,7 @@
+v. 1.5.2.8
+
+- Moving towards a better MVVM model
+
 v. 1.5.2.7
 
 - Print Button turned out to not be implemented :D

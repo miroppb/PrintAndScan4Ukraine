@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="{Tr 'PAS4U.ScanArrivedWindow.Title', DefaultText='Scan Arrived Window'}" Height="400" Width="500" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="/barcode.png">
+        Title="{Tr 'PAS4U.ScanArrivedWindow.Title', DefaultText='Scan Arrived Window'}" Height="400" Width="500" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
     <Grid>
-        <TextBlock x:Name="LblCodes" Text="{Tr 'PAS4U.ScanShippedWindow.BarcodesScanned', {Binding barCodes.Count}, DefaultText='Barcodes Scanned...'}" HorizontalAlignment="Center" />
+        <TextBlock x:Name="LblCodes" Text="{Binding CodesScanned, Mode=OneWay}" HorizontalAlignment="Center" />
         <TextBlock Text="{Tr 'PAS4U.ScanArrivedWindow.TopText', DefaultText='Scan Barcodes that arrived'}" TextWrapping="Wrap" HorizontalAlignment="Center"
                    VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
-        <Button x:Name="BtnDone" Content="{Tr 'PAS4U.ScanShippedWindow.DoneText', DefaultText='Done'}" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="40" Margin="0,310,0,0" Click="BtnDone_Click" />
+        <Button x:Name="BtnDone" Content="{Tr 'PAS4U.ScanShippedWindow.DoneText', DefaultText='Done'}" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="40" Margin="0,310,0,0"
+                Command="{Binding DoneCommand}" CommandParameter="Arrived" />
     </Grid>
 </Window>

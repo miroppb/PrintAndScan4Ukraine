@@ -1,7 +1,10 @@
 ﻿using CodingSeb.Localization;
+using CodingSeb.Localization.Loaders;
 using PrintAndScan4Ukraine.Command;
+using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Model;
+using PrintAndScan4Ukraine.Properties;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -27,20 +30,28 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public MainViewModel(IMainDataProvider mainDataProvider)
 		{
+			LocalizationLoader.Instance.FileLanguageLoaders.Add(new JsonFileLoader());
+			LocalizationLoader.Instance.AddDirectory(@"Language");
+
+			Loc.Instance.CurrentLanguage = Settings.Default.Language;
+
 			_mainDataProvider = mainDataProvider;
 			PrintCommand = new DelegateCommand(ClickPrint, () => CanPrint);
 			ScanCommand = new DelegateCommand(ClickScan, () => CanScan);
+
+			IsOnline = InternetAvailability.IsInternetAvailable();
+			_ = GetAccess();
 		}
 
-		private void ClickScan()
+		private void ClickScan(object a)
 		{
 			isVisible = false;
-			ScanWindow win = new ScanWindow(CurrentUserAccess);
+			ScanWindow win = new ScanWindow();
 			win.ShowDialog();
 			isVisible = true;
 		}
 
-		private void ClickPrint()
+		private void ClickPrint(object a)
 		{
 			isVisible = false;
 			PrintWindow win = new PrintWindow();
@@ -73,31 +84,32 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 
-		private Access _CurrentUserAccess = Access.None;
+		private static Users? _CurrentUser = new Users() { Access = Access.None};
 
-		public Access CurrentUserAccess
+		public Users CurrentUser
 		{
-			get => _CurrentUserAccess;
+			get => _CurrentUser!;
 			set
 			{
-				_CurrentUserAccess = value;
+				_CurrentUser = value;
 				PrintCommand.RaiseCanExecuteChanged();
 				ScanCommand.RaiseCanExecuteChanged();
 				RaisePropertyChanged();
 			}
 		}
+		public static Users GetUser() => _CurrentUser!;
 
-		public bool CanPrint => CurrentUserAccess.HasFlag(Access.Print);
+		public bool CanPrint => CurrentUser.Access.HasFlag(Access.Print);
 
 		public bool CanScan => true;
 
 		public async Task GetAccess()
 		{
 			if (IsOnline)
-				CurrentUserAccess = await _mainDataProvider.GetAccessFromComputerNameAsync(Environment.MachineName);
+				CurrentUser = await _mainDataProvider.GetUserFromComputerNameAsync(Environment.MachineName);
 			else
-				CurrentUserAccess = Access.None;
-			if (CurrentUserAccess == Access.None)
+				CurrentUser.Access = Access.None;
+			if (CurrentUser.Access == Access.None)
 				MessageBox.Show(Loc.Tr("PAS4U.NoAccess", "You don't have any access to this application, or you're offline. Please contact your administrator."));
 		}
 

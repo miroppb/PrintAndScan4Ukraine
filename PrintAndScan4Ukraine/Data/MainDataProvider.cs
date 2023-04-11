@@ -12,20 +12,20 @@ namespace PrintAndScan4Ukraine.Data
 {
 	public interface IMainDataProvider
 	{
-		Task<Access> GetAccessFromComputerNameAsync(string ComputerName);
+		Task<Users> GetUserFromComputerNameAsync(string ComputerName);
 	}
 
 	public class MainDataProvider : IMainDataProvider
 	{
-		public async Task<Access> GetAccessFromComputerNameAsync(string ComputerName)
+		public async Task<Users> GetUserFromComputerNameAsync(string ComputerName)
 		{
-			Access access = Access.None;
+			Users user = new Users();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Users>($"SELECT id, computername, access, comment, lastconnectedversion FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
-				if (temp != null && temp.Count() > 0)
+				var temp = await db.QueryAsync<Users>($"SELECT id, access FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
+				if (temp != null && temp.Any())
 				{
-					access = (Access)temp.FirstOrDefault()!.Access;
+					user = temp.First();
 					await db.ExecuteAsync($"UPDATE {Secrets.MySqlUserAccessTable} SET lastconnectedversion = @lastconnectedversion WHERE id = @id",
 						new { lastconnectedversion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(), id = temp.ToList()[0].Id });
 				}
@@ -35,7 +35,7 @@ namespace PrintAndScan4Ukraine.Data
 					db.Insert(new Users() { ComputerName = Environment.MachineName, Access = 0, Comment = "New", LastConnectedVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString() });
 				}
 			}
-			return access;
+			return user;
 		}
 	}
 }

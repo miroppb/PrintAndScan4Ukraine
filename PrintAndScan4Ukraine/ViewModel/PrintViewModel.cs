@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
-	class PrintViewModel : INotifyPropertyChanged
+	class PrintViewModel : ClosableViewModel, INotifyPropertyChanged
 	{
 		private readonly IPrintDataProvider _dataProvider;
 		public event PropertyChangedEventHandler? PropertyChanged;
@@ -78,7 +78,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private async void Print()
+		private async void Print(object a)
 		{
 			CanPrint = false;
 			libmiroppb.Log($"Printing from {Starting} to {Ending}, {Copies} copies, to printer {SelectedPrinter}");
