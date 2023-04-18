@@ -1,3 +1,8 @@
+v. 1.5.2.9
+
+- Error when unable to insert access into db
+- Separated Save and ExecuteSave (button) to show a message when saving manually
+
 v. 1.5.2.8
 
 - Moving towards a better MVVM model

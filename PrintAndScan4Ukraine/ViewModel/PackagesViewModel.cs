@@ -46,7 +46,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			_packageDataProvider = packageDataProvider;
 			CurrentUser = User;
-			SaveCommand = new DelegateCommand(Save, () => CanSave);
+			SaveCommand = new DelegateCommand(ExecuteSave, () => CanSave);
 			ShowHistoryCommand = new DelegateCommand(ShowHistory, () => CanShowHistory);
 			SaveAllCommand = new DelegateCommand(SaveAll);
 			ShipCommand = new DelegateCommand(ShowShipWindow, () => CanShip);

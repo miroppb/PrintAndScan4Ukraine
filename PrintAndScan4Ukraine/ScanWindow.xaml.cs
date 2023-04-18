@@ -28,8 +28,6 @@ namespace PrintAndScan4Ukraine
 		public ScanWindow()
 		{
 			InitializeComponent();
-			//clearing log
-			libmiroppb.DeleteLog();
 
 			libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
 			_viewModel = new PackagesViewModel(new PackageDataProvider(), MainViewModel.GetUser());
@@ -125,7 +123,7 @@ namespace PrintAndScan4Ukraine
 			timer.Tick += delegate
 			{
 				if (_viewModel.SelectedPackage != null && _viewModel.SelectedPackage.Modified) //only saving current package
-					_viewModel.Save(new object { });
+					_viewModel.Save();
 			};
 			timer.Start();
 		}

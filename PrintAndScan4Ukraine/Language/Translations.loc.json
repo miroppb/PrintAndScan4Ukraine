@@ -157,6 +157,10 @@
       "LastStatus": {
         "en": "Last Status: {0} on {1}",
         "ru": "Последний статус: {0} {1}"
+      },
+      "PackageSaved": {
+        "en": "Package has manually been Saved",
+        "ru": "Посылка была сохранена вручную"
       }
     },
     "ScanNewWindow": {

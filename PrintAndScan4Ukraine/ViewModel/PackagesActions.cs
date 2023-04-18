@@ -48,7 +48,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 			return null;
 		}
 
-		public void Save(object a)
+		public void ExecuteSave(object a)
+		{
+			Save();
+            System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
+		}
+
+		public void Save()
 		{
 			Save(SelectedPackage);
 		}
@@ -213,7 +219,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			scanNewWindow.ShowDialog();
 			if (WasSomethingSet)
 			{
-				Save(new object { });
+				Save();
 				await LoadAsync();
 			}
 			if (BarCodeThatWasSet != string.Empty)
