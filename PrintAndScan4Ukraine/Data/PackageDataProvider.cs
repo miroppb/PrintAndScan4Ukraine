@@ -91,7 +91,7 @@ namespace PrintAndScan4Ukraine.Data
 
 		public IEnumerable<Package_Status>? GetStatusByPackage(string packageid)
 		{
-			libmiroppb.Log($"Get List of Packages Statuses for {packageid}");
+			libmiroppb.Log($"Get List of Package Statuses for {packageid}");
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
 			try
 			{

@@ -161,6 +161,10 @@
       "PackageSaved": {
         "en": "Package has manually been Saved",
         "ru": "Посылка была сохранена вручную"
+      },
+      "ShortcutDoesNotExist": {
+        "en": "Shortcut doesn't exist on the desktop. Create it?",
+        "ru": "Ярлык не существует на рабочем столе. Создать?"
       }
     },
     "ScanNewWindow": {

@@ -1,5 +1,10 @@
 v. 1.5.2.9
 
+- Moved Excel table down 5 rows, to add extra info on top
+- Now checks to make sure new package IDs start correctly (previously didn't check beginning)
+
+v. 1.5.2.9
+
 - Error when unable to insert access into db
 - Separated Save and ExecuteSave (button) to show a message when saving manually
 

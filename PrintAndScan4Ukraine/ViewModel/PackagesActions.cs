@@ -158,7 +158,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					try
 					{
 						ws = excelPack.Workbook.Worksheets.Add(DateTime.Now.ToShortDateString());
-						ws.Cells.LoadFromCollection(list, true, OfficeOpenXml.Table.TableStyles.Light8);
+						ws.Cells[6, 1].LoadFromCollection(list, true, OfficeOpenXml.Table.TableStyles.Light8);
 					}
 					catch
 					{
@@ -167,10 +167,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 						ws.Cells[row + 1, 1].LoadFromCollection(list, false, OfficeOpenXml.Table.TableStyles.Light8);
 					}
 					ws.Cells.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
-					ws.Cells[$"C2:C{ws.Dimension.End.Row}"].Style.WrapText = true; //Sender Address
-					ws.Cells[$"F2:F{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Recipient Address
-					ws.Cells[$"H2:H{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Contents
-					ws.Cells[$"K2:K{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Statuses
+					ws.Cells[$"C7:C{ws.Dimension.End.Row}"].Style.WrapText = true; //Sender Address
+					ws.Cells[$"F7:F{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Recipient Address
+					ws.Cells[$"H7:H{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Contents
+					ws.Cells[$"K7:K{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Statuses
 					//ws.Cells[$"N2:N{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy"; //we're not doing dates separately
 					//ws.Cells[$"L2:O{ws.Dimension.End.Row + 1}"].Style.Numberformat.Format = "mm/dd/yyyy";
 					ws.Cells[ws.Dimension.Address].AutoFitColumns();
@@ -353,7 +353,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 #if DEBUG
 					Regex regex = new Regex("");
 #else
-					Regex regex = new Regex("cv\\d\\d\\d\\d\\d\\d\\dus");
+					Regex regex = new Regex("^cv\\d\\d\\d\\d\\d\\d\\dus");
 #endif
 					Match match = regex.Match(barCode);
 					if (match.Success)

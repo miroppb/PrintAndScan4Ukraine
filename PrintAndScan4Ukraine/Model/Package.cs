@@ -127,7 +127,8 @@ namespace PrintAndScan4Ukraine.Model
 					Modified = true;
 
 				_Value = value;
-				Total = ((double)value!).ToString("$0.00");
+				if (value != null)
+					Total = ((double)value!).ToString("$0.00");
 				RaisePropertyChanged();
 			}
 		}

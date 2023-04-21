@@ -1,5 +1,6 @@
 ﻿using CodingSeb.Localization;
 using CodingSeb.Localization.Loaders;
+using IWshRuntimeLibrary;
 using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
@@ -7,6 +8,8 @@ using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.Properties;
 using System;
 using System.ComponentModel;
+using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -41,6 +44,30 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 			IsOnline = InternetAvailability.IsInternetAvailable();
 			_ = GetAccess();
+
+			//CheckShortcut(); //Not going to use for now. Maybe later if a need arises
+		}
+
+		private void CheckShortcut()
+		{
+			string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+			string shortcutName = "PrintAndScan 4 Ukraine";
+			string shortcutfile =  $"{desktopPath}\\{shortcutName}.lnk";
+			if (!System.IO.File.Exists(shortcutfile))
+			{
+				if (MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.ShortcutDoesNotExist", "Shortcut doesn't exist. Create it?")}", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+				{
+					string shortcutLocation = Path.Combine(desktopPath, "PrintAndScan 4 Ukraine" + ".lnk");
+					WshShell shell = new WshShell();
+					IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+
+					shortcut.Description = "PrintAndScan 4 Ukraine";   // The description of the shortcut
+					shortcut.IconLocation = AppDomain.CurrentDomain.BaseDirectory + "barcode.ico";           // The icon of the shortcut
+					shortcut.TargetPath = $"{AppDomain.CurrentDomain.BaseDirectory}\\{AppDomain.CurrentDomain.FriendlyName}.exe";           // The path of the file that will launch when the shortcut is run
+					shortcut.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+					shortcut.Save();                                    // Save the shortcut
+				}
+			}
 		}
 
 		private void ClickScan(object a)
