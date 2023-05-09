@@ -83,10 +83,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		}
 
-		public bool UpdateRecords(List<Package> packages)
+		public bool UpdateRecords(List<Package> packages, int type = 0)
 		{
 			if (IsOnline)
-				return _packageDataProvider.UpdateRecords(packages);
+				return _packageDataProvider.UpdateRecords(packages, type);
 			return false;
 		}
 
@@ -188,7 +188,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
 			HistoryWindow historyWindow = new HistoryWindow(SelectedPackage.Sender_Name!, PreviousPackages);
-			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages)}");
+			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
 			historyWindow.ShowDialog();
 
 			if (historyWindow.SelectedPackageToUse != null)
@@ -309,7 +309,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					if (System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.ScanShippedWindow.RemoveFromListText", "Should we remove these packages from the list?")}", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 					{
 						packages.ForEach(x => x.Removed = true);
-						UpdateRecords(packages);
+						UpdateRecords(packages, -2);
 					}
 				}
 			}

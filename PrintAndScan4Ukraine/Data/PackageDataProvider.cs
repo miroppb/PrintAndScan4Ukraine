@@ -178,7 +178,8 @@ namespace PrintAndScan4Ukraine.Data
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
 				packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
-				libmiroppb.Log($"Saving {(type==-1?"Previous":"Current")} Record: {JsonConvert.SerializeObject(packages)}");
+				if (type == -2) { libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}"); }
+				else { libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
 				db.Update(packages);
 			}
 			return true;

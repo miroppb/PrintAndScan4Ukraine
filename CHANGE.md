@@ -1,4 +1,10 @@
-v. 1.5.2.9
+v. 1.5.3.1
+
+- Removed redundant log when showing history
+- When saving Removed records, don't log everything, just the IDs
+- libmiroppb.UploadLog fixed not trimming space at the beginning
+
+v. 1.5.3.0
 
 - Moved Excel table down 5 rows, to add extra info on top
 - Now checks to make sure new package IDs start correctly (previously didn't check beginning)
