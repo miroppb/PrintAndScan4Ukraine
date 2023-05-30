@@ -1,3 +1,8 @@
+v. 1.5.3.2
+
+- Added Delivery Checkbox
+- Detects Russian language on PC, and prompts to switch if current language is English
+
 v. 1.5.3.1
 
 - Removed redundant log when showing history

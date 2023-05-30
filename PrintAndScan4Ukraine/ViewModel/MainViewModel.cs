@@ -36,14 +36,23 @@ namespace PrintAndScan4Ukraine.ViewModel
 			LocalizationLoader.Instance.FileLanguageLoaders.Add(new JsonFileLoader());
 			LocalizationLoader.Instance.AddDirectory(@"Language");
 
-			Loc.Instance.CurrentLanguage = Settings.Default.Language;
-
 			_mainDataProvider = mainDataProvider;
 			PrintCommand = new DelegateCommand(ClickPrint, () => CanPrint);
 			ScanCommand = new DelegateCommand(ClickScan, () => CanScan);
 
 			IsOnline = InternetAvailability.IsInternetAvailable();
-			_ = GetAccess();
+			Task<int> done = Task.Run(GetAccess);
+			int d = done.Result;
+
+			Loc.Instance.CurrentLanguage = Settings.Default.Language;
+			if (!CurrentUser.Lang.Contains("en") && Loc.Instance.CurrentLanguage == "en")
+			{
+				if (MessageBox.Show("Мы обнаружили что ваш язык не английский. Поменять на русский?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+				{
+					Settings.Default.Language = Loc.Instance.CurrentLanguage = "ru";
+					Settings.Default.Save();
+				}
+			}
 
 			//CheckShortcut(); //Not going to use for now. Maybe later if a need arises
 		}
@@ -128,9 +137,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public bool CanPrint => CurrentUser.Access.HasFlag(Access.Print);
 
-		public bool CanScan => true;
+		public static bool CanScan => true;
 
-		public async Task GetAccess()
+		public async Task<int> GetAccess()
 		{
 			if (IsOnline)
 				CurrentUser = await _mainDataProvider.GetUserFromComputerNameAsync(Environment.MachineName);
@@ -138,6 +147,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				CurrentUser.Access = Access.None;
 			if (CurrentUser.Access == Access.None)
 				MessageBox.Show(Loc.Tr("PAS4U.NoAccess", "You don't have any access to this application, or you're offline. Please contact your administrator."));
+			return 0;
 		}
 
 	}

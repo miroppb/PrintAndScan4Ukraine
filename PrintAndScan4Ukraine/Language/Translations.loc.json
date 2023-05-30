@@ -126,6 +126,10 @@
         "en": "Value",
         "ru": "Ценность"
       },
+      "Delivery": {
+        "en": "Delivery",
+        "ru": "Доставка"
+      },
       "DateAdded": {
         "en": "Date Added {0}",
         "ru": "Дата Добавления {0}"

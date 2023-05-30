@@ -4,6 +4,7 @@ using miroppb;
 using MySqlConnector;
 using PrintAndScan4Ukraine.Model;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -23,12 +24,14 @@ namespace PrintAndScan4Ukraine.Data
 			Users user = new Users();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Users>($"SELECT id, access FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
+				var temp = await db.QueryAsync<Users>($"SELECT id, access, lang FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
 				if (temp != null && temp.Any())
 				{
 					user = temp.First();
-					await db.ExecuteAsync($"UPDATE {Secrets.MySqlUserAccessTable} SET lastconnectedversion = @lastconnectedversion WHERE id = @id",
-						new { lastconnectedversion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(), id = temp.ToList()[0].Id });
+					CultureInfo culture = CultureInfo.InstalledUICulture;
+					await db.ExecuteAsync($"UPDATE {Secrets.MySqlUserAccessTable} SET lastconnectedversion = @lastconnectedversion, lang = @lang WHERE id = @id",
+						new { lastconnectedversion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(), id = temp.ToList()[0].Id, lang = culture.Name});
+					user.Lang = culture.Name;
 				}
 				else
 				{

@@ -11,6 +11,7 @@
         <local:BoolToGridRowHeightConverter x:Key="BoolToGridRowHeightConverter" />
         <local:StatusToTextConverter x:Key="StatusToTextConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
     <Grid Background="#FFD500">
         <Grid.ColumnDefinitions>
@@ -94,6 +95,13 @@
                     <Setter Property="Margin" Value="5,0,0,0" />
                     <Setter Property="VerticalContentAlignment" Value="Center" />
                     <Setter Property="FontSize" Value="13" />
+                </Style>
+                <Style TargetType="CheckBox">
+                    <Setter Property="Margin" Value="5,0,0,0" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="Width" Value="390" />
                 </Style>
                 <Style TargetType="DataGrid">
                     <Setter Property="Height" Value="30" />
@@ -190,11 +198,16 @@
             <TextBox x:Name="TxtWeight" Grid.Row="7" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Weight,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <!--<TextBlock Grid.Row="8" Grid.Column="2" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Delivery</TextBlock>
-            <TextBox x:Name="TxtDelivery" Grid.Row="8" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Delivery,
-                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock Grid.Row="8" Grid.Column="2" Text="{Tr 'PAS4U.MainWindow.Delivery', DefaultText='Delivery'}" TextWrapping="Wrap" />
+            <CheckBox x:Name="ChkDelivery" Grid.Row="8" Grid.Column="3"
+                      IsChecked="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Delivery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      IsEnabled="{Binding AccessToEditReceipient, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBooleanConverter}}">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
 
-            <TextBlock Grid.Row="9" Grid.Column="2" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Insurance</TextBlock>
+            <!--<TextBlock Grid.Row="9" Grid.Column="2" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Insurance</TextBlock>
             <TextBox x:Name="TxtInsurance" Grid.Row="9" Grid.Column="3" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Insurance,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 

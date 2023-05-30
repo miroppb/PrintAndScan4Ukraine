@@ -7,7 +7,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 	{
 		public bool AccessToSeePackages => CurrentUser.Access.HasFlag(Access.SeePackages);
 		public bool AccessToSeeSender => CurrentUser.Access.HasFlag(Access.SeeSender);
-		public bool AccessToEditSender => !CurrentUser.Access.HasFlag(Access.EditSender);
+		public bool AccessToEditSender => !CurrentUser.Access.HasFlag(Access.EditSender); //needs to be opposite :shrug:
 		public bool AccessToEditReceipient => !CurrentUser.Access.HasFlag(Access.EditReceipient);
 		public bool AccessToAddNew => CurrentUser.Access.HasFlag(Access.AddNew);
 		public bool AccessToShip => CurrentUser.Access.HasFlag(Access.Ship);

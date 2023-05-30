@@ -164,6 +164,20 @@ namespace PrintAndScan4Ukraine.Model
 			}
 		}
 
+
+		private bool _Delivery;
+
+		public bool Delivery
+		{
+			get => _Delivery;
+			set
+			{
+				_Delivery = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
 		public bool Removed { get; set; } = false;
 
 		[Write(false)]
