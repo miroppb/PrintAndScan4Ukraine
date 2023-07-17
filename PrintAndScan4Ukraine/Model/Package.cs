@@ -197,6 +197,20 @@ namespace PrintAndScan4Ukraine.Model
 	public class Package_less
 	{
 		public string PackageId { get; set; } = string.Empty;
+
+		private string _Delivery = "✔";
+		[Description("Доставка")]
+		public string? Delivery
+		{
+			get => _Delivery;
+			set
+			{
+				if (value != null)
+				{
+					_Delivery = (value.ToLower() == "true" ? "✔" : "");
+				}
+			}
+		}
 		public string? Sender_Name { get; set; } = string.Empty;
 		public string? Sender_Address { get; set; } = string.Empty;
 		public string? Sender_Phone { get; set; } = string.Empty;

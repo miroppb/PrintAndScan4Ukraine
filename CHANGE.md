@@ -1,3 +1,12 @@
+v. 1.5.3.4
+
+- Fixed list of barcodes scanned not being reset
+- Added Delivery to Excel, showing checkmark when Delivery is checked
+
+v. 1.5.3.3
+
+- Added 2 small logs, for debuging issues
+
 v. 1.5.3.2
 
 - Added Delivery Checkbox
