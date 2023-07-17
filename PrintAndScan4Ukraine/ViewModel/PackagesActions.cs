@@ -388,13 +388,15 @@ namespace PrintAndScan4Ukraine.ViewModel
 						else
 						{
 							WasSomethingSet = false;
-                            System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
+							libmiroppb.Log("Package Already Exists: " + barCode);
+							System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
 							BarCodeThatWasSet = barCode;
 						}
 					}
 					else
 					{
 						WasSomethingSet = false;
+						libmiroppb.Log("Wrong Format: " + barCode);
                         System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.WrongFormatText", "Package number not in correct format"));
 						BarCodeThatWasSet = string.Empty;
 					}
