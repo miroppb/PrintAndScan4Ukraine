@@ -198,7 +198,7 @@ namespace PrintAndScan4Ukraine.Model
 	{
 		public string PackageId { get; set; } = string.Empty;
 
-		private string _Delivery = "✔";
+		private string _Delivery = string.Empty;
 		[Description("Доставка")]
 		public string? Delivery
 		{
