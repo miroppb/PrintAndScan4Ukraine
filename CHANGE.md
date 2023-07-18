@@ -1,3 +1,7 @@
+v. 1.5.3.5
+
+- Added more info to the message when scanned package number isn't in correct format
+
 v. 1.5.3.4
 
 - Fixed list of barcodes scanned not being reset
