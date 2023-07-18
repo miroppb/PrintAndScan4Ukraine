@@ -355,7 +355,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				if (barCode != string.Empty) //make sure that the barcode is an actual alphanumeric string
 				{
 #if DEBUG
-					Regex regex = new Regex("");
+					Regex regex = new Regex("^cv\\d\\d\\d\\d\\d\\d\\dus");
 #else
 					Regex regex = new Regex("^cv\\d\\d\\d\\d\\d\\d\\dus");
 #endif
@@ -401,7 +401,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 					{
 						WasSomethingSet = false;
 						libmiroppb.Log("Wrong Format: " + barCode);
-                        System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.WrongFormatText", "Package number not in correct format"));
+						string WrongText = string.Format(Loc.Tr("PAS4U.ScanNewWindow.WrongFormatText", "Package number not in correct format\n\nNumber: {0}"), barCode);
+                        System.Windows.MessageBox.Show(WrongText);
 						BarCodeThatWasSet = string.Empty;
 					}
 				}
