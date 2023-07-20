@@ -1,3 +1,7 @@
+v. 1.5.3.6
+
+- Regex that was checking the package format, didn't check for ending. Fixed
+
 v. 1.5.3.5
 
 - Added more info to the message when scanned package number isn't in correct format
