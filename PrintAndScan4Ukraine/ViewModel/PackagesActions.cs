@@ -272,13 +272,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private void ExecuteExport(object a)
 		{
-			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.FileMenuItem.Export.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.ExportMenuItem.ExportExcel.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
 				Export(Packages);
 		}
 
 		private void ExecuteExportShippedNotArrived(object a)
 		{
-			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.FileMenuItem.ExportShippedNotArrivedItem.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.ExportMenuItem.ExportShippedNotArrivedItem.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
 				Export(Packages, true);
 		}
 
