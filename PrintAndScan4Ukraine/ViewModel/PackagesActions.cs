@@ -114,12 +114,30 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public bool Export(IEnumerable<Package> packages, bool shippedButNotArrived = false)
 		{
+			libmiroppb.Log($"Starting Export.{(shippedButNotArrived ? " Shipped But not Arrived" : "" )}");
 			SaveFileDialog sfd = new SaveFileDialog
 			{
 				Filter = "Excel File|*.xlsx"
 			};
 			if (sfd.ShowDialog() == DialogResult.OK)
 			{
+				//Check if file selected already exists
+				bool FileExists = File.Exists(sfd.FileName);
+				if (FileExists)
+				{
+					if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.ScanShippedWindow.ExportingFileAlreadyExists", "Selected file already exists. Do you want to add selected packages to it?")}", "",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+					{
+						libmiroppb.Log($"Selected file {sfd.FileName} exists. Not adding packages to file");
+						return false;
+					}
+					else
+						libmiroppb.Log($"Selected file {sfd.FileName} exists. Adding packages to file");
+				}
+				else
+					libmiroppb.Log($"Selected file {sfd.FileName} is a new file");
+
+
 				//lets get all statuses
 				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses()!.ToList();
 
@@ -181,8 +199,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 				}
 
 				libmiroppb.Log($"Packages exported: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}");
+				System.Windows.MessageBox.Show($"Exported to: {sfd.FileName}");
 			}
-            System.Windows.MessageBox.Show($"Exported to: {sfd.FileName}");
 			return true;
 		}
 
@@ -254,12 +272,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private void ExecuteExport(object a)
 		{
-			Export(Packages);
+			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.FileMenuItem.Export.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+				Export(Packages);
 		}
 
 		private void ExecuteExportShippedNotArrived(object a)
 		{
-			Export(Packages, true);
+			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.FileMenuItem.ExportShippedNotArrivedItem.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+				Export(Packages, true);
 		}
 
 		private void ExecuteDoneCommand(object FromWhere)
@@ -307,6 +327,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				if (barCodes.Count > 0)
 				{
+					libmiroppb.Log($"Starting Export as {FromWhere}");
 					Export(packages);
 					if (System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.ScanShippedWindow.RemoveFromListText", "Should we remove these packages from the list?")}", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 					{

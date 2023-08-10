@@ -45,12 +45,20 @@
           "Header": {
             "en": "_Export to Excel",
             "ru": "_Экспорт в Excel"
+          },
+          "Explain": {
+            "en": "You're about to export all currently open packages to Excel",
+            "ru": "Вы собираетесь экспортировать все открытые посылки в Ексель"
           }
         },
         "ExportShippedNotArrivedItem": {
           "Header": {
             "en": "_Export Shipped but Not Arrived to Excel",
             "ru": "_Экспорт Отправленных но не прибытых в Excel"
+          },
+          "Explain": {
+            "en": "You're about to export all packages that were marked Shipped but had not Arrived to Excel",
+            "ru": "Вы собираетесь экспортировать все посылки, которые были отмечены как отправленные, но не доставлены в Ексель"
           }
         }
       },
@@ -283,6 +291,10 @@
           "en": "Delivered Scanned",
           "ru": "Доставленный Скан"
         }
+      },
+      "ExportingFileAlreadyExists": {
+        "en": "Selected file already exists. Do you want to add selected packages to it?",
+        "ru": "Выбранный файл уже существует. Вы хотите добавить в него выбранные посылки?"
       }
     },
     "NoAccess": {
