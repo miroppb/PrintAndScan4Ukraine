@@ -1,3 +1,7 @@
+v. 1.5.3.7
+
+-  Added some messages before exporting, explaining what's about to happen, and asking if user wants to continue
+
 v. 1.5.3.6
 
 - Regex that was checking the package format, didn't check for ending. Fixed
