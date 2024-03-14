@@ -41,8 +41,6 @@
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.Header', DefaultText='_Export'}">
                     <MenuItem x:Name="MnuExport" Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.ExportExcel.Header', DefaultText='E_xport to Excel'}" Command="{Binding ExportCommand}"
                               Visibility="{Binding AccessToExport, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    <MenuItem x:Name="MnuExportShippedNotArrived" Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.ExportShippedNotArrivedItem.Header', DefaultText='Ex_port Shipped but Not Arrived to Excel'}" Command="{Binding ExportShippedNotArrivedCommand}"
-                              Visibility="{Binding AccessToExport, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.Language', DefaultText='_Language'}">
                     <MenuItem x:Name="MnuEnglish" Header="{Tr 'LanguageName', DefaultText='_English', LanguageId='en'}" Click="MnuEnglish_Click" />

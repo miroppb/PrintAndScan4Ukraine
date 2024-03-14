@@ -5,6 +5,7 @@ using miroppb;
 using MySqlConnector;
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,8 +19,9 @@ namespace PrintAndScan4Ukraine.Data
 	{
 		Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad);
 		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName);
-		IEnumerable<Package_Status>? GetAllStatuses();
+		IEnumerable<Package_Status>? GetAllStatuses(List<string> ids);
 		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
+		Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start, DateTime end, int status);
 		bool InsertRecord(Package package);
 		bool VerifyIfExists(string packageid);
 		Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected);
@@ -35,15 +37,13 @@ namespace PrintAndScan4Ukraine.Data
 			IEnumerable<Package> packages = new List<Package>();
 			try
 			{
-				using (MySqlConnection db = Secrets.GetConnectionString())
+				using MySqlConnection db = Secrets.GetConnectionString();
+				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE removed = 0");
+				packages = temp.ToList().Select(x =>
 				{
-					var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE removed = 0");
-					packages = temp.ToList().Select(x =>
-					{
-						x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
-						return x;
-					}).ToList();
-				}
+					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
+					return x;
+				}).ToList();
 			}
 			catch
 			{
@@ -70,14 +70,14 @@ namespace PrintAndScan4Ukraine.Data
 			return packages;
 		}
 
-		public IEnumerable<Package_Status>? GetAllStatuses()
+		public IEnumerable<Package_Status>? GetAllStatuses(List<string> ids)
 		{
 			libmiroppb.Log("Get List of Packages Statuses");
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
 			try
 			{
 				using (MySqlConnection db = Secrets.GetConnectionString())
-					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} ORDER BY id");
+					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid IN ({string.Join(",", ids.Select(x => $"'{x}'"))}) ORDER BY id");
 
 				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 			}
@@ -110,20 +110,16 @@ namespace PrintAndScan4Ukraine.Data
 
 		public bool InsertRecord(Package package)
 		{
-			using (MySqlConnection db = Secrets.GetConnectionString())
-			{
-				libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-				db.Insert(package);
-				return true;
-			}
+			using MySqlConnection db = Secrets.GetConnectionString();
+			libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
+			db.Insert(package);
+			return true;
 		}
 
 		public bool VerifyIfExists(string packageid)
 		{
-			using (MySqlConnection db = Secrets.GetConnectionString())
-			{
-				return db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid AND removed = 0", new { packageid }).FirstOrDefault() != null;
-			}
+			using MySqlConnection db = Secrets.GetConnectionString();
+			return db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid AND removed = 0", new { packageid }).FirstOrDefault() != null;
 		}
 
 		public async Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected)
@@ -175,23 +171,19 @@ namespace PrintAndScan4Ukraine.Data
 
 		public bool UpdateRecords(List<Package> packages, int type = 0)
 		{
-			using (MySqlConnection db = Secrets.GetConnectionString())
-			{
-				packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
-				if (type == -2) { libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}"); }
-				else { libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
-				db.Update(packages);
-			}
+			using MySqlConnection db = Secrets.GetConnectionString();
+			packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
+			if (type == -2) { libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}"); }
+			else { libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
+			db.Update(packages);
 			return true;
 		}
 
 		public bool InsertRecordStatus(List<Package_Status> package_statuses)
 		{
-			using (MySqlConnection db = Secrets.GetConnectionString())
-			{
-				libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
-				db.Insert(package_statuses);
-			}
+			using MySqlConnection db = Secrets.GetConnectionString();
+			libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
+			db.Insert(package_statuses);
 			return true;
 		}
 
@@ -210,6 +202,12 @@ namespace PrintAndScan4Ukraine.Data
 				default:
 					return "";
 			}
+		}
+
+		public async Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start_date, DateTime end_date, int status_code)
+		{
+			using MySqlConnection db = Secrets.GetConnectionString();
+			return await db.QueryAsync<Package>("Packages_between_dates_and_status", new { start_date, end_date, status_code }, commandType: System.Data.CommandType.StoredProcedure, commandTimeout: 300);
 		}
 	}
 }

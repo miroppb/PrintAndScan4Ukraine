@@ -6,11 +6,12 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>barcode.ico</ApplicationIcon>
-    <AssemblyVersion>1.5.3.7</AssemblyVersion>
+    <AssemblyVersion>1.5.4.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="barcode.png" />
+    <None Remove="Images\loading-loading-forever.gif" />
     <None Remove="Language\Translations.loc.json" />
   </ItemGroup>
 
@@ -31,16 +32,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.0" />
-    <PackageReference Include="CodingSeb.Localization" Version="1.2.0" />
-    <PackageReference Include="CodingSeb.Localization.JsonFileLoader" Version="1.2.0" />
-    <PackageReference Include="CodingSeb.Localization.WPF" Version="1.2.0" />
-    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
+    <PackageReference Include="CodingSeb.Localization" Version="1.3.0" />
+    <PackageReference Include="CodingSeb.Localization.JsonFileLoader" Version="1.3.0" />
+    <PackageReference Include="CodingSeb.Localization.WPF" Version="1.3.0" />
+    <PackageReference Include="Dapper" Version="2.1.37" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-    <PackageReference Include="EPPlus" Version="6.2.2" />
-    <PackageReference Include="MySqlConnector" Version="2.2.5" />
+    <PackageReference Include="EPPlus" Version="7.0.10" />
+    <PackageReference Include="MySqlConnector" Version="2.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="ServiceStack.Text.Core" Version="6.8.0" />
+    <PackageReference Include="ServiceStack.Text.Core" Version="8.2.2" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +53,9 @@
 
   <ItemGroup>
     <Resource Include="barcode.png" />
+    <Content Include="Images\loading-loading-forever.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Language\Translations.loc.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

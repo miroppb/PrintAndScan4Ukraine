@@ -2,12 +2,12 @@
 using miroppb;
 using Newtonsoft.Json;
 using OfficeOpenXml;
-using OfficeOpenXml.ConditionalFormatting;
 using PrintAndScan4Ukraine.Model;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -51,7 +51,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public void ExecuteSave(object a)
 		{
 			Save();
-            System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
+			System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
 		}
 
 		public void Save()
@@ -112,10 +112,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 				return false;
 		}
 
-		public bool Export(IEnumerable<Package> packages, bool shippedButNotArrived = false)
+		public bool Export(IEnumerable<Package> packages)
 		{
-			libmiroppb.Log($"Starting Export.{(shippedButNotArrived ? " Shipped But not Arrived" : "" )}");
-			SaveFileDialog sfd = new SaveFileDialog
+			libmiroppb.Log($"Starting Export");
+			SaveFileDialog sfd = new()
 			{
 				Filter = "Excel File|*.xlsx"
 			};
@@ -139,19 +139,19 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 
 				//lets get all statuses
-				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses()!.ToList();
+				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses(Packages.Select(x => x.PackageId).ToList())!.ToList();
 
 				libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
 				ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
 				using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
 				{
-					List<Package_less> list = new List<Package_less>();
+					List<Package_less> list = new();
 					foreach (Package package in packages)
 					{
 						Package temp = package.CreateCopy();
 						List<Contents> t = package.Recipient_Contents.CreateCopy();
-						List<string> output = new List<string>();
+						List<string> output = new();
 						foreach (var item in t) { output.Add($"{item.Name}: {item.Amount}"); }
 
 						var jsonParent = JsonConvert.SerializeObject(temp);
@@ -159,17 +159,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 						c.Contents = output.Join(Environment.NewLine);
 
 						List<Package_Status> s = statuses.Where(s => s.PackageId == c.PackageId).ToList();
-						List<string> so = new List<string>();
+						List<string> so = new();
 						s.ForEach(x => so.Add(x.ToString()));
 						c.Statuses = so.Join(Environment.NewLine);
 
-						if (shippedButNotArrived)
-						{
-							if (s.FirstOrDefault(x => x.Status == 2) != null && s.FirstOrDefault(x => x.Status == 3) == null) //if contains status 2 but not 3
-								list.Add(c);
-						}
-						else
-							list.Add(c);
+						list.Add(c);
 					}
 
 					ExcelWorksheet? ws;
@@ -194,6 +188,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 					ws.Cells[$"B7:B{ws.Dimension.End.Row}"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 					ws.Cells[ws.Dimension.Address].AutoFitColumns();
+					ws.Cells[$"L7:L{ws.Dimension.End.Row}"].AutoFitColumns(35);
 
 					excelPack.Save();
 				}
@@ -272,14 +267,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private void ExecuteExport(object a)
 		{
-			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.ExportMenuItem.ExportExcel.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
-				Export(Packages);
-		}
-
-		private void ExecuteExportShippedNotArrived(object a)
-		{
-			if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.MainMenu.ExportMenuItem.ExportShippedNotArrivedItem.Explain", "You're about to export all currently open packages to Excel")}", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
-				Export(Packages, true);
+			ExportButtonEnabled = true;
+			ReportSelection win = new(this);
+			win.ShowDialog();
 		}
 
 		private void ExecuteDoneCommand(object FromWhere)
@@ -317,7 +307,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				if (BarcodesNotInPackages.Count > 0)
 				{
-                    System.Windows.MessageBox.Show(string.Format($"{Loc.Tr("PAS4U.ScanShippedWindow.ScannedButNotOnListText", "Following barcodes were scanned but not on list of packages:{0}{0}{1}{0}{0}The new statuses will be added to the database. " +
+					System.Windows.MessageBox.Show(string.Format($"{Loc.Tr("PAS4U.ScanShippedWindow.ScannedButNotOnListText", "Following barcodes were scanned but not on list of packages:{0}{0}{1}{0}{0}The new statuses will be added to the database. " +
 						"List will be saved on the desktop")}", Environment.NewLine, string.Join(", ", BarcodesNotInPackages)));
 					StreamWriter w = new(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\Shipped_{DateTime.Now:MM-dd-yyyy}.txt");
 					w.WriteLine($"Barcodes scanned as shipped that weren't on the list on {DateTime.Now:MM/dd/yyyy}:");
@@ -340,6 +330,49 @@ namespace PrintAndScan4Ukraine.ViewModel
 			barCodes.Clear();
 
 			OnClosingRequest();
+		}
+
+		public async void ExecuteGenerateReport(object a)
+		{
+			SpinnerVisible = Visibility.Visible;
+			ExportButtonEnabled = false;
+
+			if (ReportAll)
+			{
+				ExportStartDate = DateTime.MinValue;
+				ExportEndDate = DateTime.MaxValue;
+			}
+
+			Stopwatch stopwatch = new();
+			stopwatch.Start();
+
+			IEnumerable<Package>? PackagesFromDates = await _packageDataProvider.GetPackagesByDateAndLastStatusAsync(ExportStartDate, ExportEndDate, ReportLastStatus);
+
+			stopwatch.Stop();
+			libmiroppb.Log($"Generating report for: {ExportStartDate}, {ExportEndDate}, {ReportLastStatus}. Ran for: {stopwatch.Elapsed}");
+
+			OnClosingRequest();
+
+			if (PackagesFromDates != null)
+				Export(PackagesFromDates);
+
+		}
+
+		public void ExecuteRadioDateChecked(object AllOrDates)
+		{
+			ReportAll = AllOrDates.ToString() == "All";
+		}
+
+		public void ExecuteRadioStatusChecked(object LastStatus)
+		{
+			if (LastSaved.ToString() == "Scanned")
+				ReportLastStatus = 0;
+			else if (LastSaved.ToString() == "Shipped")
+				ReportLastStatus = 1;
+			else if (LastSaved.ToString() == "Arrived")
+				ReportLastStatus = 2;
+			else
+				ReportLastStatus = 3;
 		}
 
 		public void ReloadPackagesAndUpdateIfChanged()
@@ -390,7 +423,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 							else if (DoubleCheck.Value)
 							{
 								WasSomethingSet = false;
-                                System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
+								System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
 								BarCodeThatWasSet = barCode;
 							}
 							else
@@ -423,7 +456,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 						WasSomethingSet = false;
 						libmiroppb.Log("Wrong Format: " + barCode);
 						string WrongText = string.Format(Loc.Tr("PAS4U.ScanNewWindow.WrongFormatText", "Package number not in correct format\n\nNumber: {0}"), barCode);
-                        System.Windows.MessageBox.Show(WrongText);
+						System.Windows.MessageBox.Show(WrongText);
 						BarCodeThatWasSet = string.Empty;
 					}
 				}

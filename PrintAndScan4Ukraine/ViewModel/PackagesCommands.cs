@@ -13,7 +13,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public DelegateCommand ArriveCommand { get; }
 		public DelegateCommand DeliverCommand { get; }
 		public DelegateCommand ExportCommand { get; }
-		public DelegateCommand ExportShippedNotArrivedCommand { get; }
 		public DelegateCommand DoneCommand { get; }
+		public DelegateCommand GenerateReportCommand { get; }
+		public DelegateCommand RadioDateChecked {  get; }
+		public DelegateCommand RadioStatusChecked { get; }
 	}
 }

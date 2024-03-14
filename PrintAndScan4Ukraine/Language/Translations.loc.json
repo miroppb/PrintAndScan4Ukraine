@@ -235,6 +235,52 @@
         "ru": "Сканируйте Баркоды которые были доставленны..."
       }
     },
+    "ReportWindow": {
+      "StartDate": {
+        "en": "Start Date:",
+        "ru": "Дата Начала:"
+      },
+      "EndDate": {
+        "en": "End Date:",
+        "ru": "Дата Oкончания"
+      },
+      "All": {
+        "en": "All",
+        "ru": "Все"
+      },
+      "Dates": {
+        "en": "Dates",
+        "ru": "Даты"
+      },
+      "LastStatus": {
+        "en": "Last Status:",
+        "ru": "Послесний Статус:"
+      },
+      "Export": {
+        "en": "Export",
+        "ru": "Экспорт"
+      },
+      "Scanned": {
+        "en": "Scanned",
+        "ru": "Новый"
+      },
+      "Shipped": {
+        "en": "Shipped",
+        "ru": "Отправленный"
+      },
+      "Arrived": {
+        "en": "Arrived",
+        "ru": "Прибыл"
+      },
+      "Delivered": {
+        "en": "Delivered",
+        "ru": "Доставленный"
+      },
+      "Note": {
+        "en": "Might take a few seconds to generate",
+        "ru": "Создание может занять несколько секунд"
+      }
+    },
     "HistoryWindow": {
       "Title": {
         "en": "History",

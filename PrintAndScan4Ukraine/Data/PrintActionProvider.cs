@@ -5,8 +5,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Printing;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
@@ -52,7 +50,7 @@ namespace PrintAndScan4Ukraine.Data
 				}
 			}
 			catch (Exception ex) { libmiroppb.Log($"Exception: {ex.Message}"); }
-			
+
 			return true;
 		}
 	}

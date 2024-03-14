@@ -2,6 +2,7 @@
 using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -54,8 +55,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 			ArriveCommand = new DelegateCommand(ShowArriveWindow, () => CanArrive);
 			DeliverCommand = new DelegateCommand(ShowDeliverWindow, () => CanDeliver);
 			ExportCommand = new DelegateCommand(ExecuteExport);
-			ExportShippedNotArrivedCommand = new DelegateCommand(ExecuteExportShippedNotArrived);
 			DoneCommand = new DelegateCommand(ExecuteDoneCommand);
+			GenerateReportCommand = new DelegateCommand(ExecuteGenerateReport);
+			RadioDateChecked = new DelegateCommand(ExecuteRadioDateChecked);
+			RadioStatusChecked = new DelegateCommand(ExecuteRadioStatusChecked);
 		}
 
 		private Package? _selectedPackage;
@@ -132,7 +135,6 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-
 		private string _CodesScanned = $"{Loc.Tr("PAS4U.ScanShippedWindow.BarcodesScanned", "Barcodes Scanned")}: 0";
 
 		public string CodesScanned
@@ -146,8 +148,61 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 
+		private DateTime _ExportStartDate = DateTime.Now.AddDays(-1);
+
+		public DateTime ExportStartDate
+		{
+			get => _ExportStartDate;
+			set
+			{
+				_ExportStartDate = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
+		private DateTime _ExportEndDate = DateTime.Now;
+
+		public DateTime ExportEndDate
+		{
+			get => _ExportEndDate;
+			set
+			{
+				_ExportEndDate = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private Visibility _SpinnerVisible = Visibility.Collapsed;
+
+		public Visibility SpinnerVisible
+		{
+			get => _SpinnerVisible;
+			set
+			{
+				_SpinnerVisible = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private bool _ExportButtonEnabled = false;
+
+		public bool ExportButtonEnabled
+		{
+			get => _ExportButtonEnabled;
+			set
+			{
+				_ExportButtonEnabled = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		public bool ReportAll { get; set; } = false;
+
+		public int ReportLastStatus { get; set; } = 2;
+
 #if DEBUG
-		public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString() + " -Debug";
+        public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString() + " -Debug";
 #else
 		public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 #endif

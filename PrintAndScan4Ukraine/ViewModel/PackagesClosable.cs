@@ -8,10 +8,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		protected void OnClosingRequest()
 		{
-			if (ClosingRequest != null)
-			{
-				ClosingRequest(this, EventArgs.Empty);
-			}
+			ClosingRequest?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }
