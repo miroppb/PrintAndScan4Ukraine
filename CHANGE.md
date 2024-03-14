@@ -1,3 +1,8 @@
+v. 1.5.4.0
+
+- Added more options to allow exporting to excel using specific dates and statuses.
+- Package updates
+
 v. 1.5.3.7
 
 -  Added some messages before exporting, explaining what's about to happen, and asking if user wants to continue
