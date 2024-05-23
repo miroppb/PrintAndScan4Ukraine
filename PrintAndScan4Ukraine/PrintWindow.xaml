@@ -3,8 +3,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
-        Title="Print Window" Height="200" Width="450" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" ResizeMode="NoResize">
+        Title="Print Window" Height="220" Width="450" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" ResizeMode="NoResize">
+    <Window.Resources>
+        <local:RangeValidationRule x:Key="RangeValidator"/>
+        <Style TargetType="TextBox">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel>
+                            <AdornedElementPlaceholder x:Name="textBox"/>
+                            <TextBlock Text="{Binding [0].ErrorContent}" Foreground="Red"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120" />
@@ -16,7 +32,7 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="55" />
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
@@ -26,11 +42,28 @@
                   ItemsSource="{Binding Printers}" SelectedItem="{Binding SelectedPrinter, Mode=TwoWay}" Width="308" />
         <Label Grid.Row="2" Content="Print labels from" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         <Label Grid.Row="2" Grid.Column="2" Content="to" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox x:Name="TxtFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Starting}" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center"/>
-        <TextBox x:Name="TxtTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" Text="{Binding Ending}" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center" />
+        <TextBox x:Name="TxtFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center">
+            <TextBox.Text>
+                <Binding Path="Starting" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <local:RangeValidationRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <TextBox x:Name="TxtTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center">
+            <TextBox.Text>
+                <Binding Path="Ending" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <local:RangeValidationRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
         <Label Grid.Row="3" Content="Copies of each label" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         <TextBox x:Name="TxtCopies" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Copies}" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center" />
         <Button x:Name="BtnPrint" Grid.Row="3" Grid.Column="4" Content="Print" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" FontWeight="Bold" Command="{Binding PrintCommand, Mode=OneWay}"/>
-
+        <Button x:Name="BtnCancel" Grid.Row="4" Grid.Column="4" Content="Cancel Printing" HorizontalAlignment="Center" VerticalAlignment="Center" Width="95" FontWeight="Bold" Command="{Binding CancelCommand, Mode=OneWay}"/>
+        
     </Grid>
 </Window>

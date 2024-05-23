@@ -10,6 +10,7 @@ using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,7 +59,10 @@ namespace PrintAndScan4Ukraine
 		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
 		{
 			libmiroppb.Log("Application closing");
-			UploadLogs(true);
+			Thread uploadThread = new(() => UploadLogs(true));
+
+			// Start the thread
+			uploadThread.Start();
 		}
 
 		private void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)

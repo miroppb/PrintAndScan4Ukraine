@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace PrintAndScan4Ukraine.Model
 {
+	[Table(Secrets.MySqlPackagesTable)]
 	public class Package : INotifyPropertyChanged
 	{
 		public int Id { get; set; }
@@ -235,4 +236,11 @@ namespace PrintAndScan4Ukraine.Model
 		public string Name { get; set; } = string.Empty;
 		public int Amount { get; set; }
 	}
+
+	public class MissingPackages
+	{
+		public string Packageid { get; set; } = string.Empty;
+        public bool InPackages { get; set; }
+        public List<Package_Status>? Statuses { get; set; }
+    }
 }

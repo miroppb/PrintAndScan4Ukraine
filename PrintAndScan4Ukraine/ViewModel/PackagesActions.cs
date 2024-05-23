@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -15,6 +16,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Xceed.Document.NET;
+using Xceed.Words.NET;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
@@ -28,8 +31,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					Packages.Clear();
 
 				var packages = await _packageDataProvider.GetAllAsync(true);
-				if (packages != null)
-					packages.ToList().ForEach(Packages.Add);
+				packages?.ToList().ForEach(Packages.Add);
 			}
 		}
 
@@ -221,8 +223,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowShipWindow(object a)
 		{
-			int current = (SelectedPackage != null ? SelectedPackage.Id! : 0);
-			MarkAsShippedWindow shippedWindow = new MarkAsShippedWindow(this);
+			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
+			MarkAsShippedWindow shippedWindow = new(this);
 			shippedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -230,7 +232,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowAddNewWindow(object a)
 		{
-			ScanNewWindow scanNewWindow = new ScanNewWindow(this);
+			ScanNewWindow scanNewWindow = new(this);
 			scanNewWindow.ShowDialog();
 			if (WasSomethingSet)
 			{
@@ -249,8 +251,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowArriveWindow(object a)
 		{
-			int current = (SelectedPackage != null ? SelectedPackage.Id! : 0);
-			MarkAsArrivedWindow shippedWindow = new MarkAsArrivedWindow(CurrentUser);
+			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
+			MarkAsArrivedWindow shippedWindow = new(CurrentUser);
 			shippedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -258,8 +260,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowDeliverWindow(object a)
 		{
-			int current = (SelectedPackage != null ? SelectedPackage.Id! : 0);
-			MarkAsDeliveredWindow shippedWindow = new MarkAsDeliveredWindow(CurrentUser);
+			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
+			MarkAsDeliveredWindow shippedWindow = new(CurrentUser);
 			shippedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -298,7 +300,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 			if (status == 2)
 			{
-				List<Package> temp = new List<Package>();
+				List<Package> temp = new();
 				statuses.ForEach(x => temp.Add(new Package() { PackageId = x.PackageId }));
 
 				List<Package> packages = Packages.Where(x => barCodes.Contains(x.PackageId.ToString())).ToList(); //this will not select any packages that aren't on list
@@ -311,8 +313,58 @@ namespace PrintAndScan4Ukraine.ViewModel
 						"List will be saved on the desktop")}", Environment.NewLine, string.Join(", ", BarcodesNotInPackages)));
 					StreamWriter w = new(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\Shipped_{DateTime.Now:MM-dd-yyyy}.txt");
 					w.WriteLine($"Barcodes scanned as shipped that weren't on the list on {DateTime.Now:MM/dd/yyyy}:");
-					BarcodesNotInPackages.ForEach(x => w.WriteLine(x));
+					BarcodesNotInPackages.ForEach(w.WriteLine);
 					w.Close();
+
+					if (System.Windows.Forms.MessageBox.Show("Do you want a report of the missing packages?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
+					{
+						var lst = _packageDataProvider.FindMissingPackages(BarcodesNotInPackages);
+						var CodesWithoutPackage = lst.Where(x => !x.InPackages).ToList();
+						var CodesWithPackages = lst.Where(x => x.InPackages).ToList();
+						var users = _packageDataProvider.GetUserIDsAndNames();
+
+						using (DocX document = DocX.Create(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\MissingPackages_{DateTime.Now:MM-dd-yyyy}.docx"))
+						{
+							// Add a new Paragraph to the document.
+							Paragraph p = document.InsertParagraph();
+
+							// Append some text.
+							p.AppendLine($"These packages don't have any record in the database: {string.Join(", ", CodesWithoutPackage.Select(x => x.Packageid))}").Font("Calibri");
+							p.AppendLine();
+
+							foreach (var item in CodesWithPackages)
+							{
+								//lets find the last time the package was scanned in
+								List<string> Changes = new();
+								if (item.Statuses != null)
+								{
+									item.Statuses.Reverse();
+									foreach (var st in item.Statuses)
+									{
+										string user = st.Createdbyuser != null ? users.First(x => x.Id == st.Createdbyuser).Comment : st.Status == 1 ? "Vika" : "Vitaliy"; //Because they were the initial users. Remove after some time...
+										if (st.Status == 1)
+										{
+											Changes.Add($"Last Scanned in by {user} on {st.CreatedDate.ToShortDateString()}");
+											break; //only latest scanned in, in case there's duplicates
+										}
+										else if (st.Status == 2)
+											Changes.Add($"Shipped by {user} on {st.CreatedDate.ToShortDateString()}");
+										else if (st.Status == 3)
+											Changes.Add($"Arrived by {user} on {st.CreatedDate.ToShortDateString()}");
+										else
+											Changes.Add($"Delivered by {user} on {st.CreatedDate.ToShortDateString()}");
+									}
+								}
+								else
+									Changes.Add("There have been no status changes, somehow"); //shouldn't happen
+								Changes.Reverse();
+								p.AppendLine($"{item.Packageid.ToUpper()} - {string.Join(", ", Changes)}");
+								p.AppendLine();
+							}
+							document.Save();
+						}
+						System.Windows.Forms.MessageBox.Show($"File saved to Desktop: MissingPackages_{DateTime.Now:MM-dd-yyyy}.docx");
+					}
 				}
 
 				if (barCodes.Count > 0)
@@ -355,7 +407,6 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 			if (PackagesFromDates != null)
 				Export(PackagesFromDates);
-
 		}
 
 		public void ExecuteRadioDateChecked(object AllOrDates)

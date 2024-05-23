@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
-	class PrintViewModel : ClosableViewModel, INotifyPropertyChanged
+	class PrintViewModel : ClosableViewModel, INotifyPropertyChanged, IDataErrorInfo
 	{
 		private readonly IPrintDataProvider _dataProvider;
 		public event PropertyChangedEventHandler? PropertyChanged;
@@ -16,6 +16,37 @@ namespace PrintAndScan4Ukraine.ViewModel
 		protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public string Error => string.Empty;
+
+		public string this[string columnName]
+		{
+			get
+			{
+				if (columnName == nameof(Starting) || columnName == nameof(Ending))
+				{
+					if (Starting < 1000000 || Starting > 9999999 || Ending < 1000000 || Ending > 9999999)
+					{
+						CanPrint = false;
+						return "7 digits please";
+					}
+					else if (_dataProvider.FindPackagesBetweenRange(Starting, Ending))
+					{
+						CanPrint = false;
+						return "Packages within these ranges already exist.";
+					}
+				}
+				CanPrint = true;
+				return string.Empty;
+			}
+		}
+
+		public PrintViewModel(IPrintDataProvider dataProvider)
+		{
+			_dataProvider = dataProvider;
+			PrintCommand = new DelegateCommand(Print, () => CanPrint);
+			CancelCommand = new DelegateCommand(CancelPrinting, () => CanCancel);
 		}
 
 		public ObservableCollection<string> Printers { get; } = new();
@@ -66,6 +97,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 		public DelegateCommand PrintCommand { get; }
+		public DelegateCommand CancelCommand { get; }
 
 		private bool _canPrint = true;
 		public bool CanPrint
@@ -78,6 +110,17 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+		private bool _canCancel = false;
+		public bool CanCancel
+		{
+			get => _canCancel;
+			set
+			{
+				_canCancel = value;
+				CancelCommand.RaiseCanExecuteChanged();
+			}
+		}
+
 		private async void Print(object a)
 		{
 			CanPrint = false;
@@ -87,10 +130,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 			CanPrint = true;
 		}
 
-		public PrintViewModel(IPrintDataProvider dataProvider)
+		private void CancelPrinting(object obj)
 		{
-			_dataProvider = dataProvider;
-			PrintCommand = new DelegateCommand(Print, () => CanPrint);
+			libmiroppb.Log("Trying to cancel any print jobs...");
+			CanCancel = !_dataProvider.CancelPrinting(SelectedPrinter);
 		}
 
 		public void LoadPrinters()

@@ -1,3 +1,9 @@
+v. 1.5.4.1
+
+- When Shipping packages, for those that are missing from the list, a document gets genarated with last status updates
+- When printing labels, added validation for the starting and ending numbers to be 1000000 < x < 9999999
+- When printing labels, added a button to cancel printing (needs further testing).
+
 v. 1.5.4.0
 
 - Added more options to allow exporting to excel using specific dates and statuses.

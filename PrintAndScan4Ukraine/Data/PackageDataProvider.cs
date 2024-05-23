@@ -27,6 +27,8 @@ namespace PrintAndScan4Ukraine.Data
 		Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected);
 		bool UpdateRecords(List<Package> package, int type = 0);
 		bool InsertRecordStatus(List<Package_Status> package_statuses);
+		IEnumerable<MissingPackages> FindMissingPackages(List<string> barcodesNotInPackages);
+		IEnumerable<Users> GetUserIDsAndNames();
 	}
 
 	public class PackageDataProvider : IPackageDataProvider
@@ -208,6 +210,35 @@ namespace PrintAndScan4Ukraine.Data
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			return await db.QueryAsync<Package>("Packages_between_dates_and_status", new { start_date, end_date, status_code }, commandType: System.Data.CommandType.StoredProcedure, commandTimeout: 300);
+		}
+
+		public IEnumerable<MissingPackages> FindMissingPackages(List<string> barcodesNotInPackages)
+		{
+			List<MissingPackages> results = new();
+			//lets get a list of /all/ packages
+			using MySqlConnection db = Secrets.GetConnectionString();
+			List<Package> allPackages = db.Query<Package>("SELECT packageid FROM packages").ToList();
+			//find packages that aren't in the db
+			var notInDB = barcodesNotInPackages.Except(allPackages.Select(x => x.PackageId)).ToList();
+			foreach (string item in notInDB)
+			{
+				results.Add(new() { Packageid = item, InPackages = false });
+				barcodesNotInPackages.Remove(item);
+			}
+			//for packages that are in db, get list of statuses for each
+			foreach (string barcode in barcodesNotInPackages)
+			{
+				var statuses = db.Query<Package_Status>("SELECT * FROM package_status WHERE packageid = @barcode", new { barcode }).ToList();
+				results.Add(new MissingPackages() { InPackages = true, Packageid = barcode, Statuses = statuses });
+			}
+
+			return results;
+		}
+
+		public IEnumerable<Users> GetUserIDsAndNames()
+		{
+			using MySqlConnection db = Secrets.GetConnectionString();
+			return db.Query<Users>("SELECT id, SUBSTRING_INDEX(`comment`, ' ', 1) AS comment FROM users");
 		}
 	}
 }
