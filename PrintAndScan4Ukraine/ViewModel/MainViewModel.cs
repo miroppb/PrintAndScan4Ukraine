@@ -1,6 +1,7 @@
 ﻿using CodingSeb.Localization;
 using CodingSeb.Localization.Loaders;
 using IWshRuntimeLibrary;
+using miroppb;
 using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
@@ -55,6 +56,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 
 			//CheckShortcut(); //Not going to use for now. Maybe later if a need arises
+			var localTimeZone = TimeZoneInfo.Local;
+			libmiroppb.Log($"Current timezone is: {localTimeZone.DisplayName} and time is: {DateTime.Now}");
 		}
 
 		private void CheckShortcut()

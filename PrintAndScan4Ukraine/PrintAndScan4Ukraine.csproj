@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>barcode.ico</ApplicationIcon>
-    <AssemblyVersion>1.5.4.1</AssemblyVersion>
+    <AssemblyVersion>1.5.5.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -60,6 +60,10 @@
     <Content Include="Language\Translations.loc.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Time\Time.csproj" />
   </ItemGroup>
 
   <ItemGroup>

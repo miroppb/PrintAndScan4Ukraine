@@ -1,6 +1,4 @@
-﻿using PrintAndScan4Ukraine.Data;
-using PrintAndScan4Ukraine.Model;
-using PrintAndScan4Ukraine.ViewModel;
+﻿using PrintAndScan4Ukraine.ViewModel;
 using System.Windows;
 
 namespace PrintAndScan4Ukraine
@@ -10,7 +8,8 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class MarkAsShippedWindow : Window
 	{
-		public PackagesViewModel _viewModel;
+		private readonly PackagesViewModel _viewModel;
+
 		public MarkAsShippedWindow(PackagesViewModel vm)
 		{
 			InitializeComponent();

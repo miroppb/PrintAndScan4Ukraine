@@ -8,7 +8,7 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class ScanNewWindow : Window
 	{
-		private PackagesViewModel _viewModel;
+		private readonly PackagesViewModel _viewModel;
 
 		public ScanNewWindow(PackagesViewModel vm)
 		{

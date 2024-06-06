@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -247,6 +246,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 				}
 				catch { }
 			}
+			BarCode = string.Empty;
+			barCodes.Clear();
+			BarCodeThatWasSet = string.Empty;
+			WasSomethingSet = false;
+			AddMultipleVisible = Visibility.Visible;
+			if (AddMultipleNew)
+				ExecuteAddMultiple(new object()); //flip it back
 		}
 
 		private async void ShowArriveWindow(object a)
@@ -426,6 +432,21 @@ namespace PrintAndScan4Ukraine.ViewModel
 				ReportLastStatus = 3;
 		}
 
+		private void ExecuteAddMultiple(object obj)
+		{
+			AddMultipleNew = !AddMultipleNew;
+			if (!AddMultipleNew)
+			{
+				AddMultipleButton = $"{Loc.Tr("PAS4U.ScanNewWindow.Multiple", "Add Multiple")}";
+				AddMultipleText = $"{Loc.Tr("PAS4U.ScanNewWindow.TopText", "Scan Barcode to Add...")}";
+			}
+			else
+			{
+				AddMultipleButton = $"{Loc.Tr("PAS4U.ScanNewWindow.Single", "Add One")}";
+				AddMultipleText = $"{Loc.Tr("PAS4U.ScanNewWindow.TopTextMultiple", "Scan Multiple Barcodes to Add")}: 0";
+			}
+		}
+
 		public void ReloadPackagesAndUpdateIfChanged()
 		{
 			if (IsOnline)
@@ -444,79 +465,107 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			if (e.Key == Key.Enter)
 			{
-				barCodes.Add(barCode.Replace("\0", ""));
-				barCode = string.Empty;
+				barCodes.Add(BarCode.Replace("\0", ""));
+				BarCode = string.Empty;
 				e.Handled = true;
 				CodesScanned = $"{Loc.Tr("PAS4U.ScanShippedWindow.BarcodesScanned", "Barcodes Scanned")}: {barCodes.Count}";
 			}
-			barCode += ToChar(e.Key);
+			BarCode += ToChar(e.Key).ToString().Replace("\0", "");
 		}
 
 		public void NewPreviewKeyDownEvent(object sender, System.Windows.Input.KeyEventArgs e)
 		{
-			if (e.Key == Key.Enter)
+			if (AddMultipleNew && IsOnline && e.Key == Key.Enter)
 			{
-				barCode = barCode.Replace("\0", "").Trim();
-				if (barCode != string.Empty) //make sure that the barcode is an actual alphanumeric string
+				BarCode += ",";
+				string latestBarcode = BarCode.Split(',').ToList().SkipLast(1).Last();
+				if (latestBarcode != string.Empty)
 				{
-#if DEBUG
-					Regex regex = new Regex("");
-#else
-					Regex regex = new Regex("^cv\\d\\d\\d\\d\\d\\d\\dus$");
-#endif
-					Match match = regex.Match(barCode);
-					if (match.Success)
-					{
-						if (Packages.FirstOrDefault(x => x.PackageId == barCode) == null)
-						{
-							bool? DoubleCheck = VerifyIfExists(barCode);
-							if (DoubleCheck == null) { System.Windows.MessageBox.Show(Loc.Tr("PAS4U.MainWindow.Offline", "You're Offline")); }
-							else if (DoubleCheck.Value)
-							{
-								WasSomethingSet = false;
-								System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
-								BarCodeThatWasSet = barCode;
-							}
-							else
-							{
-								Insert(new()
-								{
-									PackageId = barCode,
-									Contents = JsonConvert.SerializeObject(new List<Contents>() { })
-								});
-								InsertRecordStatus(new()
-								{
-									new() {
-										PackageId = barCode, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = 1
-									}
-								});
-								WasSomethingSet = true;
-								BarCodeThatWasSet = barCode;
-							}
-						}
-						else
-						{
-							WasSomethingSet = false;
-							libmiroppb.Log("Package Already Exists: " + barCode);
-							System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
-							BarCodeThatWasSet = barCode;
-						}
-					}
-					else
-					{
-						WasSomethingSet = false;
-						libmiroppb.Log("Wrong Format: " + barCode);
-						string WrongText = string.Format(Loc.Tr("PAS4U.ScanNewWindow.WrongFormatText", "Package number not in correct format\n\nNumber: {0}"), barCode);
-						System.Windows.MessageBox.Show(WrongText);
-						BarCodeThatWasSet = string.Empty;
-					}
+					ValidateAndInsertBarcode(latestBarcode);
+					if (!string.IsNullOrEmpty(BarCodeThatWasSet))
+						barCodes.Add(latestBarcode);
+					AddMultipleText = $"{Loc.Tr("PAS4U.ScanNewWindow.TopTextMultiple", "Scan Multiple Barcodes to Add")}: {barCodes.Count}";
+				}
+				if (BarCode.Length > 1 && BarCode[^2..] == ",,")
+				{
+					//we're done
+					BarCode = string.Empty;
+					e.Handled = true;
+					ExecuteAddMultiple(new object()); //set it back
+					OnClosingRequest();
+				}
+			}
+			else if (e.Key == Key.Enter)
+			{
+				BarCode = BarCode.Replace("\0", "").Trim();
+				if (BarCode != string.Empty) //make sure that the barcode is an actual alphanumeric string
+				{
+					ValidateAndInsertBarcode(BarCode);
 				}
 
-				barCode = string.Empty;
+				BarCode = string.Empty;
 				e.Handled = true;
 				OnClosingRequest();
 			}
-			barCode += ToChar(e.Key);
+			if (e.Key == Key.Back && BarCode.Length > 0 && BarCode.Substring(BarCode.Length - 1, 1) != ",") //if the last character isn't a comma (enter was pressed and barcode has been saved)
+				BarCode = BarCode[..^1];
+			BarCode += ToChar(e.Key).ToString().Replace("\0", "");
+			AddMultipleVisible = Visibility.Collapsed;
+		}
+
+		private void ValidateAndInsertBarcode(string _barcode)
+		{
+#if DEBUG
+			Regex regex = new("");
+#else
+			Regex regex = new Regex("^cv\\d\\d\\d\\d\\d\\d\\dus$");
+#endif
+			Match match = regex.Match(_barcode);
+			if (match.Success)
+			{
+				if (Packages.FirstOrDefault(x => x.PackageId == _barcode) == null)
+				{
+					bool? DoubleCheck = VerifyIfExists(_barcode);
+					if (DoubleCheck == null) { System.Windows.MessageBox.Show(Loc.Tr("PAS4U.MainWindow.Offline", "You're Offline")); }
+					else if (DoubleCheck.Value)
+					{
+						WasSomethingSet = false;
+						System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
+						BarCodeThatWasSet = _barcode;
+					}
+					else
+					{
+						Insert(new()
+						{
+							PackageId = _barcode,
+							Contents = JsonConvert.SerializeObject(new List<Contents>() { })
+						});
+						InsertRecordStatus(new()
+						{
+							new() {
+								PackageId = _barcode, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = 1
+							}
+						});
+						WasSomethingSet = true;
+						BarCodeThatWasSet = _barcode;
+					}
+				}
+				else
+				{
+					WasSomethingSet = false;
+					libmiroppb.Log("Package Already Exists: " + _barcode);
+					System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
+					BarCodeThatWasSet = _barcode;
+				}
+			}
+			else
+			{
+				WasSomethingSet = false;
+				libmiroppb.Log("Wrong Format: " + _barcode);
+				string WrongText = string.Format(Loc.Tr("PAS4U.ScanNewWindow.WrongFormatText", "Package number not in correct format\n\nNumber: {0}"), _barcode);
+				System.Windows.MessageBox.Show(WrongText);
+				BarCodeThatWasSet = string.Empty;
+			}
 		}
 	}
 }

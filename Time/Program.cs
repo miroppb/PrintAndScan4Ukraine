@@ -1,0 +1,3 @@
+﻿using Time;
+
+ResyncTime.TryToResyncTime();

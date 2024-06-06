@@ -1,3 +1,7 @@
+v. 1.5.5.0
+
+- Added ability to scan mulitple packages into the database.
+
 v. 1.5.4.1
 
 - When Shipping packages, for those that are missing from the list, a document gets genarated with last status updates

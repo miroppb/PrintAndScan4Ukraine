@@ -172,9 +172,21 @@
         "en": "Scan New",
         "ru": "Сканировать Новую Посылку"
       },
+      "Multiple": {
+        "en": "Add Multiple",
+        "ru": "Добавить много"
+      },
+      "Single": {
+        "en": "Add One",
+        "ru": "Добавить Один"
+      },
       "TopText": {
         "en": "Scan Barcode to Add...",
-        "ru": "Сканируйте Баркод который нада добавить..."
+        "ru": "Сканируйте штрихкод который нада добавить..."
+      },
+      "TopTextMultiple": {
+        "en": "Scan Multiple Barcodes to Add...",
+        "ru": "Отсканируйте несколько штрихкодов, чтобы добавить"
       },
       "BottomText": {
         "en": "Or Press Enter to Close",

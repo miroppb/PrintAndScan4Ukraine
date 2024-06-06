@@ -7,7 +7,17 @@
         mc:Ignorable="d"
         Title="{Tr 'PAS4U.ScanNewWindow.Title', DefaultText='Scan New Window'}" Height="400" Width="500" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Icon="/barcode.png">
     <Grid>
-        <TextBlock Text="{Tr 'PAS4U.ScanNewWindow.TopText', DefaultText='Scan New Barcode to Add'}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
-        <TextBlock Text="{Tr 'PAS4U.ScanNewWindow.BottomText', DefaultText='Or Press Enter to Close'}" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" TextAlignment="Center" Margin="0,280,0,0" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="50" />
+            <RowDefinition />
+            <RowDefinition Height="20" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <Button Grid.Row="1" Content="{Binding AddMultipleButton, FallbackValue='Add Multiple'}" Command="{Binding AddMultipleCommand}" Margin="190 10" Focusable="False" Visibility="{Binding AddMultipleVisible}" />
+        <TextBlock Grid.Row="2" Text="{Binding AddMultipleText, FallbackValue='Scan Barcode to Add...'}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
+        <TextBlock Grid.Row="3" Text="{Binding BarCode, FallbackValue='CV0000000US'}" HorizontalAlignment="Center" />
+        <TextBlock Grid.Row="4" Text="{Tr 'PAS4U.ScanNewWindow.BottomText', DefaultText='Or Press Enter to Close'}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" TextAlignment="Center"/>
     </Grid>
 </Window>

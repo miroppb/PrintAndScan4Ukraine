@@ -10,7 +10,8 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class MarkAsArrivedWindow : Window
 	{
-		public PackagesViewModel _viewModel;
+		private readonly PackagesViewModel _viewModel;
+
 		public MarkAsArrivedWindow(Users user)
 		{
 			InitializeComponent();

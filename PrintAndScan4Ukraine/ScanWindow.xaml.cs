@@ -1,14 +1,11 @@
 ﻿using AutoUpdaterDotNET;
 using CodingSeb.Localization;
-using CodingSeb.Localization.Loaders;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
-using PrintAndScan4Ukraine.Model;
 using PrintAndScan4Ukraine.Properties;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +31,7 @@ namespace PrintAndScan4Ukraine
 			_viewModel = new PackagesViewModel(new PackageDataProvider(), MainViewModel.GetUser());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
-			
+
 
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
@@ -54,6 +51,9 @@ namespace PrintAndScan4Ukraine
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 			Closing += ScanWindow_Closing;
+
+			//resync time
+			//ResyncTime.TryToResyncTime();
 		}
 
 		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -85,11 +85,11 @@ namespace PrintAndScan4Ukraine
 
 		}
 
-		private void SetupUpdater()
+		private static void SetupUpdater()
 		{
 			int minutes = 2;
 			libmiroppb.Log($"Setting up the Updater for every {minutes} minutes");
-			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
+			DispatcherTimer timer = new() { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
 				libmiroppb.Log("Checking for update...");
@@ -112,7 +112,7 @@ namespace PrintAndScan4Ukraine
 		{
 			int minutes = 10;
 			libmiroppb.Log($"Setting up uploading logs every {minutes} minutes");
-			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
+			DispatcherTimer timer = new() { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
 				UploadLogs(true);

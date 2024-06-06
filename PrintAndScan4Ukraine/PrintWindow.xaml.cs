@@ -14,7 +14,7 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class PrintWindow : Window
 	{
-		private PrintViewModel _viewmodel;
+		private readonly PrintViewModel _viewmodel;
 
 		public PrintWindow()
 		{

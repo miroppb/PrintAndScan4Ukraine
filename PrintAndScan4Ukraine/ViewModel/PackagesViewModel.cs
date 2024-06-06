@@ -18,7 +18,6 @@ namespace PrintAndScan4Ukraine.ViewModel
 	{
 		private readonly IPackageDataProvider _packageDataProvider;
 
-		private string barCode = string.Empty;
 		private List<string> barCodes = new List<string>();
 		public bool WasSomethingSet = false;
 		public string BarCodeThatWasSet = string.Empty;
@@ -52,6 +51,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			SaveAllCommand = new DelegateCommand(SaveAll);
 			ShipCommand = new DelegateCommand(ShowShipWindow, () => CanShip);
 			AddNewCommand = new DelegateCommand(ShowAddNewWindow, () => CanAddNew);
+			AddMultipleCommand = new DelegateCommand(ExecuteAddMultiple, () => CanAddNew);
 			ArriveCommand = new DelegateCommand(ShowArriveWindow, () => CanArrive);
 			DeliverCommand = new DelegateCommand(ShowDeliverWindow, () => CanDeliver);
 			ExportCommand = new DelegateCommand(ExecuteExport);
@@ -119,6 +119,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 			set
 			{
 				_isOnline = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private string _barCode = string.Empty;
+
+		public string BarCode
+		{
+			get => _barCode;
+			set
+			{
+				_barCode = value;
 				RaisePropertyChanged();
 			}
 		}
@@ -201,8 +213,56 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public int ReportLastStatus { get; set; } = 2;
 
+		private bool _AddMultipleNew = false;
+
+		public bool AddMultipleNew
+		{
+			get => _AddMultipleNew;
+			set
+			{
+				_AddMultipleNew = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private string _AddMultipleButton = $"{Loc.Tr("PAS4U.ScanNewWindow.Multiple", "Add Multiple")}";
+
+		public string AddMultipleButton
+		{
+			get => _AddMultipleButton;
+			set
+			{
+				_AddMultipleButton = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private string _AddMultipleText = $"{Loc.Tr("PAS4U.ScanNewWindow.TopText", "Scan New Barcode to Add")}";
+
+		public string AddMultipleText
+		{
+			get => _AddMultipleText;
+			set
+			{
+				_AddMultipleText = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private Visibility _AddMultipleVisible = Visibility.Visible;
+
+		public Visibility AddMultipleVisible
+		{
+			get => _AddMultipleVisible;
+			set
+			{
+				_AddMultipleVisible = value;
+				RaisePropertyChanged();
+			}
+		}
+
 #if DEBUG
-        public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString() + " -Debug";
+		public static string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString() + " -Debug";
 #else
 		public string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 #endif
