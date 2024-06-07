@@ -1,5 +1,6 @@
 ﻿using AutoUpdaterDotNET;
 using CodingSeb.Localization;
+using Microsoft.Win32;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
@@ -54,6 +55,29 @@ namespace PrintAndScan4Ukraine
 
 			//resync time
 			//ResyncTime.TryToResyncTime();
+
+			SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+		}
+
+		private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+		{
+			switch (e.Mode)
+			{
+				case PowerModes.Suspend:
+					libmiroppb.Log("System is going to sleep");
+					SavingOftenTimer.Stop();
+					UploadLogsTimer.Stop();
+					ReloadingPackagesTimer.Stop();
+					UploadLogs(true);
+					break;
+				case PowerModes.Resume:
+					libmiroppb.Log("System is awake");
+					SavingOftenTimer.Start();
+					UploadLogsTimer.Start();
+					ReloadingPackagesTimer.Start();
+					UploadLogs(true);
+					break;
+			}
 		}
 
 		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -85,6 +109,10 @@ namespace PrintAndScan4Ukraine
 
 		}
 
+		DispatcherTimer UploadLogsTimer = new();
+		DispatcherTimer SavingOftenTimer = new();
+		DispatcherTimer ReloadingPackagesTimer = new();
+
 		private static void SetupUpdater()
 		{
 			int minutes = 2;
@@ -112,43 +140,43 @@ namespace PrintAndScan4Ukraine
 		{
 			int minutes = 10;
 			libmiroppb.Log($"Setting up uploading logs every {minutes} minutes");
-			DispatcherTimer timer = new() { Interval = TimeSpan.FromMinutes(minutes) };
-			timer.Tick += delegate
+			UploadLogsTimer = new() { Interval = TimeSpan.FromMinutes(minutes) };
+			UploadLogsTimer.Tick += delegate
 			{
 				UploadLogs(true);
 			};
-			timer.Start();
+			UploadLogsTimer.Start();
 		}
 
 		private void SetupSavingOften()
 		{
 			libmiroppb.Log("Setting up saving every 1 minute");
-			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
-			timer.Tick += delegate
+			SavingOftenTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
+			SavingOftenTimer.Tick += delegate
 			{
 				if (_viewModel.SelectedPackage != null && _viewModel.SelectedPackage.Modified) //only saving current package
 					_viewModel.Save();
 			};
-			timer.Start();
+			SavingOftenTimer.Start();
 		}
 
 		private void SetupReloadingPackages()
 		{
 			int minutes = 2;
 			libmiroppb.Log($"Setting up refreshing packages every {minutes} minute(s)");
-			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
-			timer.Tick += delegate
+			ReloadingPackagesTimer = new() { Interval = TimeSpan.FromMinutes(minutes) };
+			ReloadingPackagesTimer.Tick += delegate
 			{
 				_viewModel.ReloadPackagesAndUpdateIfChanged();
 			};
-			timer.Start();
+			ReloadingPackagesTimer.Start();
 		}
 
 		private void SetupOnlineCheck()
 		{
 			int minutes = 1;
 			libmiroppb.Log($"Setting up checking Internet every {minutes} minutes");
-			DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(minutes) };
+			DispatcherTimer timer = new() { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
 				_viewModel.IsOnline = InternetAvailability.IsInternetAvailable();
@@ -156,10 +184,7 @@ namespace PrintAndScan4Ukraine
 			timer.Start();
 		}
 
-		private void UploadLogs(bool deleteAfter)
-		{
-			libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", deleteAfter);
-		}
+		private static void UploadLogs(bool deleteAfter) => libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", deleteAfter);
 
 		private void MnuEnglish_Click(object sender, RoutedEventArgs e)
 		{

@@ -1,6 +1,11 @@
+v. 1.5.5.1
+
+- Attempt to detect if computer is going to sleep, and to stop/restart timers
+
 v. 1.5.5.0
 
 - Added ability to scan mulitple packages into the database.
+- When typing a new barcode to enter, the barcode is now visibile (for entering manually)
 
 v. 1.5.4.1
 

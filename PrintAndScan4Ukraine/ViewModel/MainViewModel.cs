@@ -10,7 +10,6 @@ using PrintAndScan4Ukraine.Properties;
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,7 +25,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-        
+
 		private readonly IMainDataProvider _mainDataProvider;
 
 		public DelegateCommand PrintCommand { get; }
@@ -64,7 +63,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 			string shortcutName = "PrintAndScan 4 Ukraine";
-			string shortcutfile =  $"{desktopPath}\\{shortcutName}.lnk";
+			string shortcutfile = $"{desktopPath}\\{shortcutName}.lnk";
 			if (!System.IO.File.Exists(shortcutfile))
 			{
 				if (MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.ShortcutDoesNotExist", "Shortcut doesn't exist. Create it?")}", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
@@ -123,7 +122,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 
-		private static Users? _CurrentUser = new Users() { Access = Access.None};
+		private static Users? _CurrentUser = new Users() { Access = Access.None };
 
 		public Users CurrentUser
 		{
