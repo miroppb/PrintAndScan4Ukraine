@@ -1,5 +1,6 @@
 ﻿using PrintAndScan4Ukraine.Model;
 using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
@@ -15,11 +16,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public bool AccessToDeliver => CurrentUser.Access.HasFlag(Access.Deliver);
 		public bool AccessToExport => CurrentUser.Access.HasFlag(Access.Export);
 
-		public bool CanSave => SelectedPackage != null && IsOnline;
+		public bool CanSave => SelectedPackage != null && IsOnline && SelectedPackage.PackageIdValid;
 		public bool CanShowHistory => SelectedPackage != null && IsOnline;
 		public bool CanShip => CurrentUser.Access.HasFlag(Access.Ship) && IsOnline;
 		public bool CanAddNew => CurrentUser.Access.HasFlag(Access.AddNew) && IsOnline;
 		public bool CanArrive => CurrentUser.Access.HasFlag(Access.Arrive) && IsOnline;
 		public bool CanDeliver => CurrentUser.Access.HasFlag(Access.Deliver) && IsOnline;
+		public bool CanEditPackageID => CurrentUser.Access.HasFlag(Access.EditPackageID) && IsOnline;
 	}
 }

@@ -121,7 +121,9 @@ namespace PrintAndScan4Ukraine.Data
 		public bool VerifyIfExists(string packageid)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			return db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid AND removed = 0", new { packageid }).FirstOrDefault() != null;
+			bool InNewList = db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid LIMIT 1", new { packageid }).FirstOrDefault() != null;
+			bool InArchive = db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesArchiveTable} WHERE packageid = @packageid LIMIT 1", new { packageid }).FirstOrDefault() != null;
+			return InNewList || InArchive;
 		}
 
 		public async Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected)
@@ -178,6 +180,11 @@ namespace PrintAndScan4Ukraine.Data
 			if (type == -2) { libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}"); }
 			else { libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
 			db.Update(packages);
+			foreach (Package p in packages)
+			{
+				if (p.PackageIDModified)
+					db.Execute($"UPDATE {Secrets.MySqlPackageStatusTable} SET packageid = @PackageId WHERE packageid = @OldPackageID", new { p.PackageId, p.OldPackageID });
+			}
 			return true;
 		}
 

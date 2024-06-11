@@ -9,7 +9,23 @@ namespace PrintAndScan4Ukraine.Model
 	public class Package : INotifyPropertyChanged
 	{
 		public int Id { get; set; }
-		public string PackageId { get; set; } = string.Empty;
+		private string _PackageId = string.Empty;
+
+		public string PackageId
+		{
+			get => _PackageId;
+			set
+			{
+				if (_PackageId != string.Empty && _PackageId != value)
+				{
+					PackageIDModified = true;
+					OldPackageID = _PackageId;
+				}
+
+				_PackageId = value;
+				RaisePropertyChanged();
+			}
+		}
 
 		private string _Sender_Name = string.Empty;
 
@@ -184,6 +200,18 @@ namespace PrintAndScan4Ukraine.Model
 		[Write(false)]
 		[Computed]
 		public bool Modified { get; internal set; } = false;
+
+		[Write(false)]
+		[Computed]
+		public bool PackageIDModified { get; internal set; } = false;
+
+		[Write(false)]
+		[Computed]
+		public string OldPackageID { get; set; } = string.Empty;
+
+		[Write(false)]
+		[Computed]
+		public bool PackageIdValid { get; set; } = true;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 

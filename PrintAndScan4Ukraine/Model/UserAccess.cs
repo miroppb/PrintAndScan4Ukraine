@@ -16,7 +16,8 @@ namespace PrintAndScan4Ukraine.Model
 		Arrive = 64,
 		Deliver = 128,
 		Export = 256,
-		Print = 512
+		Print = 512,
+		EditPackageID = 1024
 	}
 
 	[Table(Secrets.MySqlUserAccessTable)]

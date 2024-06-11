@@ -59,6 +59,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			GenerateReportCommand = new DelegateCommand(ExecuteGenerateReport);
 			RadioDateChecked = new DelegateCommand(ExecuteRadioDateChecked);
 			RadioStatusChecked = new DelegateCommand(ExecuteRadioStatusChecked);
+			EditPackageIDCommand = new DelegateCommand(ExecuteEditPackageID, () => CanEditPackageID);
 		}
 
 		private Package? _selectedPackage;
@@ -257,6 +258,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 			set
 			{
 				_AddMultipleVisible = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private bool _IsEditingPackageID = false;
+
+		public bool IsEditingPackageID
+		{
+			get => _IsEditingPackageID;
+			set
+			{
+				_IsEditingPackageID = value;
 				RaisePropertyChanged();
 			}
 		}

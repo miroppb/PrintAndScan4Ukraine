@@ -40,6 +40,12 @@
             "en": "Scan _Delivered",
             "ru": "Скан _Доставленное"
           }
+        },
+        "EditPackageId": {
+          "Header": {
+            "en": "Edit _Package IDs",
+            "ru": "Изменять ID Посылок"
+          }
         }
       },
       "ExportMenuItem": {

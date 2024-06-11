@@ -68,6 +68,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 					package.Modified = false; //setting back as it was saved
+					package.PackageIDModified = false;
 				}
 			}
 		}
@@ -79,7 +80,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 					foreach (var package in Packages)
+					{
 						package.Modified = false; //everything was saved
+						package.PackageIDModified = false;
+					}
 				}
 
 		}
@@ -566,6 +570,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 				System.Windows.MessageBox.Show(WrongText);
 				BarCodeThatWasSet = string.Empty;
 			}
+		}
+
+		private void ExecuteEditPackageID(object obj)
+		{
+			IsEditingPackageID = !IsEditingPackageID;
 		}
 	}
 }

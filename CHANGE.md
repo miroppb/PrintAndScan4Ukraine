@@ -1,3 +1,11 @@
+v. 1.5.5.3
+
+- Added ability to change Package ID (with permission)
+
+v. 1.5.5.2
+
+- No change
+
 v. 1.5.5.1
 
 - Attempt to detect if computer is going to sleep, and to stop/restart timers

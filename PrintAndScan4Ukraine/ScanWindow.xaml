@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:local="clr-namespace:PrintAndScan4Ukraine.Converter"
+        xmlns:local2="clr-namespace:PrintAndScan4Ukraine"
         Title="{Binding Header}" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
     <Window.Resources>
         <local:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
@@ -37,6 +38,8 @@
                               Visibility="{Binding AccessToArrive, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <MenuItem x:Name="MnuDeliver" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanDeliverItem.Header', DefaultText='Scan _Delivered'}" Command="{Binding DeliverCommand}"
                               Visibility="{Binding AccessToDeliver, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <MenuItem x:Name="MnuEditPackageId" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.EditPackageId.Header', DefaultText='Edit _Package IDs'}" Command="{Binding EditPackageIDCommand}"
+                              Visibility="{Binding CanEditPackageID, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" IsChecked="{Binding IsEditingPackageID, UpdateSourceTrigger=PropertyChanged}" />
                 </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.Header', DefaultText='_Export'}">
                     <MenuItem x:Name="MnuExport" Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.ExportExcel.Header', DefaultText='E_xport to Excel'}" Command="{Binding ExportCommand}"
@@ -138,7 +141,18 @@
 
             <TextBlock Text="{Tr 'PAS4U.MainWindow.PackageId', DefaultText='Package ID'}" />
             <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.PackageId,
-                Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,0,0" FontSize="20" />
+                Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,0,0" FontSize="20" 
+                       Visibility="{Binding IsEditingPackageID, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InvertedBooleanToVisibilityConverter}, FallbackValue='Visible'}" />
+            <TextBox x:Name="TxtPackageId" Grid.Column="1" HorizontalAlignment="Left" Margin="5,0,0,0" FontSize="20" 
+                     Visibility="{Binding IsEditingPackageID, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue='Hidden'}">
+                <TextBox.Text>
+                    <Binding ElementName="LstUPCAndNames" Path="SelectedItem.PackageId" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local2:UniqueIDValidationRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
 
             <TextBlock x:Name="TxtLastStatus" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.LastStatus', {Binding SelectedPackageLastStatus.Status, Mode=TwoWay, Converter={StaticResource StatusToTextConverter}}, {Binding SelectedPackageLastStatus.CreatedDate}, DefaultText='Last Status'}"
                        Margin="0 0 33 0" TextAlignment="Right" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

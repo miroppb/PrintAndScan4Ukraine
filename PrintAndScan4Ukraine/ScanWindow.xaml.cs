@@ -96,7 +96,7 @@ namespace PrintAndScan4Ukraine
 			ScanWindow? sw = Keyboard.FocusedElement as ScanWindow;
 			try
 			{
-				if (sw == null && lvi == null && !tb!.Name.Contains("Address") && !tb!.Parent.ToString()!.Contains("DataGridCell"))
+				if (sw == null && lvi == null && !tb!.Name.Contains("Address") && !tb!.Name.Contains("PackageId") && !tb!.Parent.ToString()!.Contains("DataGridCell"))
 				{
 					if (e.Key == Key.Enter)
 					{
@@ -104,9 +104,18 @@ namespace PrintAndScan4Ukraine
 						e.Handled = true;
 					}
 				}
+				else if (sw == null && lvi == null && tb!.Name.Contains("PackageId"))
+				{
+					_viewModel.SelectedPackage.PackageIdValid = !Validation.GetHasError(TxtPackageId);
+					if (e.Key == Key.Enter && _viewModel.SelectedPackage.PackageIdValid)
+					{
+						_viewModel.Save();
+						MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
+						e.Handled = true;
+					}
+				}
 			}
 			catch { }
-
 		}
 
 		DispatcherTimer UploadLogsTimer = new();
@@ -133,7 +142,7 @@ namespace PrintAndScan4Ukraine
 		{
 			libmiroppb.Log("Update starting");
 			UploadLogs(true);
-			Application.Current.Shutdown();
+			Environment.Exit(0); //Application.Current.Shutdown wasn't working for a customer
 		}
 
 		private void SetupLogUploader()
