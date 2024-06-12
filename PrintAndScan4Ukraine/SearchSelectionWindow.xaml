@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
         Title="{Tr 'PAS4U.MainMenu.SearchSelectionWindow.Title', DefaultText='Search Selection'}" Height="200" Width="300" Icon="/barcode.png" WindowStartupLocation="CenterScreen">
-    <Grid>
+    <Grid FocusManager.FocusedElement="{Binding ElementName=TxtSearch}">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition />
@@ -21,11 +21,11 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Search Parameter:" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" />
-        <TextBox Text="{Binding SearchParam, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1" Margin="5 10 50 5" VerticalContentAlignment="Center" />
+        <TextBox x:Name="TxtSearch" Text="{Binding SearchParam, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1" Margin="5 10 50 5" VerticalContentAlignment="Center" />
 
-        <RadioButton GroupName="SearchGroup" Content="{Tr 'PAS4U.SearchSelectionWindow.Package', DefaultText='Package ID'}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 10 0" Command="{Binding RadioSearchCheckedCommand}" CommandParameter="Package" />
-        <RadioButton GroupName="SearchGroup" Content="{Tr 'PAS4U.SearchSelectionWindow.Name', DefaultText='Sender Name'}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10 0 0 0" IsChecked="True" Command="{Binding RadioSearchCheckedCommand}" CommandParameter="Name" />
-
+        <RadioButton GroupName="SearchGroup" Content="{Tr 'PAS4U.SearchSelectionWindow.Package', DefaultText='Package ID'}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 10 0" IsChecked="True" Command="{Binding RadioSearchCheckedCommand}" CommandParameter="Package" />
+        <RadioButton GroupName="SearchGroup" Content="{Tr 'PAS4U.SearchSelectionWindow.Name', DefaultText='Sender Name'}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10 0 0 0"  Command="{Binding RadioSearchCheckedCommand}" CommandParameter="Name" />
+        <CheckBox Content="{Tr 'PAS4U.SearchSelectionWindow.Archive', DefaultText='Archive?'}" IsChecked="{Binding ArchiveChecked, Mode=TwoWay}" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" />
         <Button Content="{Tr 'PAS4U.SearchSelectionWindow.Search', DefaultText='Search'}" Grid.Column="1" Grid.Row="3" Margin="50 10" Command="{Binding SearchCommand, Mode=OneWay}" IsEnabled="{Binding SearchButtonEnabled}" />
     </Grid>
 </Window>

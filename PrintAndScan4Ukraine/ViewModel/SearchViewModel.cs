@@ -1,5 +1,7 @@
 ﻿using CodingSeb.Localization;
+using miroppb;
 using MySqlConnector;
+using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Model;
@@ -51,8 +53,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 			PreviousShipments.Clear();
 			if (WhatAreWeSearchingFor == SearchFor.PackageID)
 			{
+				libmiroppb.Log($"Searching for Package: {SearchParam}");
 				TopText = $"Search Results for Package: {SearchParam}";
-				var temp_packages = await _provider.GetPackageAsync(SearchParam);
+				var temp_packages = await _provider.GetPackageAsync(SearchParam, ArchiveChecked);
 				var statuses = _provider.GetStatusByPackage(SearchParam);
 				if (temp_packages != null && statuses != null)
 					PreviousShipments.AddDistinctRange(_provider.MapPackagesAndStatusesToLess(temp_packages, statuses));
@@ -70,6 +73,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 			else
 			{
+				libmiroppb.Log($"Searching by Sender: {SearchParam}");
 				TopText = $"Search Results for Sender: {SearchParam}";
 				var temp_packages = await _provider.GetByNameAsync(SearchParam);
 				if (temp_packages != null)
@@ -88,13 +92,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 			if (Generating)
 			{
+				libmiroppb.Log($"Results found: {JsonConvert.SerializeObject(PreviousShipments)}");
+				if (WhatAreWeSearchingFor == SearchFor.PackageID)
+					for (int a = 0; a < PreviousShipments.Count; a++)
+						PreviousShipments[a].Recipient_Name = $"{PreviousShipments[a].Sender_Name}: {PreviousShipments[a].Recipient_Name}";
+
 				//open Search Window with options
 				SearchWindow searchWindow = new(this);
 				searchWindow.ShowDialog();
 			}
 		}
 
-		private void ExecuteCloseCommand(object obj)
+		public void ExecuteCloseCommand(object obj)
 		{
 			OnClosingRequest();
 		}
@@ -107,6 +116,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 			set
 			{
 				_previousShipments = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private Package_less? _SelectedShipment = null;
+
+		public Package_less? SelectedShipment
+		{
+			get => _SelectedShipment;
+			set
+			{
+				_SelectedShipment = value;
 				RaisePropertyChanged();
 			}
 		}
@@ -149,6 +170,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 			set
 			{
 				_TopText = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		private bool _ArchiveChecked = false;
+
+		public bool ArchiveChecked
+		{
+			get => _ArchiveChecked;
+			set
+			{
+				_ArchiveChecked = value;
 				RaisePropertyChanged();
 			}
 		}

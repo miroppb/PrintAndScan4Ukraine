@@ -15,6 +15,7 @@ namespace PrintAndScan4Ukraine
 			InitializeComponent();
 			_viewmodel = new SearchViewModel();
 			DataContext = _viewmodel;
+			_viewmodel.ClosingRequest += (sender, e) => Close();
 		}
 	}
 }

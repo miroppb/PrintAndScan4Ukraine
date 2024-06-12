@@ -363,6 +363,10 @@
       "Error": {
         "en": "An unexpected error occused. Please try again or contact your administrator",
         "ru": "Произошла неожиданная ошибка. Пожалуйста, попробуйте еще раз или свяжитесь с администратором"
+      },
+      "Archive": {
+        "en": "Archive?",
+        "ru": "Архив?"
       }
     },
     "Export": {

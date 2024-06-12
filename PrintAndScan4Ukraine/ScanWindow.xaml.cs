@@ -106,7 +106,7 @@ namespace PrintAndScan4Ukraine
 				}
 				else if (sw == null && lvi == null && tb!.Name.Contains("PackageId"))
 				{
-					_viewModel.SelectedPackage.PackageIdValid = !Validation.GetHasError(TxtPackageId);
+					_viewModel.SelectedPackage!.PackageIdValid = !Validation.GetHasError(TxtPackageId);
 					if (e.Key == Key.Enter && _viewModel.SelectedPackage.PackageIdValid)
 					{
 						_viewModel.Save();

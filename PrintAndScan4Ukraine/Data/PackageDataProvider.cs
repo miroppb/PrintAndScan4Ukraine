@@ -30,7 +30,7 @@ namespace PrintAndScan4Ukraine.Data
 		bool InsertRecordStatus(List<Package_Status> package_statuses);
 		IEnumerable<MissingPackages> FindMissingPackages(List<string> barcodesNotInPackages);
 		IEnumerable<Users> GetUserIDsAndNames();
-		Task<IEnumerable<Package>> GetPackageAsync(string packageid); //returning list because we have duplicates :/
+		Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive); //returning list because we have duplicates :/
 		List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses);
 	}
 
@@ -255,10 +255,12 @@ namespace PrintAndScan4Ukraine.Data
 			return db.Query<Users>("SELECT id, SUBSTRING_INDEX(`comment`, ' ', 1) AS comment FROM users");
 		}
 
-		public async Task<IEnumerable<Package>> GetPackageAsync(string packageid)
+		public async Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			return await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid UNION SELECT * FROM {Secrets.MySqlPackagesArchiveTable} WHERE packageid = @packageid", new { packageid });
+			string sql = $"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid ";
+			if (useArchive) sql += $"UNION SELECT * FROM {{Secrets.MySqlPackagesArchiveTable}} WHERE packageid = @packageid";
+			return await db.QueryAsync<Package>(sql, new { packageid });
 		}
 
 		public List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses)

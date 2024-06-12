@@ -1,3 +1,8 @@
+v. 1.5.6.1
+
+- Added ability to double-click package in search to open it in Main-Window
+- Ability to Search Archive or not
+
 v. 1.5.6.0
 
 - Added a Search Window, where the user can search by Package ID or by Sender's Name

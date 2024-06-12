@@ -57,7 +57,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public void Save()
 		{
-			Save(SelectedPackage);
+			Save(SelectedPackage!);
 		}
 
 		public void Save(Package package, int type = 0)
@@ -188,7 +188,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowHistory(object a)
 		{
-			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
+			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage!.Sender_Name!);
 			HistoryWindow historyWindow = new HistoryWindow(SelectedPackage.Sender_Name!, PreviousPackages);
 			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
 			historyWindow.ShowDialog();
@@ -436,7 +436,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public void ReloadPackagesAndUpdateIfChanged()
 		{
 			if (IsOnline)
-				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
+				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage!);
 		}
 
 		internal bool? VerifyIfExists(string barCode)
@@ -563,6 +563,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			SearchSelectionWindow searchSelection = new();
 			searchSelection.ShowDialog();
+			if (SearchSelectedPackage != string.Empty)
+			{
+				libmiroppb.Log($"{SearchSelectedPackage} has been selected");
+				SelectedPackage = Packages.FirstOrDefault(x => x.PackageId == SearchSelectedPackage);
+			}
 		}
+
+		public static string SearchSelectedPackage = string.Empty;
 	}
 }
