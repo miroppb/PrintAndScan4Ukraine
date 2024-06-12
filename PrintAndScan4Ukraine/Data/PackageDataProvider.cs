@@ -5,6 +5,7 @@ using miroppb;
 using MySqlConnector;
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Model;
+using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,6 +30,8 @@ namespace PrintAndScan4Ukraine.Data
 		bool InsertRecordStatus(List<Package_Status> package_statuses);
 		IEnumerable<MissingPackages> FindMissingPackages(List<string> barcodesNotInPackages);
 		IEnumerable<Users> GetUserIDsAndNames();
+		Task<IEnumerable<Package>> GetPackageAsync(string packageid); //returning list because we have duplicates :/
+		List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses);
 	}
 
 	public class PackageDataProvider : IPackageDataProvider
@@ -97,8 +100,8 @@ namespace PrintAndScan4Ukraine.Data
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
 			try
 			{
-				using (MySqlConnection db = Secrets.GetConnectionString())
-					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @packageid ORDER BY id", new { packageid });
+				using MySqlConnection db = Secrets.GetConnectionString();
+				statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @packageid UNION SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusArchiveTable} WHERE packageid = @packageid ORDER BY id", new { packageid });
 
 				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 			}
@@ -179,11 +182,15 @@ namespace PrintAndScan4Ukraine.Data
 			packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
 			if (type == -2) { libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}"); }
 			else { libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
-			db.Update(packages);
 			foreach (Package p in packages)
 			{
 				if (p.PackageIDModified)
-					db.Execute($"UPDATE {Secrets.MySqlPackageStatusTable} SET packageid = @PackageId WHERE packageid = @OldPackageID", new { p.PackageId, p.OldPackageID });
+				{
+					db.Execute($"UPDATE {Secrets.MySqlPackageStatusTable} SET packageid = @NewPackageId WHERE packageid = @PackageId", new { p.PackageId, p.NewPackageId });
+					p.PackageId = p.NewPackageId;
+					p.PackageIDModified = false;
+				}
+				db.Update(p);
 			}
 			return true;
 		}
@@ -224,7 +231,7 @@ namespace PrintAndScan4Ukraine.Data
 			List<MissingPackages> results = new();
 			//lets get a list of /all/ packages
 			using MySqlConnection db = Secrets.GetConnectionString();
-			List<Package> allPackages = db.Query<Package>("SELECT packageid FROM packages").ToList();
+			List<Package> allPackages = db.Query<Package>($"SELECT packageid FROM {Secrets.MySqlPackagesTable}").ToList();
 			//find packages that aren't in the db
 			var notInDB = barcodesNotInPackages.Except(allPackages.Select(x => x.PackageId)).ToList();
 			foreach (string item in notInDB)
@@ -235,7 +242,7 @@ namespace PrintAndScan4Ukraine.Data
 			//for packages that are in db, get list of statuses for each
 			foreach (string barcode in barcodesNotInPackages)
 			{
-				var statuses = db.Query<Package_Status>("SELECT * FROM package_status WHERE packageid = @barcode", new { barcode }).ToList();
+				var statuses = db.Query<Package_Status>($"SELECT * FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @barcode", new { barcode }).ToList();
 				results.Add(new MissingPackages() { InPackages = true, Packageid = barcode, Statuses = statuses });
 			}
 
@@ -246,6 +253,36 @@ namespace PrintAndScan4Ukraine.Data
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			return db.Query<Users>("SELECT id, SUBSTRING_INDEX(`comment`, ' ', 1) AS comment FROM users");
+		}
+
+		public async Task<IEnumerable<Package>> GetPackageAsync(string packageid)
+		{
+			using MySqlConnection db = Secrets.GetConnectionString();
+			return await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid UNION SELECT * FROM {Secrets.MySqlPackagesArchiveTable} WHERE packageid = @packageid", new { packageid });
+		}
+
+		public List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses)
+		{
+			List<Package_less> list = new();
+			foreach (Package package in packages)
+			{
+				Package temp = package.CreateCopy();
+				List<Contents> t = package.Recipient_Contents.CreateCopy();
+				List<string> output = new();
+				foreach (var item in t) { output.Add($"{item.Name}: {item.Amount}"); }
+
+				var jsonParent = JsonConvert.SerializeObject(temp);
+				Package_less c = JsonConvert.DeserializeObject<Package_less>(jsonParent)!;
+				c.Contents = output.Join(Environment.NewLine);
+
+				List<Package_Status> s = statuses.Where(s => s.PackageId == c.PackageId).ToList();
+				List<string> so = new();
+				s.ForEach(x => so.Add(x.ToString()));
+				c.Statuses = so.Join(Environment.NewLine);
+
+				list.Add(c);
+			}
+			return list;
 		}
 	}
 }

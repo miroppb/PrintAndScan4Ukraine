@@ -151,25 +151,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
 				{
-					List<Package_less> list = new();
-					foreach (Package package in packages)
-					{
-						Package temp = package.CreateCopy();
-						List<Contents> t = package.Recipient_Contents.CreateCopy();
-						List<string> output = new();
-						foreach (var item in t) { output.Add($"{item.Name}: {item.Amount}"); }
-
-						var jsonParent = JsonConvert.SerializeObject(temp);
-						Package_less c = JsonConvert.DeserializeObject<Package_less>(jsonParent)!;
-						c.Contents = output.Join(Environment.NewLine);
-
-						List<Package_Status> s = statuses.Where(s => s.PackageId == c.PackageId).ToList();
-						List<string> so = new();
-						s.ForEach(x => so.Add(x.ToString()));
-						c.Statuses = so.Join(Environment.NewLine);
-
-						list.Add(c);
-					}
+					List<Package_less> list = _packageDataProvider.MapPackagesAndStatusesToLess(packages, statuses);
 
 					ExcelWorksheet? ws;
 					try
@@ -211,7 +193,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
 			historyWindow.ShowDialog();
 
-			if (historyWindow.SelectedPackageToUse != null)
+			if (historyWindow.DoubleClicked && historyWindow.SelectedPackageToUse != null)
 			{
 				libmiroppb.Log($"Replacing current Package {SelectedPackage.Id} with {JsonConvert.SerializeObject(historyWindow.SelectedPackageToUse)}");
 				Package p = historyWindow.SelectedPackageToUse;
@@ -575,6 +557,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private void ExecuteEditPackageID(object obj)
 		{
 			IsEditingPackageID = !IsEditingPackageID;
+		}
+
+		private void ExecuteShowSearch(object obj)
+		{
+			SearchSelectionWindow searchSelection = new();
+			searchSelection.ShowDialog();
 		}
 	}
 }

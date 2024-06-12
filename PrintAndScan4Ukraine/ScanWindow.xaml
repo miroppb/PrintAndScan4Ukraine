@@ -45,6 +45,9 @@
                     <MenuItem x:Name="MnuExport" Header="{Tr 'PAS4U.MainMenu.ExportMenuItem.ExportExcel.Header', DefaultText='E_xport to Excel'}" Command="{Binding ExportCommand}"
                               Visibility="{Binding AccessToExport, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </MenuItem>
+                <MenuItem Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Header', DefaultText='_Tools'}">
+                    <MenuItem x:Name="MnuSearch" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Search', DefaultText='S_earch', LanguageId='en'}" Command="{Binding ShowSearchCommand}" />
+                </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.Language', DefaultText='_Language'}">
                     <MenuItem x:Name="MnuEnglish" Header="{Tr 'LanguageName', DefaultText='_English', LanguageId='en'}" Click="MnuEnglish_Click" />
                     <MenuItem x:Name="MnuRussian" Header="{Tr 'LanguageName', DefaultText='_Russian', LanguageId='ru'}" Click="MnuRussian_Click" />
@@ -146,7 +149,7 @@
             <TextBox x:Name="TxtPackageId" Grid.Column="1" HorizontalAlignment="Left" Margin="5,0,0,0" FontSize="20" 
                      Visibility="{Binding IsEditingPackageID, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue='Hidden'}">
                 <TextBox.Text>
-                    <Binding ElementName="LstUPCAndNames" Path="SelectedItem.PackageId" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                    <Binding ElementName="LstUPCAndNames" Path="SelectedItem.NewPackageId" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
                             <local2:UniqueIDValidationRule />
                         </Binding.ValidationRules>

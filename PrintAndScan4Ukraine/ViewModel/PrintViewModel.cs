@@ -26,7 +26,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				if (columnName == nameof(Starting) || columnName == nameof(Ending))
 				{
-					if (Starting < 1000000 || Starting > 9999999 || Ending < 1000000 || Ending > 9999999)
+					if (Starting < 100000000 || Starting > 999999999 || Ending < 100000000 || Ending > 999999999)
 					{
 						CanPrint = false;
 						return "7 digits please";
@@ -63,7 +63,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 
-		private int _starting = 3000001;
+		private int _starting = 300000001;
 		public int Starting
 		{
 			get => _starting;
@@ -74,7 +74,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private int _ending = 3000002;
+		private int _ending = 300000002;
 		public int Ending
 		{
 			get => _ending;

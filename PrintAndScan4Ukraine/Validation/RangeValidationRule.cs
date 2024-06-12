@@ -1,5 +1,4 @@
-﻿using PrintAndScan4Ukraine.Data;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Controls;
 
 namespace PrintAndScan4Ukraine
@@ -10,9 +9,9 @@ namespace PrintAndScan4Ukraine
 		{
 			if (int.TryParse(value?.ToString(), out int intValue))
 			{
-				if (intValue < 1000000 || intValue > 9999999)
+				if (intValue < 100000000 || intValue > 999999999)
 				{
-					return new ValidationResult(false, "Value must be between 1000000 and 9999999.");
+					return new ValidationResult(false, "Value must be between 100000000 and 999999999.");
 				}
 			}
 			else

@@ -1,19 +1,20 @@
-﻿<Window x:Class="PrintAndScan4Ukraine.HistoryWindow"
+﻿<Window x:Class="PrintAndScan4Ukraine.SearchWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
-        Title="HistoryWindow" Height="300" Width="550" Icon="/barcode.png" WindowStartupLocation="CenterScreen">
+        Title="Search Results" Height="350" Width="550" Icon="/barcode.png" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70" />
             <RowDefinition />
+            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding SenderName, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
-        <ListView x:Name="LstItems" Grid.Row="1" Margin="20,0,20,5" ItemsSource="{Binding PreviousShipments, Mode=TwoWay}" SelectedItem="{Binding SelectedShipment, Mode=TwoWay}">
+        <TextBlock Text="{Binding TopText}" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" />
+        <ListView x:Name="LstItems" Grid.Row="1" Margin="20,0,20,5" ItemsSource="{Binding PreviousShipments}" SelectedItem="{Binding SelectedShipment, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -31,10 +32,11 @@
                         <TextBlock Text="{Binding Recipient_Name}" FontWeight="Bold" FontSize="14" />
 
                         <TextBlock Text="{Binding Recipient_Address}" Grid.Row="1" />
-                        <!--<TextBlock Text="{Binding Date_Shipped}" Grid.Row="2" />-->
+                        <TextBlock Text="{Binding Statuses}" Grid.Row="2" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Button Grid.Row="2" Content="Close" Margin="250 0" />
     </Grid>
 </Window>

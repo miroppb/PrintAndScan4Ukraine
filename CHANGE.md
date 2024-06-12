@@ -1,3 +1,10 @@
+v. 1.5.6.0
+
+- Added a Search Window, where the user can search by Package ID or by Sender's Name
+- Fixed a bug when changing Package IDs
+- Fixed a bug on the History Window, where the main package would get updated when the user clicked an old package but then X-closed the window
+- Increased the digit count from 7 to 9 on labels
+
 v. 1.5.5.3
 
 - Added ability to change Package ID (with permission)

@@ -16,12 +16,6 @@ namespace PrintAndScan4Ukraine.Model
 			get => _PackageId;
 			set
 			{
-				if (_PackageId != string.Empty && _PackageId != value)
-				{
-					PackageIDModified = true;
-					OldPackageID = _PackageId;
-				}
-
 				_PackageId = value;
 				RaisePropertyChanged();
 			}
@@ -205,9 +199,20 @@ namespace PrintAndScan4Ukraine.Model
 		[Computed]
 		public bool PackageIDModified { get; internal set; } = false;
 
+		private string _NewPackageID = string.Empty;
 		[Write(false)]
 		[Computed]
-		public string OldPackageID { get; set; } = string.Empty;
+		public string NewPackageId
+		{
+			get => _NewPackageID;
+			set
+			{
+				_NewPackageID = value;
+				if (value != PackageId)
+					PackageIDModified = true;
+				RaisePropertyChanged();
+			}
+		}
 
 		[Write(false)]
 		[Computed]

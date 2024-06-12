@@ -41,7 +41,7 @@ namespace PrintAndScan4Ukraine.Data
 						StringBuilder sb = new("^XA");
 						sb.AppendLine();
 						sb.AppendLine("^BY4,2,270");
-						sb.AppendLine($"^FO100,50^BC^FDCV{a.ToString("0000000")}US^FS");
+						sb.AppendLine($"^FO55,55^BC^FDCV{a.ToString("000000000")}US^FS");
 						sb.AppendLine();
 						sb.AppendLine("^XZ");
 
@@ -77,7 +77,7 @@ namespace PrintAndScan4Ukraine.Data
 		public bool FindPackagesBetweenRange(int starting, int ending)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			return db.ExecuteScalar<int>("SELECT COUNT(id) FROM packages WHERE SUBSTRING(packageid, 3, 7) BETWEEN @starting AND @ending AND packageid LIKE 'cv%us' LIMIT 1", new { starting, ending }) > 0;
+			return db.ExecuteScalar<int>("SELECT COUNT(id) FROM packages WHERE SUBSTRING(packageid, 3, 9) BETWEEN @starting AND @ending AND packageid LIKE 'cv%us' LIMIT 1", new { starting, ending }) > 0;
 		}
 	}
 }

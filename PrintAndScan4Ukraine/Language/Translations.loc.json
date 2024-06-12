@@ -74,6 +74,16 @@
           }
         }
       },
+      "ToolsMenu": {
+        "Header": {
+          "en": "_Tools",
+          "ru": "_Инструменты"
+        },
+        "Search": {
+          "en": "S_earch",
+          "ru": "_Поиск"
+        }
+      },
       "Language": {
         "en": "Language",
         "ru": "Язык"
@@ -323,6 +333,36 @@
       "ValueText": {
         "en": "Value?",
         "ru": "Ценность?"
+      }
+    },
+    "SearchSelectionWindow": {
+      "Title": {
+        "en": "Search Selection Window",
+        "ru": "Выбор Поиска"
+      },
+      "Package": {
+        "en": "Package",
+        "ru": "Посылка"
+      },
+      "Name": {
+        "en": "Name",
+        "ru": "Имя"
+      },
+      "Search": {
+        "en": "Search",
+        "ru": "Поиск"
+      },
+      "NoIDButStatus": {
+        "en": "{0} isn't in the database, but there statuses:{1}",
+        "ru": "{0} нету в базе, но есть статусы:{1}"
+      },
+      "NoPackages": {
+        "en": "{0} has no packages in the database",
+        "ru": "{0} нету посылок в базе"
+      },
+      "Error": {
+        "en": "An unexpected error occused. Please try again or contact your administrator",
+        "ru": "Произошла неожиданная ошибка. Пожалуйста, попробуйте еще раз или свяжитесь с администратором"
       }
     },
     "Export": {

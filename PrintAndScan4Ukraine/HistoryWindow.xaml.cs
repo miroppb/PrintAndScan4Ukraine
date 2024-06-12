@@ -12,7 +12,7 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class HistoryWindow : Window
 	{
-		HistoryViewModel _viewmodel;
+		private readonly HistoryViewModel _viewmodel;
 
 		public HistoryWindow(string NameOfSender, List<Package>? ListOfPreviousPackages)
 		{
@@ -20,10 +20,9 @@ namespace PrintAndScan4Ukraine
 			_viewmodel = new HistoryViewModel();
 			DataContext = _viewmodel;
 
-			_viewmodel.SenderName = $"{string.Format(Loc.Tr("PAS4U.HistoryWindow.TopText", "Barcodes Scanned"), NameOfSender)}";
+			_viewmodel.SenderName = $"{string.Format(Loc.Tr("PAS4U.HistoryWindow.TopText", "Sender {0}"), NameOfSender)}";
 			ObservableCollection<Package> obp = new();
-			if (ListOfPreviousPackages != null)
-				ListOfPreviousPackages.ForEach(obp.Add);
+			ListOfPreviousPackages?.ForEach(obp.Add);
 			_viewmodel.PreviousShipments = obp;
 
 			LstItems.MouseDoubleClick += LstItems_MouseDoubleClick;
@@ -48,9 +47,12 @@ namespace PrintAndScan4Ukraine
 						_viewmodel.SelectedShipment.Value = null;
 					}
 				}
+				DoubleClicked = true;
 				Close();
 			}
 		}
+
+		public bool DoubleClicked = false;
 
 		public Package? SelectedPackageToUse => _viewmodel.SelectedShipment;
 	}

@@ -49,6 +49,5 @@ namespace PrintAndScan4Ukraine.ViewModel
 				RaisePropertyChanged();
 			}
 		}
-
 	}
 }

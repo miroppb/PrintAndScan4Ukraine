@@ -60,6 +60,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			RadioDateChecked = new DelegateCommand(ExecuteRadioDateChecked);
 			RadioStatusChecked = new DelegateCommand(ExecuteRadioStatusChecked);
 			EditPackageIDCommand = new DelegateCommand(ExecuteEditPackageID, () => CanEditPackageID);
+			ShowSearchCommand = new DelegateCommand(ExecuteShowSearch, () => AccessToSeePackages && AccessToSeeSender);
 		}
 
 		private Package? _selectedPackage;
@@ -82,6 +83,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 					IsSelectedPackageShowing = Visibility.Hidden;
 				SaveCommand.RaiseCanExecuteChanged();
 				ShowHistoryCommand.RaiseCanExecuteChanged();
+
+				SelectedPackage.NewPackageId = SelectedPackage.PackageId;
 			}
 		}
 
