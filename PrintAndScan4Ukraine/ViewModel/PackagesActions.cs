@@ -55,10 +55,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
 		}
 
-		public void Save()
-		{
-			Save(SelectedPackage!);
-		}
+		public void Save() => Save(SelectedPackage);
 
 		public void Save(Package package, int type = 0)
 		{
@@ -188,7 +185,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowHistory(object a)
 		{
-			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage!.Sender_Name!);
+			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
 			HistoryWindow historyWindow = new HistoryWindow(SelectedPackage.Sender_Name!, PreviousPackages);
 			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
 			historyWindow.ShowDialog();
@@ -436,7 +433,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public void ReloadPackagesAndUpdateIfChanged()
 		{
 			if (IsOnline)
-				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage!);
+				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
 		}
 
 		internal bool? VerifyIfExists(string barCode)
@@ -566,7 +563,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (SearchSelectedPackage != string.Empty)
 			{
 				libmiroppb.Log($"{SearchSelectedPackage} has been selected");
-				SelectedPackage = Packages.FirstOrDefault(x => x.PackageId == SearchSelectedPackage);
+				var temp = Packages.FirstOrDefault(x => x.PackageId == SearchSelectedPackage);
+				if (temp != null)
+					SelectedPackage = temp;
+				else
+					System.Windows.MessageBox.Show($"PAS4U.SearchSelectionWindow.PackageNotOnList", "Selected package isn't on the list, and can't be displayed");
 			}
 		}
 

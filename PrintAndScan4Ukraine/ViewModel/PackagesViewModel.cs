@@ -64,7 +64,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 		private Package? _selectedPackage;
-		public Package? SelectedPackage
+		public Package SelectedPackage
 		{
 			get => _selectedPackage!;
 			set
@@ -84,7 +84,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				SaveCommand.RaiseCanExecuteChanged();
 				ShowHistoryCommand.RaiseCanExecuteChanged();
 
-				SelectedPackage!.NewPackageId = SelectedPackage.PackageId;
+				SelectedPackage.NewPackageId = SelectedPackage.PackageId;
 			}
 		}
 

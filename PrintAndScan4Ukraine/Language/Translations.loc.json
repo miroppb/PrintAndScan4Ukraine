@@ -367,6 +367,10 @@
       "Archive": {
         "en": "Archive?",
         "ru": "Архив?"
+      },
+      "PackageNotOnList": {
+        "en": "This package isn't on the list",
+        "ru": "Этой посылки нету в списке"
       }
     },
     "Export": {

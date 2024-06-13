@@ -1,3 +1,7 @@
+v. 1.5.6.2
+
+- Fixed bug that caused application to close if search-selected package isn't on the list
+
 v. 1.5.6.1
 
 - Added ability to double-click package in search to open it in Main-Window
