@@ -501,7 +501,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 #if DEBUG
 			Regex regex = new("");
 #else
-			Regex regex = new Regex("^cv\\d\\d\\d\\d\\d\\d\\d\\du\\ds$");
+			Regex regex = new Regex("^cv\\d{7,9}us$");
 #endif
 			Match match = regex.Match(_barcode);
 			if (match.Success)

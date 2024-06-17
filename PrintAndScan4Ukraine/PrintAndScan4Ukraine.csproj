@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>barcode.ico</ApplicationIcon>
-    <AssemblyVersion>1.5.6.3</AssemblyVersion>
+    <AssemblyVersion>1.5.6.4</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.6" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.9.0" />
     <PackageReference Include="CodingSeb.Localization" Version="1.3.0" />
     <PackageReference Include="CodingSeb.Localization.JsonFileLoader" Version="1.3.0" />
     <PackageReference Include="CodingSeb.Localization.WPF" Version="1.3.0" />
@@ -42,7 +42,7 @@
     <PackageReference Include="EPPlus" Version="7.1.3" />
     <PackageReference Include="MySqlConnector" Version="2.3.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="ServiceStack.Text.Core" Version="8.2.2" />
+    <PackageReference Include="ServiceStack.Text.Core" Version="8.3.0" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
   </ItemGroup>
 

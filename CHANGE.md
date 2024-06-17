@@ -1,3 +1,7 @@
+v. 1.5.6.4
+
+- Fixed Regex that was matching new package IDs
+
 v. 1.5.6.3
 
 - Fixed some bugs with the new ability to change package IDs.
