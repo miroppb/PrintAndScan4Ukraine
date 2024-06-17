@@ -186,9 +186,11 @@ namespace PrintAndScan4Ukraine.Data
 			{
 				if (p.PackageIDModified)
 				{
+					p.NewPackageId = p.NewPackageId.ToLower();
 					db.Execute($"UPDATE {Secrets.MySqlPackageStatusTable} SET packageid = @NewPackageId WHERE packageid = @PackageId", new { p.PackageId, p.NewPackageId });
 					p.PackageId = p.NewPackageId;
 					p.PackageIDModified = false;
+					libmiroppb.Log($"Package ID has been updated from {p.PackageId} to {p.NewPackageId}");
 				}
 				db.Update(p);
 			}

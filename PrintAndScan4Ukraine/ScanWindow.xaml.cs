@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Time;
 
 namespace PrintAndScan4Ukraine
 {
@@ -54,7 +55,7 @@ namespace PrintAndScan4Ukraine
 			Closing += ScanWindow_Closing;
 
 			//resync time
-			//ResyncTime.TryToResyncTime();
+			ResyncTime.TryToResyncTime();
 
 			SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 		}

@@ -78,13 +78,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 				{
 					IsSelectedPackageShowing = Visibility.Visible;
 					SelectedPackageLastStatus = _packageDataProvider.GetStatusByPackage(_selectedPackage.PackageId)!.LastOrDefault()!;
+					SelectedPackage.NewPackageId = SelectedPackage.PackageId.ToLower();
 				}
 				else
 					IsSelectedPackageShowing = Visibility.Hidden;
 				SaveCommand.RaiseCanExecuteChanged();
 				ShowHistoryCommand.RaiseCanExecuteChanged();
-
-				SelectedPackage.NewPackageId = SelectedPackage.PackageId;
 			}
 		}
 

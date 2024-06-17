@@ -213,8 +213,8 @@
         "ru": "Посылка уже есть"
       },
       "WrongFormatText": {
-        "en": "Package number not in correct format\n\nScanned: {0}\n\nAppropriate: CV#######US",
-        "ru": "Номер посылки не в правильном формате\n\nСканировано: {0}\n\nОжидаемий:  CV#######US"
+        "en": "Package number not in correct format\n\nScanned: {0}\n\nAppropriate: CV#########US",
+        "ru": "Номер посылки не в правильном формате\n\nСканировано: {0}\n\nОжидаемий:  CV#########US"
       }
     },
     "ScanShippedWindow": {

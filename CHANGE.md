@@ -1,3 +1,8 @@
+v. 1.5.6.3
+
+- Fixed some bugs with the new ability to change package IDs.
+- Re-enabled time resyncing when Window opens
+
 v. 1.5.6.2
 
 - Fixed bug that caused application to close if search-selected package isn't on the list
