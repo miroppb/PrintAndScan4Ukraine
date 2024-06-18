@@ -1,3 +1,8 @@
+v. 1.5.6.6
+
+- Added some more logging in various spots
+- Check if system time is different from the server time, and prompt user to resync
+
 v. 1.5.6.5
 
 - Wasn't logging the package ID change in the right spot

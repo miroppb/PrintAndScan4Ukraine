@@ -12,4 +12,10 @@
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="libmiroppb">
+      <HintPath>..\..\libmiroppb\libmiroppb\bin\Debug\libmiroppb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 ﻿using CodingSeb.Localization;
+using miroppb;
 using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Model;
@@ -61,6 +62,20 @@ namespace PrintAndScan4Ukraine.ViewModel
 			RadioStatusChecked = new DelegateCommand(ExecuteRadioStatusChecked);
 			EditPackageIDCommand = new DelegateCommand(ExecuteEditPackageID, () => CanEditPackageID);
 			ShowSearchCommand = new DelegateCommand(ExecuteShowSearch, () => AccessToSeePackages && AccessToSeeSender);
+
+			CheckSystemTime();
+		}
+
+		private void CheckSystemTime()
+		{
+			DateTime SysDate = DateTime.Now;
+			DateTime ServDate = _packageDataProvider.GetServerDate();
+			TimeSpan diff = SysDate > ServDate ? SysDate - ServDate : ServDate - SysDate;
+			if (diff.TotalHours > 1)
+			{
+				libmiroppb.Log("System time out of sync");
+				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.SystemTimeOutOfSync", "We detected that the current system time is out of sync. Please fix or run this application as Administrator")}");
+			}
 		}
 
 		private Package? _selectedPackage;

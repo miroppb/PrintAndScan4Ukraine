@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using miroppb;
+using System.Diagnostics;
 using System.Security.Principal;
 using System.ServiceProcess;
 
@@ -11,9 +12,11 @@ namespace Time
 
 		private static void StartTimeService()
 		{
+			libmiroppb.Log("We are admin!");
 			ServiceController serviceController = new("w32time");
 			if (serviceController.Status != ServiceControllerStatus.Running)
 			{
+				libmiroppb.Log("Starting w32time Service");
 				serviceController.Start();
 			}
 		}
@@ -22,6 +25,7 @@ namespace Time
 		{
 			try
 			{
+				libmiroppb.Log("Sending a resync request");
 				using Process processTime = new();
 				processTime.StartInfo.FileName = "w32tm";
 				processTime.StartInfo.Arguments = "/resync";
@@ -29,11 +33,13 @@ namespace Time
 				processTime.Start();
 				processTime.WaitForExit();
 
+				libmiroppb.Log("Request was successful");
 				return true;
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				// Handle any exceptions here
+				libmiroppb.Log($"Error with request: {ex.Message}");
 				return false;
 			}
 		}

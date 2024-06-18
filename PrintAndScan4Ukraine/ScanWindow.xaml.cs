@@ -34,7 +34,6 @@ namespace PrintAndScan4Ukraine
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
 
-
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
 		}
@@ -57,29 +56,29 @@ namespace PrintAndScan4Ukraine
 			//resync time
 			ResyncTime.TryToResyncTime();
 
-			SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+			//SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 		}
 
-		private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-		{
-			switch (e.Mode)
-			{
-				case PowerModes.Suspend:
-					libmiroppb.Log("System is going to sleep");
-					SavingOftenTimer.Stop();
-					UploadLogsTimer.Stop();
-					ReloadingPackagesTimer.Stop();
-					UploadLogs(true);
-					break;
-				case PowerModes.Resume:
-					libmiroppb.Log("System is awake");
-					SavingOftenTimer.Start();
-					UploadLogsTimer.Start();
-					ReloadingPackagesTimer.Start();
-					UploadLogs(true);
-					break;
-			}
-		}
+		//private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+		//{
+		//	switch (e.Mode)
+		//	{
+		//		case PowerModes.Suspend:
+		//			libmiroppb.Log("System is going to sleep");
+		//			SavingOftenTimer.Stop();
+		//			UploadLogsTimer.Stop();
+		//			ReloadingPackagesTimer.Stop();
+		//			UploadLogs(true);
+		//			break;
+		//		case PowerModes.Resume:
+		//			libmiroppb.Log("System is awake");
+		//			SavingOftenTimer.Start();
+		//			UploadLogsTimer.Start();
+		//			ReloadingPackagesTimer.Start();
+		//			UploadLogs(true);
+		//			break;
+		//	}
+		//}
 
 		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
 		{

@@ -181,6 +181,10 @@
       "ShortcutDoesNotExist": {
         "en": "Shortcut doesn't exist on the desktop. Create it?",
         "ru": "Ярлык не существует на рабочем столе. Создать?"
+      },
+      "SystemTimeOutOfSync": {
+        "en": "We detected that the current system time is out of sync. Please sync the time or run this application as Administrator to sync the time.",
+        "ru": "Мы обнаружили, что текущее системное время не синхронизировано. Пожалуйста, синхронизируйте время или запустите это приложение от имени администратора, чтобы синхронизировать время."
       }
     },
     "ScanNewWindow": {

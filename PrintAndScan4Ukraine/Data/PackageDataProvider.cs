@@ -32,6 +32,7 @@ namespace PrintAndScan4Ukraine.Data
 		IEnumerable<Users> GetUserIDsAndNames();
 		Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive); //returning list because we have duplicates :/
 		List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses);
+		DateTime GetServerDate();
 	}
 
 	public class PackageDataProvider : IPackageDataProvider
@@ -287,6 +288,12 @@ namespace PrintAndScan4Ukraine.Data
 				list.Add(c);
 			}
 			return list;
+		}
+
+		public DateTime GetServerDate()
+		{
+			using MySqlConnection db = Secrets.GetConnectionString();
+			return db.QuerySingle<DateTime>("SELECT NOW()");
 		}
 	}
 }
