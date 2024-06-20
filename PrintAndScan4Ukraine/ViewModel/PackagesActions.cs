@@ -186,7 +186,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private async void ShowHistory(object a)
 		{
 			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
-			HistoryWindow historyWindow = new HistoryWindow(SelectedPackage.Sender_Name!, PreviousPackages);
+			HistoryWindow historyWindow = new(SelectedPackage.Sender_Name!, PreviousPackages);
 			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
 			historyWindow.ShowDialog();
 
@@ -214,6 +214,16 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private async void ShowAddNewWindow(object a)
 		{
+			if (IsEditingPackageID)
+			{
+				AddMultipleText = Loc.Tr("PAS4U.ScanNewWindow.TopTextFind", "Scan New Barcode to Find");
+				AddMultipleVisible = Visibility.Hidden;
+			}
+			else
+			{
+				AddMultipleText = Loc.Tr("PAS4U.ScanNewWindow.TopText", "Scan New Barcode to Add");
+				AddMultipleVisible = Visibility.Visible;
+			}
 			ScanNewWindow scanNewWindow = new(this);
 			scanNewWindow.ShowDialog();
 			if (WasSomethingSet)
@@ -281,7 +291,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 			CodesScanned = "Sending codes to database. Please wait...";
 			libmiroppb.Log($"Scanned As {FromWhere}: {JsonConvert.SerializeObject(barCodes)}");
-			List<Package_Status> statuses = new List<Package_Status>();
+			List<Package_Status> statuses = new();
 			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = status }));
 			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
 
@@ -513,31 +523,38 @@ namespace PrintAndScan4Ukraine.ViewModel
 					else if (DoubleCheck.Value)
 					{
 						WasSomethingSet = false;
-						System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
+						libmiroppb.Log("Package Already Exists: " + _barcode);
+						if (!IsEditingPackageID)
+							System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
 						BarCodeThatWasSet = _barcode;
 					}
 					else
 					{
-						Insert(new()
+						if (IsEditingPackageID && System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.NewWhileEditing", "You're in the process of editing barcodes, and are about to add a new barcode"),
+							"Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
 						{
-							PackageId = _barcode,
-							Contents = JsonConvert.SerializeObject(new List<Contents>() { })
-						});
-						InsertRecordStatus(new()
-						{
-							new() {
-								PackageId = _barcode, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = 1
-							}
-						});
-						WasSomethingSet = true;
-						BarCodeThatWasSet = _barcode;
+							Insert(new()
+							{
+								PackageId = _barcode,
+								Contents = JsonConvert.SerializeObject(new List<Contents>() { })
+							});
+							InsertRecordStatus(new()
+							{
+								new() {
+									PackageId = _barcode, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = 1
+								}
+							});
+							WasSomethingSet = true;
+							BarCodeThatWasSet = _barcode;
+						}
 					}
 				}
 				else
 				{
 					WasSomethingSet = false;
 					libmiroppb.Log("Package Already Exists: " + _barcode);
-					System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
+					if (!IsEditingPackageID)
+						System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
 					BarCodeThatWasSet = _barcode;
 				}
 			}

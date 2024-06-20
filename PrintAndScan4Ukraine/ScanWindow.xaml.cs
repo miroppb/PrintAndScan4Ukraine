@@ -1,6 +1,5 @@
 ﻿using AutoUpdaterDotNET;
 using CodingSeb.Localization;
-using Microsoft.Win32;
 using miroppb;
 using PrintAndScan4Ukraine.Connection;
 using PrintAndScan4Ukraine.Data;
@@ -14,7 +13,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Time;
 
 namespace PrintAndScan4Ukraine
 {
@@ -52,33 +50,7 @@ namespace PrintAndScan4Ukraine
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
 			Closing += ScanWindow_Closing;
-
-			//resync time
-			ResyncTime.TryToResyncTime();
-
-			//SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 		}
-
-		//private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-		//{
-		//	switch (e.Mode)
-		//	{
-		//		case PowerModes.Suspend:
-		//			libmiroppb.Log("System is going to sleep");
-		//			SavingOftenTimer.Stop();
-		//			UploadLogsTimer.Stop();
-		//			ReloadingPackagesTimer.Stop();
-		//			UploadLogs(true);
-		//			break;
-		//		case PowerModes.Resume:
-		//			libmiroppb.Log("System is awake");
-		//			SavingOftenTimer.Start();
-		//			UploadLogsTimer.Start();
-		//			ReloadingPackagesTimer.Start();
-		//			UploadLogs(true);
-		//			break;
-		//	}
-		//}
 
 		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
 		{

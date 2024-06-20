@@ -1,3 +1,7 @@
+v. 1.5.6.7
+
+- When editing pacakge IDs and scanning new, prompt when adding a new and not while searching
+
 v. 1.5.6.6
 
 - Added some more logging in various spots

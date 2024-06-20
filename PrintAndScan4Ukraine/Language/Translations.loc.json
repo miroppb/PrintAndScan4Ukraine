@@ -208,6 +208,10 @@
         "en": "Scan Multiple Barcodes to Add...",
         "ru": "Отсканируйте несколько штрихкодов, чтобы добавить"
       },
+      "TopTextFind": {
+        "en": "Scan Barcode to Find...",
+        "ru": "Сканируйте штрихкод который нада найти..."
+      },
       "BottomText": {
         "en": "Or Press Enter to Close",
         "ru": "Или нажмите Enter, чтобы закрыть"
@@ -219,6 +223,10 @@
       "WrongFormatText": {
         "en": "Package number not in correct format\n\nScanned: {0}\n\nAppropriate: CV#########US",
         "ru": "Номер посылки не в правильном формате\n\nСканировано: {0}\n\nОжидаемий:  CV#########US"
+      },
+      "NewWhileEditing": {
+        "en": "You're in the process of editing barcodes, and are about to add a new barcode. Do you want to add a new barcode?",
+        "ru": "Вы находитесь в процессе редактирования штрих-кодов и собираетесь добавить новый штрихкод. Хотите добавить новый штрихкод?"
       }
     },
     "ScanShippedWindow": {

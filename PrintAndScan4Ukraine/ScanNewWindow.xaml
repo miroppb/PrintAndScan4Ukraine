@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
-        Title="{Tr 'PAS4U.ScanNewWindow.Title', DefaultText='Scan New Window'}" Height="400" Width="500" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Icon="/barcode.png">
+        Title="{Tr 'PAS4U.ScanNewWindow.Title', DefaultText='Scan New Window'}" Height="440" Width="550" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Icon="/barcode.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
