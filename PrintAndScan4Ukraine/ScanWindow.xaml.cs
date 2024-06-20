@@ -81,8 +81,8 @@ namespace PrintAndScan4Ukraine
 					_viewModel.SelectedPackage.PackageIdValid = !Validation.GetHasError(TxtPackageId);
 					if (e.Key == Key.Enter && _viewModel.SelectedPackage.PackageIdValid)
 					{
-						_viewModel.Save();
-						MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
+						if (_viewModel.Save())
+							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
 						e.Handled = true;
 					}
 				}

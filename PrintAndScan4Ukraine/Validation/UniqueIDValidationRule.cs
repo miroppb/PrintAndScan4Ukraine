@@ -1,4 +1,5 @@
 ﻿using PrintAndScan4Ukraine.Data;
+using PrintAndScan4Ukraine.ViewModel;
 using System.Globalization;
 using System.Windows.Controls;
 
@@ -11,7 +12,7 @@ namespace PrintAndScan4Ukraine
 			if (value is string newId)
 			{
 				IPackageDataProvider _provider = new PackageDataProvider();
-				if (_provider.VerifyIfExists(newId))
+				if (PackagesViewModel.StaticSelectedPackage?.PackageId != newId && _provider.VerifyIfExists(newId))
 					return new ValidationResult(false, "ID already exists.");
 			}
 

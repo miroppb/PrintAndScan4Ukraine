@@ -51,13 +51,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public void ExecuteSave(object a)
 		{
-			Save();
-			System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
+			if (Save())
+				System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
 		}
 
-		public void Save() => Save(SelectedPackage);
+		public bool Save() => Save(SelectedPackage);
 
-		public void Save(Package package, int type = 0)
+		public bool Save(Package package, int type = 0)
 		{
 			if (IsOnline && package != null)
 			{
@@ -66,8 +66,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 					package.Modified = false; //setting back as it was saved
 					package.PackageIDModified = false;
+					return true;
 				}
 			}
+			return false;
 		}
 
 		public void SaveAll(object a)

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -188,10 +189,30 @@ namespace PrintAndScan4Ukraine.Data
 				if (p.PackageIDModified)
 				{
 					p.NewPackageId = p.NewPackageId.ToLower();
-					libmiroppb.Log($"Package ID has been updated from {p.PackageId} to {p.NewPackageId}");
-					db.Execute($"UPDATE {Secrets.MySqlPackageStatusTable} SET packageid = @NewPackageId WHERE packageid = @PackageId", new { p.PackageId, p.NewPackageId });
-					p.PackageId = p.NewPackageId;
-					p.PackageIDModified = false;
+					//check if in correct format
+#if DEBUG
+					Regex regex = new Regex("^cv\\d{7,9}us$");
+#else
+					Regex regex = new Regex("^cv\\d{7,9}us$");
+#endif
+					Match match = regex.Match(p.NewPackageId);
+					bool ForceSave = false;
+					if (!match.Success)
+					{
+						ForceSave = false;
+						if (MessageBox.Show(string.Format(Loc.Tr("PAS4U.MainWindow.NewWrongPackageIDFormat", "New Package ID isn't in the correct format:\n\nScanned: {0}\n\nAppropriate: CV#########US\n\n Force save?"), p.NewPackageId), "Incorrect format", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+							ForceSave = true;
+						else
+							return false;
+					}
+
+					if (ForceSave)
+					{
+						libmiroppb.Log($"Package ID has been updated from {p.PackageId} to {p.NewPackageId}");
+						db.Execute($"UPDATE {Secrets.MySqlPackageStatusTable} SET packageid = @NewPackageId WHERE packageid = @PackageId", new { p.PackageId, p.NewPackageId });
+						p.PackageId = p.NewPackageId;
+						p.PackageIDModified = false;
+					}
 				}
 				db.Update(p);
 			}

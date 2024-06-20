@@ -1,6 +1,7 @@
 v. 1.5.6.7
 
-- When editing pacakge IDs and scanning new, prompt when adding a new and not while searching
+- When editing package IDs and scanning new, prompt when adding a new and not while searching
+- When editing package IDs, checks format, and prompts if not in correct format
 
 v. 1.5.6.6
 

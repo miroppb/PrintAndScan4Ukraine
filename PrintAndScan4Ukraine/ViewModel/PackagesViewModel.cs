@@ -19,7 +19,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 	{
 		private readonly IPackageDataProvider _packageDataProvider;
 
-		private List<string> barCodes = new List<string>();
+		private List<string> barCodes = new();
 		public bool WasSomethingSet = false;
 		public string BarCodeThatWasSet = string.Empty;
 
@@ -94,6 +94,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					IsSelectedPackageShowing = Visibility.Visible;
 					SelectedPackageLastStatus = _packageDataProvider.GetStatusByPackage(_selectedPackage.PackageId)!.LastOrDefault()!;
 					SelectedPackage.NewPackageId = SelectedPackage.PackageId.ToLower();
+					StaticSelectedPackage = SelectedPackage;
 				}
 				else
 					IsSelectedPackageShowing = Visibility.Hidden;
@@ -102,7 +103,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private Package_Status _SelectedPackageStatus = new Package_Status();
+		public static Package? StaticSelectedPackage { get; set; } = null;
+
+		private Package_Status _SelectedPackageStatus = new();
 
 		public Package_Status SelectedPackageLastStatus
 		{

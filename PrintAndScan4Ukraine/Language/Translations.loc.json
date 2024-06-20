@@ -185,6 +185,10 @@
       "SystemTimeOutOfSync": {
         "en": "We detected that the current system time is out of sync. Please sync the time or run this application as Administrator to sync the time.",
         "ru": "Мы обнаружили, что текущее системное время не синхронизировано. Пожалуйста, синхронизируйте время или запустите это приложение от имени администратора, чтобы синхронизировать время."
+      },
+      "NewWrongPackageIDFormat": {
+        "en": "New Package ID isn't in the correct format:\n\nScanned: {0}\n\nAppropriate: CV#########US\n\nDo you still want to save?",
+        "ru": "Номер посылки не в правильном формате\n\nСканировано: {0}\n\nОжидаемий: CV#########US\n\nВы все еще хотите сохранить?"
       }
     },
     "ScanNewWindow": {
