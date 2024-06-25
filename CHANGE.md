@@ -1,3 +1,8 @@
+v. 1.5.6.8
+
+- Fixed a bug where while adding a new package, application didn't save the new package
+- When scanning an existing package, list now scrolls to the selected item
+
 v. 1.5.6.7
 
 - When editing package IDs and scanning new, prompt when adding a new and not while searching

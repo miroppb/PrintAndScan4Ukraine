@@ -23,6 +23,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public bool WasSomethingSet = false;
 		public string BarCodeThatWasSet = string.Empty;
 
+		public event EventHandler? ScrollListBox = null;
 		public event PropertyChangedEventHandler? PropertyChanged;
 		protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
 		{
@@ -95,6 +96,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					SelectedPackageLastStatus = _packageDataProvider.GetStatusByPackage(_selectedPackage.PackageId)!.LastOrDefault()!;
 					SelectedPackage.NewPackageId = SelectedPackage.PackageId.ToLower();
 					StaticSelectedPackage = SelectedPackage;
+					ScrollListBox?.Invoke(this, EventArgs.Empty);
 				}
 				else
 					IsSelectedPackageShowing = Visibility.Hidden;

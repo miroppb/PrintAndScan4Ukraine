@@ -532,8 +532,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 					}
 					else
 					{
-						if (IsEditingPackageID && System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.NewWhileEditing", "You're in the process of editing barcodes, and are about to add a new barcode"),
-							"Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+						if (!IsEditingPackageID | (IsEditingPackageID && System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.NewWhileEditing", "You're in the process of editing barcodes, and are about to add a new barcode"),
+							"Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes))
 						{
 							Insert(new()
 							{

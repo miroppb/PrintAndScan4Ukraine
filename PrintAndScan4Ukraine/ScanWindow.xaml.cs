@@ -22,6 +22,7 @@ namespace PrintAndScan4Ukraine
 	public partial class ScanWindow : Window
 	{
 		private readonly PackagesViewModel _viewModel;
+		
 
 		public ScanWindow()
 		{
@@ -31,9 +32,15 @@ namespace PrintAndScan4Ukraine
 			_viewModel = new PackagesViewModel(new PackageDataProvider(), MainViewModel.GetUser());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
+			_viewModel.ScrollListBox += _viewModel_ScrollListBox;
 
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
+		}
+
+		private void _viewModel_ScrollListBox(object? sender, EventArgs e)
+		{
+			LstUPCAndNames.ScrollIntoView(_viewModel.SelectedPackage);
 		}
 
 		private async void ScanWindow_Loaded(object sender, RoutedEventArgs e)
