@@ -186,17 +186,23 @@ namespace PrintAndScan4Ukraine.Data
 			else { libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
 			foreach (Package p in packages)
 			{
+				if (p.PackageIDModified && string.IsNullOrWhiteSpace(p.NewPackageId))
+				{
+					libmiroppb.Log($"Attempt to change Package ID {p.PackageId} to an empty string");
+					MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageIdEmpty", "Package ID is empty. Not saving.")}");
+					return false;
+				}
 				if (p.PackageIDModified)
 				{
 					p.NewPackageId = p.NewPackageId.ToLower();
 					//check if in correct format
 #if DEBUG
-					Regex regex = new Regex("^cv\\d{7,9}us$");
+					Regex regex = new Regex("");
 #else
 					Regex regex = new Regex("^cv\\d{7,9}us$");
 #endif
 					Match match = regex.Match(p.NewPackageId);
-					bool ForceSave = false;
+					bool ForceSave = true;
 					if (!match.Success)
 					{
 						ForceSave = false;

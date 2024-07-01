@@ -90,6 +90,8 @@ namespace PrintAndScan4Ukraine
 					{
 						if (_viewModel.Save())
 							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
+						else
+							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageNotSaved", "Error saving package.")}", "");
 						e.Handled = true;
 					}
 				}

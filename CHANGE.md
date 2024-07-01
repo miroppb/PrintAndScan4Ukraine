@@ -1,3 +1,11 @@
+v. 1.5.6.10
+
+- Fixed a bug where the new package ID wasn't being saved in some cases
+
+v. 1.5.6.9
+
+- Prevent saving if package ID is empty.
+
 v. 1.5.6.8
 
 - Fixed a bug where while adding a new package, application didn't save the new package
