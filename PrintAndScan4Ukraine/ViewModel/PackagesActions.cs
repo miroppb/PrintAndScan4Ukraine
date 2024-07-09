@@ -209,6 +209,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsShippedWindow shippedWindow = new(this);
+			libmiroppb.Log("Opening Scan as Shipped Window");
 			shippedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -254,6 +255,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsArrivedWindow shippedWindow = new(CurrentUser);
+			libmiroppb.Log("Opening Scan as Arrived Window");
 			shippedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -263,6 +265,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsDeliveredWindow shippedWindow = new(CurrentUser);
+			libmiroppb.Log("Opening Scan as Delivered Window");
 			shippedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -291,13 +294,17 @@ namespace PrintAndScan4Ukraine.ViewModel
 					break;
 			}
 
+			DoneButtonEnabled = false;
+
 			CodesScanned = "Sending codes to database. Please wait...";
 			libmiroppb.Log($"Scanned As {FromWhere}: {JsonConvert.SerializeObject(barCodes)}");
 			List<Package_Status> statuses = new();
 			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = status }));
 			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
 
+			libmiroppb.Log("Updating statuses");
 			InsertRecordStatus(statuses);
+			libmiroppb.Log("Done");
 
 			if (status == 2)
 			{
@@ -372,16 +379,17 @@ namespace PrintAndScan4Ukraine.ViewModel
 				{
 					libmiroppb.Log($"Starting Export as {FromWhere}");
 					Export(packages);
+					libmiroppb.Log("Done");
 					if (System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.ScanShippedWindow.RemoveFromListText", "Should we remove these packages from the list?")}", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 					{
 						packages.ForEach(x => x.Removed = true);
 						UpdateRecords(packages, -2);
+						libmiroppb.Log("Done");
 					}
 				}
 			}
-
+			DoneButtonEnabled = true;
 			barCodes.Clear();
-
 			OnClosingRequest();
 		}
 

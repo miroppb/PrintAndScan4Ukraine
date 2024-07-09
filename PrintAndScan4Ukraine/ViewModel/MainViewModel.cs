@@ -13,6 +13,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
@@ -30,6 +31,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public DelegateCommand PrintCommand { get; }
 		public DelegateCommand ScanCommand { get; }
+
+		DispatcherTimer CheckinTimer = new();
 
 		public MainViewModel(IMainDataProvider mainDataProvider)
 		{
@@ -57,6 +60,19 @@ namespace PrintAndScan4Ukraine.ViewModel
 			//CheckShortcut(); //Not going to use for now. Maybe later if a need arises
 			var localTimeZone = TimeZoneInfo.Local;
 			libmiroppb.Log($"Current timezone is: {localTimeZone.DisplayName} and time is: {DateTime.Now}");
+
+			SetupHeartbeatTimer();
+		}
+
+		private void SetupHeartbeatTimer()
+		{
+			libmiroppb.Log("Setting up saving every 1 minute");
+			CheckinTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
+			CheckinTimer.Tick += delegate
+			{
+				_mainDataProvider.Heartbeat(GetUser());
+			};
+			CheckinTimer.Start();
 		}
 
 		private void CheckShortcut()
@@ -84,7 +100,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private void ClickScan(object a)
 		{
 			isVisible = false;
-			ScanWindow win = new ScanWindow();
+			ScanWindow win = new();
 			win.ShowDialog();
 			isVisible = true;
 		}
@@ -92,7 +108,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private void ClickPrint(object a)
 		{
 			isVisible = false;
-			PrintWindow win = new PrintWindow();
+			PrintWindow win = new();
 			win.ShowDialog();
 			isVisible = true;
 		}

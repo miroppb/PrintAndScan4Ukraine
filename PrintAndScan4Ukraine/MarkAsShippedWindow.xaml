@@ -11,6 +11,6 @@
         <TextBlock Text="{Tr 'PAS4U.ScanShippedWindow.TopText', DefaultText='Scan Barcodes that were shipped'}" TextWrapping="Wrap" HorizontalAlignment="Center"
                    VerticalAlignment="Center" FontSize="50" TextAlignment="Center" />
         <Button x:Name="BtnDone" Content="{Tr 'PAS4U.ScanShippedWindow.DoneText', DefaultText='Done'}" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="40" Margin="0,310,0,0"
-                Command="{Binding DoneCommand}" CommandParameter="Shipped" />
+                Command="{Binding DoneCommand}" CommandParameter="Shipped" IsEnabled="{Binding DoneButtonEnabled}" />
     </Grid>
 </Window>

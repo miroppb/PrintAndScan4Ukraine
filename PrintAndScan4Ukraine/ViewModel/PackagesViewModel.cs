@@ -296,6 +296,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+		private bool _DoneButtonEnabled = true;
+
+		public bool DoneButtonEnabled
+		{
+			get => _DoneButtonEnabled;
+			set
+			{
+				_DoneButtonEnabled = value;
+				RaisePropertyChanged();
+			}
+		}
+
 #if DEBUG
 		public static string Header => "Scan Packages v. " + Assembly.GetExecutingAssembly().GetName().Version!.ToString() + " -Debug";
 #else

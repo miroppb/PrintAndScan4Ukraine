@@ -174,7 +174,7 @@ namespace PrintAndScan4Ukraine
 			timer.Start();
 		}
 
-		private static void UploadLogs(bool deleteAfter) => libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", deleteAfter);
+		private static void UploadLogs(bool deleteAfter) => libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, deleteAfter);
 
 		private void MnuEnglish_Click(object sender, RoutedEventArgs e)
 		{

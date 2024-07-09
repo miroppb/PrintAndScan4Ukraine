@@ -44,6 +44,6 @@ namespace PrintAndScan4Ukraine
 			
 		}
 
-		private void UploadLogs(bool deleteAfter) => libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, "logs", deleteAfter);
+		private void UploadLogs(bool deleteAfter) => libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, deleteAfter);
 	}
 }

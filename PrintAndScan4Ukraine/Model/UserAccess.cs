@@ -29,5 +29,6 @@ namespace PrintAndScan4Ukraine.Model
 		public string Comment { get; init; } = string.Empty;
 		public string LastConnectedVersion { get; set; } = string.Empty;
 		public string Lang { get; set; } = string.Empty;
+        public DateTime LastCheckin { get; set; }
     }
 }

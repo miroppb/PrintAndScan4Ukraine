@@ -1,3 +1,10 @@
+v. 1.5.6.11
+
+- When Scanning as ship/arrive/deliver, the Done button is disabled while sending and exporting
+- Added a heartbeat, to check into the database
+- Added some more logging throughout the application
+- Trying to resolve the log file not uploading when it's too large
+
 v. 1.5.6.10
 
 - Fixed a bug where the new package ID wasn't being saved in some cases
