@@ -1,3 +1,7 @@
+v. 1.5.6.12
+
+- Fixed bug that was causing User info to get removed from the database
+
 v. 1.5.6.11
 
 - When Scanning as ship/arrive/deliver, the Done button is disabled while sending and exporting

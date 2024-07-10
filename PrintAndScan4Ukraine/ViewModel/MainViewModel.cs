@@ -70,7 +70,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			CheckinTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
 			CheckinTimer.Tick += delegate
 			{
-				_mainDataProvider.Heartbeat(GetUser());
+				_mainDataProvider.Heartbeat(CurrentUser);
 			};
 			CheckinTimer.Start();
 		}
@@ -138,7 +138,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 
-		private static Users? _CurrentUser = new Users() { Access = Access.None };
+		private static Users? _CurrentUser = new() { Access = Access.None };
 
 		public Users CurrentUser
 		{

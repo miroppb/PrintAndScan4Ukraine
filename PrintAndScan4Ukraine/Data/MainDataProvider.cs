@@ -25,13 +25,16 @@ namespace PrintAndScan4Ukraine.Data
 			Users user = new();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Users>($"SELECT id, access, lang FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
+				var temp = await db.QueryAsync<Users>($"SELECT id, computername, access, comment, lastconnectedversion, lang, lastcheckin FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
 				if (temp != null && temp.Any())
 				{
 					user = temp.First();
 					CultureInfo culture = CultureInfo.InstalledUICulture;
+
 					await db.ExecuteAsync($"UPDATE {Secrets.MySqlUserAccessTable} SET lastconnectedversion = @lastconnectedversion, lang = @lang, lastcheckin = @Now WHERE id = @id",
-						new { lastconnectedversion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(), id = temp.ToList()[0].Id, lang = culture.Name, DateTime.Now });
+						new { lastconnectedversion = Assembly.GetExecutingAssembly()
+										   .GetName().Version!
+										   .ToString(), id = temp.ToList()[0].Id, lang = culture.Name, DateTime.Now });
 					user.Lang = culture.Name;
 				}
 				else
@@ -39,7 +42,14 @@ namespace PrintAndScan4Ukraine.Data
 					try
 					{
 						libmiroppb.Log($"Inserting None User Access for: {Environment.MachineName}");
-						db.Insert(new Users() { ComputerName = Environment.MachineName, Access = 0, Comment = "New", LastConnectedVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(), LastCheckin = DateTime.Now });
+						db.Insert(new Users()
+						{
+							ComputerName = Environment.MachineName,
+							Access = 0,
+							Comment = "New",
+							LastConnectedVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(),
+							LastCheckin = DateTime.Now
+						});
 					}
 					catch (Exception ex)
 					{
