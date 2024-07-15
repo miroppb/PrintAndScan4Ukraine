@@ -9,6 +9,7 @@ using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -34,6 +35,7 @@ namespace PrintAndScan4Ukraine.Data
 		Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive); //returning list because we have duplicates :/
 		List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses);
 		DateTime GetServerDate();
+		long UploadExportedFile(string fileName);
 	}
 
 	public class PackageDataProvider : IPackageDataProvider
@@ -321,6 +323,19 @@ namespace PrintAndScan4Ukraine.Data
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			return db.QuerySingle<DateTime>("SELECT NOW()");
+		}
+
+		public long UploadExportedFile(string fileName)
+		{
+			using MySqlConnection db = Secrets.GetConnectionString();
+			Exports ex = new Exports()
+			{
+				Filename = Path.GetFileName(fileName),
+				Datetime = DateTime.Now,
+				Content = File.ReadAllBytes(fileName)
+			};
+			var ret = db.Insert(ex);
+			return ret;
 		}
 	}
 }

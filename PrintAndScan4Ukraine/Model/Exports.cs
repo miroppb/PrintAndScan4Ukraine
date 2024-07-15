@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using System;
 
 namespace PrintAndScan4Ukraine.Model
 {
+	[Table(Secrets.MySqlExportsTable)]
 	public class Exports
 	{
 		public int Id { get; set; }

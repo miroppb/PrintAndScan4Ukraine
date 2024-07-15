@@ -179,6 +179,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 					excelPack.Save();
 				}
 
+				_packageDataProvider.UploadExportedFile(sfd.FileName);
+
 				libmiroppb.Log($"Packages exported: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}");
 				System.Windows.MessageBox.Show($"Exported to: {sfd.FileName}");
 			}
