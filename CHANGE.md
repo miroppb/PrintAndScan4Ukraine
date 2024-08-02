@@ -1,3 +1,7 @@
+v. 1.5.7.2
+
+- Fixed some bugs in the search window
+
 v. 1.5.7.1
 
 - Added Sender/Recipient Phones to Search window

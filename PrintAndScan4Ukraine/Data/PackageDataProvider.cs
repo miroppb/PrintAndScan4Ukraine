@@ -21,7 +21,7 @@ namespace PrintAndScan4Ukraine.Data
 	public interface IPackageDataProvider
 	{
 		Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad);
-		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName);
+		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName, bool useArchive = false);
 		IEnumerable<Package_Status>? GetAllStatuses(List<string> ids);
 		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
 		Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start, DateTime end, int status);
@@ -62,13 +62,15 @@ namespace PrintAndScan4Ukraine.Data
 			return packages;
 		}
 
-		public async Task<IEnumerable<Package>?> GetByNameAsync(string SenderName)
+		public async Task<IEnumerable<Package>?> GetByNameAsync(string SenderName, bool useArchive = false)
 		{
 			libmiroppb.Log($"Get List of Packages for {SenderName}");
 			IEnumerable<Package> packages = new List<Package>();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Package>($"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE sender_name = @SenderName", new { SenderName });
+				string sql = $"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE sender_name LIKE @SenderName ";
+				if (useArchive) sql += $"UNION SELECT * FROM {Secrets.MySqlPackagesArchiveTable} WHERE sender_name LIKE @SenderName";
+				var temp = await db.QueryAsync<Package>(sql, new { SenderName = $"%{SenderName}%" });
 				packages = temp.ToList().Select(x =>
 				{
 					x.Recipient_Contents = x.Contents != null ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)! : new List<Contents>() { };
@@ -86,7 +88,7 @@ namespace PrintAndScan4Ukraine.Data
 			try
 			{
 				using (MySqlConnection db = Secrets.GetConnectionString())
-					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid IN ({string.Join(",", ids.Select(x => $"'{x}'"))}) ORDER BY id");
+					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid IN ({string.Join(",", ids.Select(x => $"'{x}'"))}) UNION SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusArchiveTable} WHERE packageid IN ({string.Join(",", ids.Select(x => $"'{x}'"))}) ORDER BY id");
 
 				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 			}

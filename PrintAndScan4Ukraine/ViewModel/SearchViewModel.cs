@@ -75,8 +75,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				libmiroppb.Log($"Searching by Sender: {SearchParam}");
 				TopText = $"Search Results for Sender: {SearchParam}";
-				var temp_packages = await _provider.GetByNameAsync(SearchParam);
-				if (temp_packages != null)
+				var temp_packages = await _provider.GetByNameAsync(SearchParam, ArchiveChecked);
+				if (temp_packages != null && temp_packages.Any())
 				{
 					var statuses = _provider.GetAllStatuses(temp_packages.Select(x => x.PackageId).ToList());
 					if (statuses != null)
@@ -93,13 +93,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (Generating)
 			{
 				libmiroppb.Log($"Results found: {JsonConvert.SerializeObject(PreviousShipments)}");
-				if (WhatAreWeSearchingFor == SearchFor.PackageID)
-					for (int a = 0; a < PreviousShipments.Count; a++)
-					{
-						int sender_length = PreviousShipments[a].Sender_Name!.Length;
-						PreviousShipments[a].Recipient_Name = $"{PreviousShipments[a].Sender_Name}: {PreviousShipments[a].Recipient_Name}";
-						PreviousShipments[a].Sender_Phone = $"{PreviousShipments[a].Sender_Phone!.PadRight(sender_length)}    :     {PreviousShipments[a].Recipient_Phone}";
-					}
+				for (int a = 0; a < PreviousShipments.Count; a++)
+				{
+					int sender_length = PreviousShipments[a].Sender_Name!.Length;
+					PreviousShipments[a].Recipient_Name = $"{PreviousShipments[a].Sender_Name}: {PreviousShipments[a].Recipient_Name}";
+					PreviousShipments[a].Sender_Phone = $"{PreviousShipments[a].Sender_Phone!.PadRight(sender_length)}    :     {PreviousShipments[a].Recipient_Phone}";
+				}
 
 				//open Search Window with options
 				SearchWindow searchWindow = new(this);
