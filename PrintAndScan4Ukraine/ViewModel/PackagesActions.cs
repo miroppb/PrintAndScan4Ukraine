@@ -596,7 +596,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				if (temp != null)
 					SelectedPackage = temp;
 				else
-					System.Windows.MessageBox.Show($"PAS4U.SearchSelectionWindow.PackageNotOnList", "Selected package isn't on the list, and can't be displayed");
+					System.Windows.MessageBox.Show(Loc.Tr($"PAS4U.SearchSelectionWindow.PackageNotOnList", "This package isn't on the list"), "Selected package isn't on the list, and can't be displayed");
 			}
 		}
 

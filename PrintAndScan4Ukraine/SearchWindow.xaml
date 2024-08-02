@@ -27,16 +27,17 @@
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
 
                         <TextBlock Text="{Binding Recipient_Name}" FontWeight="Bold" FontSize="14" />
-
-                        <TextBlock Text="{Binding Recipient_Address}" Grid.Row="1" />
-                        <TextBlock Text="{Binding Statuses}" Grid.Row="2" />
+                        <TextBlock Text="{Binding Sender_Phone}" FontWeight="Bold" FontSize="12" Grid.Row="1" />
+                        <TextBlock Text="{Binding Recipient_Address}" Grid.Row="2" />
+                        <TextBlock Text="{Binding Statuses}" Grid.Row="3" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Grid.Row="2" Content="Close" Margin="250 0" />
+        <Button Grid.Row="2" Content="Close" Margin="250 0" Command="{Binding CloseCommand}" />
     </Grid>
 </Window>

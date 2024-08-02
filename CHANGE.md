@@ -1,3 +1,7 @@
+v. 1.5.7.1
+
+- Added Sender/Recipient Phones to Search window
+
 v. 1.5.7.0
 
 - When exporting, the file is uploaded to the database

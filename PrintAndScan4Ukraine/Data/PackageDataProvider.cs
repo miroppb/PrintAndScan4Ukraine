@@ -291,7 +291,7 @@ namespace PrintAndScan4Ukraine.Data
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			string sql = $"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid ";
-			if (useArchive) sql += $"UNION SELECT * FROM {{Secrets.MySqlPackagesArchiveTable}} WHERE packageid = @packageid";
+			if (useArchive) sql += $"UNION SELECT * FROM {Secrets.MySqlPackagesArchiveTable} WHERE packageid = @packageid";
 			return await db.QueryAsync<Package>(sql, new { packageid });
 		}
 
