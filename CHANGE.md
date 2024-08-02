@@ -1,3 +1,7 @@
+v. 1.5.7.3
+
+- Added Package ID to Search Window
+
 v. 1.5.7.2
 
 - Fixed some bugs in the search window
