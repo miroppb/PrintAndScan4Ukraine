@@ -116,7 +116,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				return false;
 		}
 
-		public bool Export(IEnumerable<Package> packages)
+		public bool Export(IEnumerable<Package> packages, bool useArchive = false)
 		{
 			libmiroppb.Log($"Starting Export");
 			SaveFileDialog sfd = new()
@@ -143,7 +143,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 
 				//lets get all statuses
-				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses(Packages.Select(x => x.PackageId).ToList())!.ToList();
+				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses(packages.Select(x => x.PackageId).ToList(), useArchive)!.ToList();
 
 				libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
 				ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -256,9 +256,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private async void ShowArriveWindow(object a)
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
-			MarkAsArrivedWindow shippedWindow = new(CurrentUser);
+			MarkAsArrivedWindow arrivedWindow = new(CurrentUser);
 			libmiroppb.Log("Opening Scan as Arrived Window");
-			shippedWindow.ShowDialog();
+			arrivedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
 		}
@@ -266,9 +266,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private async void ShowDeliverWindow(object a)
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
-			MarkAsDeliveredWindow shippedWindow = new(CurrentUser);
+			MarkAsDeliveredWindow deliveredWindow = new(CurrentUser);
 			libmiroppb.Log("Opening Scan as Delivered Window");
-			shippedWindow.ShowDialog();
+			deliveredWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
 		}
@@ -280,7 +280,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			win.ShowDialog();
 		}
 
-		private void ExecuteDoneCommand(object FromWhere)
+		private async void ExecuteDoneCommand(object FromWhere)
 		{
 			int status = 1;
 			switch (FromWhere.ToString())
@@ -377,7 +377,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					}
 				}
 
-				if (barCodes.Count > 0)
+				if (packages.Any())
 				{
 					libmiroppb.Log($"Starting Export as {FromWhere}");
 					Export(packages);
@@ -388,6 +388,33 @@ namespace PrintAndScan4Ukraine.ViewModel
 						UpdateRecords(packages, -2);
 						libmiroppb.Log("Done");
 					}
+				}
+			}
+			else if (status == 3)
+			{
+				//get packages from db for all scanned barcodes
+				IEnumerable<Package> packages = await _packageDataProvider.GetPackagesAsync(barCodes, true);
+				List<Package> packages1 = packages.ToList();
+				
+				//find packages that don't have records
+				List<string> BarcodesNotInPackages = barCodes.Where(s => !packages.Any(p => p.PackageId == s)).ToList();
+
+				//prompt to save the list to desktop
+				if (BarcodesNotInPackages.Count > 0)
+				{
+					System.Windows.MessageBox.Show(string.Format($"{Loc.Tr("PAS4U.ScanShippedWindow.ScannedButNotOnListText", "Following barcodes were scanned but not on list of packages:{0}{0}{1}{0}{0}The new statuses will be added to the database. " +
+						"List will be saved on the desktop")}", Environment.NewLine, string.Join(", ", BarcodesNotInPackages)));
+					StreamWriter w = new(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\Arrived_{DateTime.Now:MM-dd-yyyy}.txt");
+					w.WriteLine($"Barcodes scanned as arrived that weren't on the list on {DateTime.Now:MM/dd/yyyy}:");
+					BarcodesNotInPackages.ForEach(w.WriteLine);
+					w.Close();
+				}
+				//if barcodes > 0, export Excel
+				if (packages.Any())
+				{
+					libmiroppb.Log($"Starting Export as {FromWhere}");
+					Export(packages);
+					libmiroppb.Log("Done");
 				}
 			}
 			DoneButtonEnabled = true;

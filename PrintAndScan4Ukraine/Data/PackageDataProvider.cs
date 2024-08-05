@@ -22,7 +22,7 @@ namespace PrintAndScan4Ukraine.Data
 	{
 		Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad);
 		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName, bool useArchive = false);
-		IEnumerable<Package_Status>? GetAllStatuses(List<string> ids);
+		IEnumerable<Package_Status>? GetAllStatuses(List<string> ids, bool useArchive = false);
 		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
 		Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start, DateTime end, int status);
 		bool InsertRecord(Package package);
@@ -33,6 +33,7 @@ namespace PrintAndScan4Ukraine.Data
 		IEnumerable<MissingPackages> FindMissingPackages(List<string> barcodesNotInPackages);
 		IEnumerable<Users> GetUserIDsAndNames();
 		Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive); //returning list because we have duplicates :/
+		Task<IEnumerable<Package>> GetPackagesAsync(List<string> packages, bool useArchive = false);
 		List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses);
 		DateTime GetServerDate();
 		long UploadExportedFile(string fileName);
@@ -81,16 +82,28 @@ namespace PrintAndScan4Ukraine.Data
 			return packages;
 		}
 
-		public IEnumerable<Package_Status>? GetAllStatuses(List<string> ids)
+		public IEnumerable<Package_Status>? GetAllStatuses(List<string> ids, bool useArchive = false)
 		{
 			libmiroppb.Log("Get List of Packages Statuses");
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
 			try
 			{
-				using (MySqlConnection db = Secrets.GetConnectionString())
-					statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid IN ({string.Join(",", ids.Select(x => $"'{x}'"))}) UNION SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusArchiveTable} WHERE packageid IN ({string.Join(",", ids.Select(x => $"'{x}'"))}) ORDER BY id");
+				using MySqlConnection db = Secrets.GetConnectionString();
+				// Create SQL query
+				string baseSql = $"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid IN ({string.Join(",", ids.Select((_, i) => $"@id{i}"))})";
+				string unionSql = useArchive
+					? $"UNION SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusArchiveTable} WHERE packageid IN ({string.Join(",", ids.Select((_, i) => $"@id{i}"))})"
+					: string.Empty;
+
+				string sql = $"{baseSql} {unionSql} ORDER BY id";
+
+				// Create parameters dictionary
+				var parameters = ids.Select((id, index) => new { Name = $"@id{index}", Value = id })
+									.ToDictionary(p => p.Name, p => (object)p.Value);
 
 				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
+
+				statuses = db.Query<Package_Status>(sql, parameters);
 			}
 			catch
 			{
@@ -330,13 +343,27 @@ namespace PrintAndScan4Ukraine.Data
 		public long UploadExportedFile(string fileName)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			Exports ex = new Exports()
+			Exports ex = new()
 			{
 				Filename = Path.GetFileName(fileName),
 				Datetime = DateTime.Now,
 				Content = File.ReadAllBytes(fileName)
 			};
 			var ret = db.Insert(ex);
+			return ret;
+		}
+
+		public async Task<IEnumerable<Package>> GetPackagesAsync(List<string> packages, bool useArchive = false)
+		{
+			if (packages == null || packages.Count == 0)
+				return new List<Package>();
+
+			using MySqlConnection db = Secrets.GetConnectionString();
+			string sql = $"SELECT * FROM {Secrets.MySqlPackagesTable} WHERE packageid IN ({string.Join(',', packages.Select((_, i) => $"@p{i}"))})";
+			if (useArchive)
+				sql += $" UNION SELECT * FROM {Secrets.MySqlPackagesArchiveTable} WHERE packageid IN ({string.Join(',', packages.Select((_, i) => $"@p{i}"))})";
+			var parameters = packages.Select((pkg, i) => new { Name = $"@p{i}", Value = pkg }).ToDictionary(p => p.Name, p => (object)p.Value);
+			var ret = await db.QueryAsync<Package>(sql, parameters);
 			return ret;
 		}
 	}

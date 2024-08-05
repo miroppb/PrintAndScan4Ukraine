@@ -1,3 +1,7 @@
+v. 1.5.8.0
+
+- When Marking as Arrived, exports the packages to an Excel spreadsheet
+
 v. 1.5.7.3
 
 - Added Package ID to Search Window
