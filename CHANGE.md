@@ -1,3 +1,7 @@
+v. 1.5.8.1
+
+- Logs weren't being uploaded
+
 v. 1.5.8.0
 
 - When Marking as Arrived, exports the packages to an Excel spreadsheet
