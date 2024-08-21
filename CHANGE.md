@@ -1,6 +1,6 @@
 v. 1.5.8.2-3
 
-- Temporarily upload only top 100 records to log
+- Temporarily upload only top 100 records to log (fixed libmiroppb not finding the correct dir)
 
 v. 1.5.8.1
 
