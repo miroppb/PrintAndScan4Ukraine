@@ -1,3 +1,7 @@
+v. 1.5.8.2
+
+- Temporarily upload only top 100 records to log
+
 v. 1.5.8.1
 
 - Logs weren't being uploaded
