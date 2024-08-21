@@ -1,4 +1,4 @@
-v. 1.5.8.2
+v. 1.5.8.2-3
 
 - Temporarily upload only top 100 records to log
 

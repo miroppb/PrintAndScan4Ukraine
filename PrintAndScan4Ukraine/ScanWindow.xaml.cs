@@ -59,13 +59,10 @@ namespace PrintAndScan4Ukraine
 			Closing += ScanWindow_Closing;
 		}
 
-		private void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+		private async void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
 		{
 			libmiroppb.Log("Application closing");
-			Thread uploadThread = new(() => UploadLogs(true));
-
-			// Start the thread
-			uploadThread.Start();
+			await UploadLogs(true);
 		}
 
 		private void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -119,10 +116,10 @@ namespace PrintAndScan4Ukraine
 			AutoUpdater.Start(Secrets.GetUpdateURL()); //Checking for update on start
 		}
 
-		private void AutoUpdater_ApplicationExitEvent()
+		private async void AutoUpdater_ApplicationExitEvent()
 		{
 			libmiroppb.Log("Update starting");
-			UploadLogs(true);
+			await UploadLogs(true);
 			Environment.Exit(0); //Application.Current.Shutdown wasn't working for a customer
 		}
 
@@ -131,9 +128,9 @@ namespace PrintAndScan4Ukraine
 			int minutes = 10;
 			libmiroppb.Log($"Setting up uploading logs every {minutes} minutes");
 			UploadLogsTimer = new() { Interval = TimeSpan.FromMinutes(minutes) };
-			UploadLogsTimer.Tick += delegate
+			UploadLogsTimer.Tick += async delegate
 			{
-				UploadLogs(true);
+				await UploadLogs(true);
 			};
 			UploadLogsTimer.Start();
 		}
@@ -174,7 +171,7 @@ namespace PrintAndScan4Ukraine
 			timer.Start();
 		}
 
-		private static void UploadLogs(bool deleteAfter) => libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, deleteAfter);
+		private static async Task UploadLogs(bool deleteAfter) => await libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, deleteAfter);
 
 		private void MnuEnglish_Click(object sender, RoutedEventArgs e)
 		{
