@@ -53,7 +53,7 @@ namespace PrintAndScan4Ukraine.Data
 					}
 				}
 			}
-			catch (Exception ex) { libmiroppb.Log($"Exception: {ex.Message}"); }
+			catch (Exception ex) { Libmiroppb.Log($"Exception: {ex.Message}"); }
 
 			return true;
 		}

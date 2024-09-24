@@ -118,7 +118,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public bool Export(IEnumerable<Package> packages, bool useArchive = false)
 		{
-			libmiroppb.Log($"Starting Export");
+			Libmiroppb.Log($"Starting Export");
 			SaveFileDialog sfd = new()
 			{
 				Filter = "Excel File|*.xlsx"
@@ -132,20 +132,20 @@ namespace PrintAndScan4Ukraine.ViewModel
 					if (System.Windows.Forms.MessageBox.Show($"{Loc.Tr("PAS4U.ScanShippedWindow.ExportingFileAlreadyExists", "Selected file already exists. Do you want to add selected packages to it?")}", "",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
 					{
-						libmiroppb.Log($"Selected file {sfd.FileName} exists. Not adding packages to file");
+						Libmiroppb.Log($"Selected file {sfd.FileName} exists. Not adding packages to file");
 						return false;
 					}
 					else
-						libmiroppb.Log($"Selected file {sfd.FileName} exists. Adding packages to file");
+						Libmiroppb.Log($"Selected file {sfd.FileName} exists. Adding packages to file");
 				}
 				else
-					libmiroppb.Log($"Selected file {sfd.FileName} is a new file");
+					Libmiroppb.Log($"Selected file {sfd.FileName} is a new file");
 
 
 				//lets get all statuses
 				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses(packages.Select(x => x.PackageId).ToList(), useArchive)!.ToList();
 
-				libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
+				Libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
 				ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
 				using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
@@ -181,7 +181,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				_packageDataProvider.UploadExportedFile(sfd.FileName);
 
-				libmiroppb.Log($"Packages exported: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}");
+				Libmiroppb.Log($"Packages exported: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}");
 				System.Windows.MessageBox.Show($"Exported to: {sfd.FileName}");
 			}
 			return true;
@@ -191,12 +191,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
 			HistoryWindow historyWindow = new(SelectedPackage.Sender_Name!, PreviousPackages);
-			libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
+			Libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
 			historyWindow.ShowDialog();
 
 			if (historyWindow.DoubleClicked && historyWindow.SelectedPackageToUse != null)
 			{
-				libmiroppb.Log($"Replacing current Package {SelectedPackage.Id} with {JsonConvert.SerializeObject(historyWindow.SelectedPackageToUse)}");
+				Libmiroppb.Log($"Replacing current Package {SelectedPackage.Id} with {JsonConvert.SerializeObject(historyWindow.SelectedPackageToUse)}");
 				Package p = historyWindow.SelectedPackageToUse;
 				SelectedPackage.Recipient_Name = p.Recipient_Name;
 				SelectedPackage.Recipient_Address = p.Recipient_Address;
@@ -211,7 +211,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsShippedWindow shippedWindow = new(this);
-			libmiroppb.Log("Opening Scan as Shipped Window");
+			Libmiroppb.Log("Opening Scan as Shipped Window");
 			shippedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -257,7 +257,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsArrivedWindow arrivedWindow = new(CurrentUser);
-			libmiroppb.Log("Opening Scan as Arrived Window");
+			Libmiroppb.Log("Opening Scan as Arrived Window");
 			arrivedWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -267,7 +267,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsDeliveredWindow deliveredWindow = new(CurrentUser);
-			libmiroppb.Log("Opening Scan as Delivered Window");
+			Libmiroppb.Log("Opening Scan as Delivered Window");
 			deliveredWindow.ShowDialog();
 			await LoadAsync();
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
@@ -299,14 +299,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 			DoneButtonEnabled = false;
 
 			CodesScanned = "Sending codes to database. Please wait...";
-			libmiroppb.Log($"Scanned As {FromWhere}: {JsonConvert.SerializeObject(barCodes)}");
+			Libmiroppb.Log($"Scanned As {FromWhere}: {JsonConvert.SerializeObject(barCodes)}");
 			List<Package_Status> statuses = new();
 			barCodes.ForEach(x => statuses.Add(new() { PackageId = x, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = status }));
 			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
 
-			libmiroppb.Log("Updating statuses");
+			Libmiroppb.Log("Updating statuses");
 			InsertRecordStatus(statuses);
-			libmiroppb.Log("Done");
+			Libmiroppb.Log("Done");
 
 			if (status == 2)
 			{
@@ -379,14 +379,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				if (packages.Any())
 				{
-					libmiroppb.Log($"Starting Export as {FromWhere}");
+					Libmiroppb.Log($"Starting Export as {FromWhere}");
 					Export(packages);
-					libmiroppb.Log("Done");
+					Libmiroppb.Log("Done");
 					if (System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.ScanShippedWindow.RemoveFromListText", "Should we remove these packages from the list?")}", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 					{
 						packages.ForEach(x => x.Removed = true);
 						UpdateRecords(packages, -2);
-						libmiroppb.Log("Done");
+						Libmiroppb.Log("Done");
 					}
 				}
 			}
@@ -412,9 +412,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 				//if barcodes > 0, export Excel
 				if (packages.Any())
 				{
-					libmiroppb.Log($"Starting Export as {FromWhere}");
+					Libmiroppb.Log($"Starting Export as {FromWhere}");
 					Export(packages);
-					libmiroppb.Log("Done");
+					Libmiroppb.Log("Done");
 				}
 			}
 			DoneButtonEnabled = true;
@@ -439,7 +439,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			IEnumerable<Package>? PackagesFromDates = await _packageDataProvider.GetPackagesByDateAndLastStatusAsync(ExportStartDate, ExportEndDate, ReportLastStatus);
 
 			stopwatch.Stop();
-			libmiroppb.Log($"Generating report for: {ExportStartDate}, {ExportEndDate}, {ReportLastStatus}. Ran for: {stopwatch.Elapsed}");
+			Libmiroppb.Log($"Generating report for: {ExportStartDate}, {ExportEndDate}, {ReportLastStatus}. Ran for: {stopwatch.Elapsed}");
 
 			OnClosingRequest();
 
@@ -562,7 +562,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					else if (DoubleCheck.Value)
 					{
 						WasSomethingSet = false;
-						libmiroppb.Log("Package Already Exists: " + _barcode);
+						Libmiroppb.Log("Package Already Exists: " + _barcode);
 						if (!IsEditingPackageID)
 							System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
 						BarCodeThatWasSet = _barcode;
@@ -591,7 +591,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				else
 				{
 					WasSomethingSet = false;
-					libmiroppb.Log("Package Already Exists: " + _barcode);
+					Libmiroppb.Log("Package Already Exists: " + _barcode);
 					if (!IsEditingPackageID)
 						System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.AlreadyExistsText", "Package already exists"));
 					BarCodeThatWasSet = _barcode;
@@ -600,7 +600,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			else
 			{
 				WasSomethingSet = false;
-				libmiroppb.Log("Wrong Format: " + _barcode);
+				Libmiroppb.Log("Wrong Format: " + _barcode);
 				string WrongText = string.Format(Loc.Tr("PAS4U.ScanNewWindow.WrongFormatText", "Package number not in correct format\n\nNumber: {0}"), _barcode);
 				System.Windows.MessageBox.Show(WrongText);
 				BarCodeThatWasSet = string.Empty;
@@ -618,7 +618,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			searchSelection.ShowDialog();
 			if (SearchSelectedPackage != string.Empty)
 			{
-				libmiroppb.Log($"{SearchSelectedPackage} has been selected");
+				Libmiroppb.Log($"{SearchSelectedPackage} has been selected");
 				var temp = Packages.FirstOrDefault(x => x.PackageId == SearchSelectedPackage);
 				if (temp != null)
 					SelectedPackage = temp;

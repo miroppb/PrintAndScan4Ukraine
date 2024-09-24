@@ -28,17 +28,17 @@ namespace PrintAndScan4Ukraine
 		{
 			InitializeComponent();
 
-			libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
+			Libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
 			_viewModel = new PackagesViewModel(new PackageDataProvider(), MainViewModel.GetUser());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
-			_viewModel.ScrollListBox += _viewModel_ScrollListBox;
+			_viewModel.ScrollListBox += ViewModel_ScrollListBox;
 
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
 		}
 
-		private void _viewModel_ScrollListBox(object? sender, EventArgs e)
+		private void ViewModel_ScrollListBox(object? sender, EventArgs e)
 		{
 			LstUPCAndNames.ScrollIntoView(_viewModel.SelectedPackage);
 		}
@@ -61,7 +61,7 @@ namespace PrintAndScan4Ukraine
 
 		private async void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
 		{
-			libmiroppb.Log("Application closing");
+			Libmiroppb.Log("Application closing");
 			await UploadLogs(true);
 		}
 
@@ -103,22 +103,22 @@ namespace PrintAndScan4Ukraine
 		private static void SetupUpdater()
 		{
 			int minutes = 2;
-			libmiroppb.Log($"Setting up the Updater for every {minutes} minutes");
+			Libmiroppb.Log($"Setting up the Updater for every {minutes} minutes");
 			DispatcherTimer timer = new() { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
-				libmiroppb.Log("Checking for update...");
+				Libmiroppb.Log("Checking for update...");
 				AutoUpdater.Start(Secrets.GetUpdateURL());
 			};
 			timer.Start();
 
-			libmiroppb.Log("Checking for update...");
+			Libmiroppb.Log("Checking for update...");
 			AutoUpdater.Start(Secrets.GetUpdateURL()); //Checking for update on start
 		}
 
 		private async void AutoUpdater_ApplicationExitEvent()
 		{
-			libmiroppb.Log("Update starting");
+			Libmiroppb.Log("Update starting");
 			await UploadLogs(true);
 			Environment.Exit(0); //Application.Current.Shutdown wasn't working for a customer
 		}
@@ -126,7 +126,7 @@ namespace PrintAndScan4Ukraine
 		private void SetupLogUploader()
 		{
 			int minutes = 10;
-			libmiroppb.Log($"Setting up uploading logs every {minutes} minutes");
+			Libmiroppb.Log($"Setting up uploading logs every {minutes} minutes");
 			UploadLogsTimer = new() { Interval = TimeSpan.FromMinutes(minutes) };
 			UploadLogsTimer.Tick += async delegate
 			{
@@ -137,7 +137,7 @@ namespace PrintAndScan4Ukraine
 
 		private void SetupSavingOften()
 		{
-			libmiroppb.Log("Setting up saving every 1 minute");
+			Libmiroppb.Log("Setting up saving every 1 minute");
 			SavingOftenTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
 			SavingOftenTimer.Tick += delegate
 			{
@@ -150,7 +150,7 @@ namespace PrintAndScan4Ukraine
 		private void SetupReloadingPackages()
 		{
 			int minutes = 2;
-			libmiroppb.Log($"Setting up refreshing packages every {minutes} minute(s)");
+			Libmiroppb.Log($"Setting up refreshing packages every {minutes} minute(s)");
 			ReloadingPackagesTimer = new() { Interval = TimeSpan.FromMinutes(minutes) };
 			ReloadingPackagesTimer.Tick += delegate
 			{
@@ -162,7 +162,7 @@ namespace PrintAndScan4Ukraine
 		private void SetupOnlineCheck()
 		{
 			int minutes = 1;
-			libmiroppb.Log($"Setting up checking Internet every {minutes} minutes");
+			Libmiroppb.Log($"Setting up checking Internet every {minutes} minutes");
 			DispatcherTimer timer = new() { Interval = TimeSpan.FromMinutes(minutes) };
 			timer.Tick += delegate
 			{
@@ -171,7 +171,7 @@ namespace PrintAndScan4Ukraine
 			timer.Start();
 		}
 
-		private static async Task UploadLogs(bool deleteAfter) => await libmiroppb.UploadLog(Secrets.GetConnectionString().ConnectionString, deleteAfter);
+		private static async Task UploadLogs(bool deleteAfter) => await Libmiroppb.UploadLogAsync(Secrets.GetConnectionString().ConnectionString, deleteAfter);
 
 		private void MnuEnglish_Click(object sender, RoutedEventArgs e)
 		{

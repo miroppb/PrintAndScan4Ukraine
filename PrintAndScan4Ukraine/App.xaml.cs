@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace PrintAndScan4Ukraine
@@ -28,26 +29,71 @@ namespace PrintAndScan4Ukraine
 			const string appName = "PrintAndScan4Ukraine";
 			bool createdNew;
 
+			// Try to create a mutex to ensure only one instance of the app is running
 			_mutex = new Mutex(true, appName, out createdNew);
 
 			if (!createdNew)
 			{
-				//app is already running! Exiting the application
-				MessageBox.Show("App is already running.");
-				libmiroppb.Log("Trying to open already running application");
-				Process current = Process.GetCurrentProcess();
-				foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+				// If the app is already running, prompt the user
+				var result = MessageBox.Show("App is already running. Do you want to close it?", "", MessageBoxButton.YesNo);
+
+				if (result == MessageBoxResult.Yes)
 				{
-					if (process.Id != current.Id)
-					{
-						SetForegroundWindow(process.MainWindowHandle);
-						break;
-					}
+					// Signal the running instance to close gracefully, don't forcefully kill
+					NotifyExistingInstanceToShutdown(appName);
 				}
-				Application.Current.Shutdown();
+				else
+				{
+					// Bring the existing instance to the foreground instead of launching a new one
+					BringRunningInstanceToForeground();
+				}
+
+				// Exit the new instance since the app is already running
+				Current.Shutdown();
+				return;
 			}
 
+			MonitorForShutdownSignal();
+
+			// Continue with normal startup if no other instance is running
 			base.OnStartup(e);
+		}
+
+		private void NotifyExistingInstanceToShutdown(string appName)
+		{
+			// Set the shutdown event to signal the existing instance
+			var shutdownEvent = new EventWaitHandle(false, EventResetMode.ManualReset, "PrintAndScan4Ukraine_ShutdownEvent");
+			shutdownEvent.Set(); // Signal the running instance to shut down gracefully.
+		}
+
+		private void BringRunningInstanceToForeground()
+		{
+			// Find the running process and bring its main window to the front
+			Process current = Process.GetCurrentProcess();
+			foreach (Process process in Process.GetProcessesByName(current.ProcessName))
+			{
+				if (process.Id != current.Id)
+				{
+					SetForegroundWindow(process.MainWindowHandle);
+					break;
+				}
+			}
+		}
+		public static void MonitorForShutdownSignal()
+		{
+			var shutdownEvent = new EventWaitHandle(false, EventResetMode.ManualReset, "PrintAndScan4Ukraine_ShutdownEvent");
+
+			Task.Run(() =>
+			{
+				// Wait until the shutdown event is signaled
+				shutdownEvent.WaitOne();
+
+				// Gracefully shut down the application
+				Current.Dispatcher.Invoke(() =>
+				{
+					Current.Shutdown();
+				});
+			});
 		}
 	}
 }

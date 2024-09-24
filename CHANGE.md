@@ -1,3 +1,7 @@
+v. 1.5.8.4
+
+- Minor updates. Reworked logging library :shrug: Trying to handle logs not uploading
+
 v. 1.5.8.2-3
 
 - Temporarily upload only top 100 records to log (fixed libmiroppb not finding the correct dir)

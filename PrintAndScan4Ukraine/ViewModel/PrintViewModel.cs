@@ -124,7 +124,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private async void Print(object a)
 		{
 			CanPrint = false;
-			libmiroppb.Log($"Printing from {Starting} to {Ending}, {Copies} copies, to printer {SelectedPrinter}");
+			Libmiroppb.Log($"Printing from {Starting} to {Ending}, {Copies} copies, to printer {SelectedPrinter}");
 			_dataProvider.PrintBarcodes(Starting, Ending, Copies, SelectedPrinter);
 			await Task.Delay(2000);
 			CanPrint = true;
@@ -132,7 +132,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		private void CancelPrinting(object obj)
 		{
-			libmiroppb.Log("Trying to cancel any print jobs...");
+			Libmiroppb.Log("Trying to cancel any print jobs...");
 			CanCancel = !_dataProvider.CancelPrinting(SelectedPrinter);
 		}
 

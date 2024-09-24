@@ -74,7 +74,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			TimeSpan diff = SysDate > ServDate ? SysDate - ServDate : ServDate - SysDate;
 			if (diff.TotalHours > 1)
 			{
-				libmiroppb.Log("System time out of sync");
+				Libmiroppb.Log("System time out of sync");
 				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.SystemTimeOutOfSync", "We detected that the current system time is out of sync. Please fix or run this application as Administrator")}");
 			}
 		}

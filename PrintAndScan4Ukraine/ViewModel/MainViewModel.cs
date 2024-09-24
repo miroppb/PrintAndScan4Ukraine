@@ -59,14 +59,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 			//CheckShortcut(); //Not going to use for now. Maybe later if a need arises
 			var localTimeZone = TimeZoneInfo.Local;
-			libmiroppb.Log($"Current timezone is: {localTimeZone.DisplayName} and time is: {DateTime.Now}");
+			Libmiroppb.Log($"Current timezone is: {localTimeZone.DisplayName} and time is: {DateTime.Now}");
 
 			SetupHeartbeatTimer();
 		}
 
 		private void SetupHeartbeatTimer()
 		{
-			libmiroppb.Log("Setting up saving every 1 minute");
+			Libmiroppb.Log("Setting up saving every 1 minute");
 			CheckinTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
 			CheckinTimer.Tick += delegate
 			{

@@ -53,7 +53,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			PreviousShipments.Clear();
 			if (WhatAreWeSearchingFor == SearchFor.PackageID)
 			{
-				libmiroppb.Log($"Searching for Package: {SearchParam}");
+				Libmiroppb.Log($"Searching for Package: {SearchParam}");
 				TopText = $"Search Results for Package: {SearchParam}";
 				var temp_packages = await _provider.GetPackageAsync(SearchParam, ArchiveChecked);
 				var statuses = _provider.GetStatusByPackage(SearchParam);
@@ -73,7 +73,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 			else
 			{
-				libmiroppb.Log($"Searching by Sender: {SearchParam}");
+				Libmiroppb.Log($"Searching by Sender: {SearchParam}");
 				TopText = $"Search Results for Sender: {SearchParam}";
 				var temp_packages = await _provider.GetByNameAsync(SearchParam, ArchiveChecked);
 				if (temp_packages != null && temp_packages.Any())
@@ -92,7 +92,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 			if (Generating)
 			{
-				libmiroppb.Log($"Results found: {JsonConvert.SerializeObject(PreviousShipments)}");
+				Libmiroppb.Log($"Results found: {JsonConvert.SerializeObject(PreviousShipments)}");
 				for (int a = 0; a < PreviousShipments.Count; a++)
 				{
 					int sender_length = PreviousShipments[a].Sender_Name!.Length;

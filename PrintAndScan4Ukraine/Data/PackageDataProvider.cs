@@ -43,7 +43,7 @@ namespace PrintAndScan4Ukraine.Data
 	{
 		public async Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad)
 		{
-			libmiroppb.Log($"Get List of Packages{(initialLoad ? "" : " for a refresh")}");
+			Libmiroppb.Log($"Get List of Packages{(initialLoad ? "" : " for a refresh")}");
 			IEnumerable<Package> packages = new List<Package>();
 			try
 			{
@@ -57,7 +57,7 @@ namespace PrintAndScan4Ukraine.Data
 			}
 			catch
 			{
-				libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
+				Libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
 				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
 			}
 			return packages;
@@ -65,7 +65,7 @@ namespace PrintAndScan4Ukraine.Data
 
 		public async Task<IEnumerable<Package>?> GetByNameAsync(string SenderName, bool useArchive = false)
 		{
-			libmiroppb.Log($"Get List of Packages for {SenderName}");
+			Libmiroppb.Log($"Get List of Packages for {SenderName}");
 			IEnumerable<Package> packages = new List<Package>();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
@@ -78,13 +78,13 @@ namespace PrintAndScan4Ukraine.Data
 					return x;
 				}).ToList();
 			}
-			libmiroppb.Log(JsonConvert.SerializeObject(packages));
+			Libmiroppb.Log(JsonConvert.SerializeObject(packages));
 			return packages;
 		}
 
 		public IEnumerable<Package_Status>? GetAllStatuses(List<string> ids, bool useArchive = false)
 		{
-			libmiroppb.Log("Get List of Packages Statuses");
+			Libmiroppb.Log("Get List of Packages Statuses");
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
 			try
 			{
@@ -101,13 +101,13 @@ namespace PrintAndScan4Ukraine.Data
 				var parameters = ids.Select((id, index) => new { Name = $"@id{index}", Value = id })
 									.ToDictionary(p => p.Name, p => (object)p.Value);
 
-				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
+				Libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 
 				statuses = db.Query<Package_Status>(sql, parameters);
 			}
 			catch
 			{
-				libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
+				Libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
 				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
 			}
 			return statuses;
@@ -115,18 +115,18 @@ namespace PrintAndScan4Ukraine.Data
 
 		public IEnumerable<Package_Status>? GetStatusByPackage(string packageid)
 		{
-			libmiroppb.Log($"Get List of Package Statuses for {packageid}");
+			Libmiroppb.Log($"Get List of Package Statuses for {packageid}");
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
 			try
 			{
 				using MySqlConnection db = Secrets.GetConnectionString();
 				statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @packageid UNION SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusArchiveTable} WHERE packageid = @packageid ORDER BY id", new { packageid });
 
-				libmiroppb.Log(JsonConvert.SerializeObject(statuses));
+				Libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 			}
 			catch
 			{
-				libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
+				Libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
 				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
 			}
 			return statuses;
@@ -135,7 +135,7 @@ namespace PrintAndScan4Ukraine.Data
 		public bool InsertRecord(Package package)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
+			Libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
 			db.Insert(package);
 			return true;
 		}
@@ -199,13 +199,13 @@ namespace PrintAndScan4Ukraine.Data
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
-			if (type == -2) { libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}"); }
-			else { libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
+			if (type == -2) { Libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}"); }
+			else { Libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Record: {JsonConvert.SerializeObject(packages)}"); }
 			foreach (Package p in packages)
 			{
 				if (p.PackageIDModified && string.IsNullOrWhiteSpace(p.NewPackageId))
 				{
-					libmiroppb.Log($"Attempt to change Package ID {p.PackageId} to an empty string");
+					Libmiroppb.Log($"Attempt to change Package ID {p.PackageId} to an empty string");
 					MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageIdEmpty", "Package ID is empty. Not saving.")}");
 					return false;
 				}
@@ -231,7 +231,7 @@ namespace PrintAndScan4Ukraine.Data
 
 					if (ForceSave)
 					{
-						libmiroppb.Log($"Package ID has been updated from {p.PackageId} to {p.NewPackageId}");
+						Libmiroppb.Log($"Package ID has been updated from {p.PackageId} to {p.NewPackageId}");
 						db.Execute($"UPDATE {Secrets.MySqlPackageStatusTable} SET packageid = @NewPackageId WHERE packageid = @PackageId", new { p.PackageId, p.NewPackageId });
 						p.PackageId = p.NewPackageId;
 						p.PackageIDModified = false;
@@ -245,7 +245,7 @@ namespace PrintAndScan4Ukraine.Data
 		public bool InsertRecordStatus(List<Package_Status> package_statuses)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
+			Libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
 			db.Insert(package_statuses);
 			return true;
 		}

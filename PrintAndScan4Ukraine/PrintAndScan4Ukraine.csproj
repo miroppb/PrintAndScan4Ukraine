@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>barcode.ico</ApplicationIcon>
-    <AssemblyVersion>1.5.8.3</AssemblyVersion>
+    <AssemblyVersion>1.5.8.4</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,19 +39,13 @@
     <PackageReference Include="Dapper" Version="2.1.37" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
     <PackageReference Include="DocX" Version="3.0.1" />
-    <PackageReference Include="EPPlus" Version="7.2.2" />
+    <PackageReference Include="EPPlus" Version="7.3.2" />
     <PackageReference Include="MySqlConnector" Version="2.3.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="ServiceStack.Text.Core" Version="8.3.0" />
+    <PackageReference Include="ServiceStack.Text.Core" Version="8.4.0" />
     <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
     <PackageReference Include="System.Text.Json" Version="8.0.4" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="libmiroppb">
-      <HintPath>..\..\libmiroppb\libmiroppb\bin\Debug\libmiroppb.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -66,6 +60,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Time\Time.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Libmiroppb">
+      <HintPath>..\..\Libmiroppb\Libmiroppb\bin\Release\net7.0\Libmiroppb.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

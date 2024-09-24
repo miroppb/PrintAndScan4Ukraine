@@ -41,7 +41,7 @@ namespace PrintAndScan4Ukraine.Data
 				{
 					try
 					{
-						libmiroppb.Log($"Inserting None User Access for: {Environment.MachineName}");
+						Libmiroppb.Log($"Inserting None User Access for: {Environment.MachineName}");
 						db.Insert(new Users()
 						{
 							ComputerName = Environment.MachineName,
@@ -53,7 +53,7 @@ namespace PrintAndScan4Ukraine.Data
 					}
 					catch (Exception ex)
 					{
-						libmiroppb.Log($"Error while inserting new User Access: { ex.Message}");
+						Libmiroppb.Log($"Error while inserting new User Access: { ex.Message}");
 						MessageBox.Show($"Error. Please contact your administrator: {ex.Message}");
 					}
 					
