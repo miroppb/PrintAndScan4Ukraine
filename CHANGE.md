@@ -1,4 +1,9 @@
-v. 1.5.8.4
+v. 1.5.8.6
+
+- Incremental updates to packages
+- Hopefully fixed logging :)
+
+v. 1.5.8.4-5
 
 - Minor updates. Reworked logging library :shrug: Trying to handle logs not uploading
 

@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <Reference Include="libmiroppb">
-      <HintPath>..\..\libmiroppb\libmiroppb\bin\Debug\libmiroppb.dll</HintPath>
+      <HintPath>..\..\libmiroppb\libmiroppb\bin\Debug\net7.0\libmiroppb.dll</HintPath>
     </Reference>
   </ItemGroup>
 
