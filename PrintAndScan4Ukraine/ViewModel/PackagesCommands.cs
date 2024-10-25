@@ -20,5 +20,6 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public DelegateCommand RadioStatusChecked { get; }
 		public DelegateCommand EditPackageIDCommand { get; }
 		public DelegateCommand ShowSearchCommand { get; }
+		public DelegateCommand ShowCheckUpdateCommand { get; }
 	}
 }

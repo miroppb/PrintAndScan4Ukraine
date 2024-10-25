@@ -1,3 +1,9 @@
+v. 1.5.9.0
+
+- Attempting to use SSL for Mysql (long overdue)
+- Added a manual update button under Tools
+- Check for update at start, and prevent usage if out of date
+
 v. 1.5.8.6
 
 - Incremental updates to packages

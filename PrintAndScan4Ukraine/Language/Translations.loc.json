@@ -82,6 +82,10 @@
         "Search": {
           "en": "S_earch",
           "ru": "_Поиск"
+        },
+        "Update": {
+          "en": "Check for _Update",
+          "ru": "Проверить _обновления"
         }
       },
       "Language": {
@@ -197,6 +201,10 @@
       "PackageIdEmpty": {
         "en": "Package ID is empty, and this package won't be saved. Please fix.",
         "ru": "Посылка не сохранена, так как номер посылки пустой. Пожалуйста исправьте."
+      },
+      "Update": {
+        "en": "A mandatory update is available. The application will now update and restart.",
+        "ru": "Обновление обязательно. Приложение будет обновлено и перезапущено."
       }
     },
     "ScanNewWindow": {

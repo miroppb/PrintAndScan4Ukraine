@@ -7,7 +7,6 @@ using PrintAndScan4Ukraine.Properties;
 using PrintAndScan4Ukraine.ViewModel;
 using System;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,7 +21,7 @@ namespace PrintAndScan4Ukraine
 	public partial class ScanWindow : Window
 	{
 		private readonly PackagesViewModel _viewModel;
-		
+
 
 		public ScanWindow()
 		{

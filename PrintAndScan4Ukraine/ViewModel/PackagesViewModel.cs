@@ -63,6 +63,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			RadioStatusChecked = new DelegateCommand(ExecuteRadioStatusChecked);
 			EditPackageIDCommand = new DelegateCommand(ExecuteEditPackageID, () => CanEditPackageID);
 			ShowSearchCommand = new DelegateCommand(ExecuteShowSearch, () => AccessToSeePackages && AccessToSeeSender);
+			ShowCheckUpdateCommand = new DelegateCommand(ExecuteCheckUpdate, () => IsOnline);
 
 			CheckSystemTime();
 		}

@@ -46,7 +46,8 @@
                               Visibility="{Binding AccessToExport, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Header', DefaultText='_Tools'}">
-                    <MenuItem x:Name="MnuSearch" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Search', DefaultText='S_earch', LanguageId='en'}" Command="{Binding ShowSearchCommand}" />
+                    <MenuItem x:Name="MnuSearch" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Search', DefaultText='S_earch'}" Command="{Binding ShowSearchCommand}" />
+                    <MenuItem x:Name="MnuCheckUpdate" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Update', DefaultText='_Update'}" Command="{Binding ShowCheckUpdateCommand}" />
                 </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.Language', DefaultText='_Language'}">
                     <MenuItem x:Name="MnuEnglish" Header="{Tr 'LanguageName', DefaultText='_English', LanguageId='en'}" Click="MnuEnglish_Click" />

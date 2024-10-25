@@ -1,4 +1,5 @@
-﻿using CodingSeb.Localization;
+﻿using AutoUpdaterDotNET;
+using CodingSeb.Localization;
 using miroppb;
 using Newtonsoft.Json;
 using OfficeOpenXml;
@@ -628,5 +629,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 		}
 
 		public static string SearchSelectedPackage = string.Empty;
+
+		private void ExecuteCheckUpdate(object obj)
+		{
+			AutoUpdater.Start(Secrets.GetUpdateURL());
+		}
 	}
 }

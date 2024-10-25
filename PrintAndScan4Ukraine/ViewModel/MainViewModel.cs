@@ -1,4 +1,5 @@
-﻿using CodingSeb.Localization;
+﻿using AutoUpdaterDotNET;
+using CodingSeb.Localization;
 using CodingSeb.Localization.Loaders;
 using IWshRuntimeLibrary;
 using miroppb;
@@ -62,6 +63,40 @@ namespace PrintAndScan4Ukraine.ViewModel
 			Libmiroppb.Log($"Current timezone is: {localTimeZone.DisplayName} and time is: {DateTime.Now}");
 
 			SetupHeartbeatTimer();
+
+			AutoUpdater.Start(Secrets.GetUpdateURL()); //lets check for an update, in case user doesn't go to Scan
+			AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+		}
+
+		private async void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+		{
+			if (args.Error == null)
+			{
+				if (args.IsUpdateAvailable)
+				{
+					if (args.Mandatory.Value)
+					{
+						MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Update", "A mandatory update is available. The application will now update and restart.")}");
+						AutoUpdater.ShowUpdateForm(args);
+						CloseApplication();
+					}
+					else
+					{
+						AutoUpdater.ShowUpdateForm(args);
+					}
+				}
+			}
+			else
+			{
+				Libmiroppb.Log($"Error Checking for Update: {args.Error.Message}");
+				await Libmiroppb.UploadLogAsync(Secrets.GetConnectionString().ConnectionString);
+				MessageBox.Show($"Error checking for update: {args.Error.Message}");
+			}
+		}
+
+		private void CloseApplication()
+		{
+			Application.Current.Shutdown();
 		}
 
 		private void SetupHeartbeatTimer()
