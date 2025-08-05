@@ -28,7 +28,7 @@ namespace PrintAndScan4Ukraine
 			InitializeComponent();
 
 			Libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
-			_viewModel = new PackagesViewModel(new PackageDataProvider(), MainViewModel.GetUser());
+			_viewModel = new PackagesViewModel(new APIPackageDataProvider(new ApiService(Secrets.ApiKey)), MainViewModel.GetUser());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
 			_viewModel.ScrollListBox += ViewModel_ScrollListBox;
@@ -64,7 +64,7 @@ namespace PrintAndScan4Ukraine
 			await UploadLogs(true);
 		}
 
-		private void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+		private async void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			ListViewItem? lvi = Keyboard.FocusedElement as ListViewItem;
 			TextBox? tb = Keyboard.FocusedElement as TextBox;
@@ -84,7 +84,7 @@ namespace PrintAndScan4Ukraine
 					_viewModel.SelectedPackage.PackageIdValid = !Validation.GetHasError(TxtPackageId);
 					if (e.Key == Key.Enter && _viewModel.SelectedPackage.PackageIdValid)
 					{
-						if (_viewModel.Save())
+						if (await _viewModel.Save())
 							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
 						else
 							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageNotSaved", "Error saving package.")}", "");
@@ -141,7 +141,7 @@ namespace PrintAndScan4Ukraine
 			SavingOftenTimer.Tick += delegate
 			{
 				if (_viewModel.SelectedPackage != null && _viewModel.SelectedPackage.Modified) //only saving current package
-					_viewModel.Save();
+					_ = _viewModel.Save();
 			};
 			SavingOftenTimer.Start();
 		}

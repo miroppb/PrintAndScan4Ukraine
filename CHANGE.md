@@ -1,3 +1,9 @@
+v. 1.6.0.0
+
+- Massive update, in the sense that I've moved every DB call to an API
+- Created integration testing for the Package API calls. Not for Main, because there's only 2
+
+
 v. 1.5.9.0
 
 - Attempting to use SSL for Mysql (long overdue)

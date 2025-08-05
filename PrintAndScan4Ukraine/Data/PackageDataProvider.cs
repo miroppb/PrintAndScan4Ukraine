@@ -18,28 +18,7 @@ using System.Windows;
 
 namespace PrintAndScan4Ukraine.Data
 {
-	public interface IPackageDataProvider
-	{
-		Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad);
-		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName, bool useArchive = false);
-		IEnumerable<Package_Status>? GetAllStatuses(List<string> ids, bool useArchive = false);
-		IEnumerable<Package_Status>? GetStatusByPackage(string packageid);
-		Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start, DateTime end, int status);
-		bool InsertRecord(Package package);
-		bool VerifyIfExists(string packageid);
-		Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected);
-		bool UpdateRecords(List<Package> package, int type = 0);
-		bool InsertRecordStatus(List<Package_Status> package_statuses);
-		IEnumerable<MissingPackages> FindMissingPackages(List<string> barcodesNotInPackages);
-		IEnumerable<Users> GetUserIDsAndNames();
-		Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive); //returning list because we have duplicates :/
-		Task<IEnumerable<Package>> GetPackagesAsync(List<string> packages, bool useArchive = false);
-		List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses);
-		DateTime GetServerDate();
-		long UploadExportedFile(string fileName);
-	}
-
-	public class PackageDataProvider : IPackageDataProvider
+	public class PackageDataProvider123 : IPackageDataProvider
 	{
 		public async Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad)
 		{
@@ -82,7 +61,7 @@ namespace PrintAndScan4Ukraine.Data
 			return packages;
 		}
 
-		public IEnumerable<Package_Status>? GetAllStatuses(List<string> ids, bool useArchive = false)
+		public async Task<IEnumerable<Package_Status>?> GetAllStatuses(List<string> ids, bool useArchive = false)
 		{
 			Libmiroppb.Log("Get List of Packages Statuses");
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
@@ -103,7 +82,7 @@ namespace PrintAndScan4Ukraine.Data
 
 				Libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 
-				statuses = db.Query<Package_Status>(sql, parameters);
+				statuses = await db.QueryAsync<Package_Status>(sql, parameters);
 			}
 			catch
 			{
@@ -113,14 +92,14 @@ namespace PrintAndScan4Ukraine.Data
 			return statuses;
 		}
 
-		public IEnumerable<Package_Status>? GetStatusByPackage(string packageid)
+		public async Task<IEnumerable<Package_Status>?> GetStatusByPackage(string packageid)
 		{
 			Libmiroppb.Log($"Get List of Package Statuses for {packageid}");
 			IEnumerable<Package_Status> statuses = new List<Package_Status>();
 			try
 			{
 				using MySqlConnection db = Secrets.GetConnectionString();
-				statuses = db.Query<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @packageid UNION SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusArchiveTable} WHERE packageid = @packageid ORDER BY id", new { packageid });
+				statuses = await db.QueryAsync<Package_Status>($"SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @packageid UNION SELECT id, packageid, createddate, status FROM {Secrets.MySqlPackageStatusArchiveTable} WHERE packageid = @packageid ORDER BY id", new { packageid });
 
 				Libmiroppb.Log(JsonConvert.SerializeObject(statuses));
 			}
@@ -132,19 +111,19 @@ namespace PrintAndScan4Ukraine.Data
 			return statuses;
 		}
 
-		public bool InsertRecord(Package package)
+		public async Task<bool> InsertRecord(Package package)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			Libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
-			db.Insert(package);
+			await db.InsertAsync(package);
 			return true;
 		}
 
-		public bool VerifyIfExists(string packageid)
+		public async Task<bool> VerifyIfExists(string packageid)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			bool InNewList = db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid LIMIT 1", new { packageid }).FirstOrDefault() != null;
-			bool InArchive = db.Query<Package>($"SELECT id FROM {Secrets.MySqlPackagesArchiveTable} WHERE packageid = @packageid LIMIT 1", new { packageid }).FirstOrDefault() != null;
+			bool InNewList = await db.QueryFirstOrDefaultAsync<Package>($"SELECT id FROM {Secrets.MySqlPackagesTable} WHERE packageid = @packageid LIMIT 1", new { packageid }) != null;
+			bool InArchive = await db.QueryFirstOrDefaultAsync<Package>($"SELECT id FROM {Secrets.MySqlPackagesArchiveTable} WHERE packageid = @packageid LIMIT 1", new { packageid }) != null;
 			return InNewList || InArchive;
 		}
 
@@ -195,7 +174,7 @@ namespace PrintAndScan4Ukraine.Data
 			return (same, rt);
 		}
 
-		public bool UpdateRecords(List<Package> packages, int type = 0)
+		public async Task<bool> UpdateRecords(List<Package> packages, int type = 0)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			packages.ForEach(x => x.Contents = JsonConvert.SerializeObject(x.Recipient_Contents));
@@ -237,16 +216,16 @@ namespace PrintAndScan4Ukraine.Data
 						p.PackageIDModified = false;
 					}
 				}
-				db.Update(p);
+				await db.UpdateAsync(p);
 			}
 			return true;
 		}
 
-		public bool InsertRecordStatus(List<Package_Status> package_statuses)
+		public async Task<bool> InsertRecordStatus(List<Package_Status> package_statuses)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			Libmiroppb.Log($"Inserting Package Statuses: {JsonConvert.SerializeObject(package_statuses)}");
-			db.Insert(package_statuses);
+			await db.InsertAsync(package_statuses);
 			return true;
 		}
 
@@ -273,12 +252,12 @@ namespace PrintAndScan4Ukraine.Data
 			return await db.QueryAsync<Package>("Packages_between_dates_and_status", new { start_date, end_date, status_code }, commandType: System.Data.CommandType.StoredProcedure, commandTimeout: 300);
 		}
 
-		public IEnumerable<MissingPackages> FindMissingPackages(List<string> barcodesNotInPackages)
+		public async Task<IEnumerable<MissingPackages>> FindMissingPackages(List<string> barcodesNotInPackages)
 		{
-			List<MissingPackages> results = new();
+			List<MissingPackages> results = [];
 			//lets get a list of /all/ packages
 			using MySqlConnection db = Secrets.GetConnectionString();
-			List<Package> allPackages = db.Query<Package>($"SELECT packageid FROM {Secrets.MySqlPackagesTable}").ToList();
+			IEnumerable<Package> allPackages = await db.QueryAsync<Package>($"SELECT packageid FROM {Secrets.MySqlPackagesTable}");
 			//find packages that aren't in the db
 			var notInDB = barcodesNotInPackages.Except(allPackages.Select(x => x.PackageId)).ToList();
 			foreach (string item in notInDB)
@@ -289,17 +268,17 @@ namespace PrintAndScan4Ukraine.Data
 			//for packages that are in db, get list of statuses for each
 			foreach (string barcode in barcodesNotInPackages)
 			{
-				var statuses = db.Query<Package_Status>($"SELECT * FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @barcode", new { barcode }).ToList();
-				results.Add(new MissingPackages() { InPackages = true, Packageid = barcode, Statuses = statuses });
+				var statuses = await db.QueryAsync<Package_Status>($"SELECT * FROM {Secrets.MySqlPackageStatusTable} WHERE packageid = @barcode", new { barcode });
+				results.Add(new MissingPackages() { InPackages = true, Packageid = barcode, Statuses = [.. statuses] });
 			}
 
 			return results;
 		}
 
-		public IEnumerable<Users> GetUserIDsAndNames()
+		public async Task<IEnumerable<Users>> GetUserIDsAndNames()
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			return db.Query<Users>("SELECT id, SUBSTRING_INDEX(`comment`, ' ', 1) AS comment FROM users");
+			return await db.QueryAsync<Users>("SELECT id, SUBSTRING_INDEX(`comment`, ' ', 1) AS comment FROM users");
 		}
 
 		public async Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive)
@@ -334,13 +313,13 @@ namespace PrintAndScan4Ukraine.Data
 			return list;
 		}
 
-		public DateTime GetServerDate()
+		public async Task<DateTime> GetServerDate()
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
-			return db.QuerySingle<DateTime>("SELECT NOW()");
+			return await db.QuerySingleAsync<DateTime>("SELECT NOW()");
 		}
 
-		public long UploadExportedFile(string fileName)
+		public async Task<long> UploadExportedFile(string fileName)
 		{
 			using MySqlConnection db = Secrets.GetConnectionString();
 			Exports ex = new()
@@ -349,7 +328,7 @@ namespace PrintAndScan4Ukraine.Data
 				Datetime = DateTime.Now,
 				Content = File.ReadAllBytes(fileName)
 			};
-			var ret = db.Insert(ex);
+			var ret = await db.InsertAsync(ex);
 			return ret;
 		}
 

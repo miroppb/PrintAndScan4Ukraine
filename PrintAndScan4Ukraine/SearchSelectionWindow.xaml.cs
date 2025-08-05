@@ -8,7 +8,7 @@ namespace PrintAndScan4Ukraine
 	/// </summary>
 	public partial class SearchSelectionWindow : Window
 	{
-		private readonly SearchViewModel _viewmodel;
+		public readonly SearchViewModel _viewmodel;
 
 		public SearchSelectionWindow()
 		{

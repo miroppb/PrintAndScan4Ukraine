@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
-	class PrintViewModel : ClosableViewModel, INotifyPropertyChanged, IDataErrorInfo
+	public partial class PrintViewModel : ClosableViewModel, INotifyPropertyChanged
 	{
 		private readonly IPrintDataProvider _dataProvider;
 		public event PropertyChangedEventHandler? PropertyChanged;
@@ -20,27 +20,27 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public string Error => string.Empty;
 
-		public string this[string columnName]
-		{
-			get
-			{
-				if (columnName == nameof(Starting) || columnName == nameof(Ending))
-				{
-					if (Starting < 100000000 || Starting > 999999999 || Ending < 100000000 || Ending > 999999999)
-					{
-						CanPrint = false;
-						return "7 digits please";
-					}
-					else if (_dataProvider.FindPackagesBetweenRange(Starting, Ending))
-					{
-						CanPrint = false;
-						return "Packages within these ranges already exist.";
-					}
-				}
-				CanPrint = true;
-				return string.Empty;
-			}
-		}
+		//public string this[string columnName]
+		//{
+		//	get
+		//	{
+		//		if (columnName == nameof(Starting) || columnName == nameof(Ending))
+		//		{
+		//			if (Starting < 100000000 || Starting > 999999999 || Ending < 100000000 || Ending > 999999999)
+		//			{
+		//				CanPrint = false;
+		//				return "7 digits please";
+		//			}
+		//			else if (_dataProvider.FindPackagesBetweenRange(Starting, Ending))
+		//			{
+		//				CanPrint = false;
+		//				return "Packages within these ranges already exist.";
+		//			}
+		//		}
+		//		CanPrint = true;
+		//		return string.Empty;
+		//	}
+		//}
 
 		public PrintViewModel(IPrintDataProvider dataProvider)
 		{
@@ -71,6 +71,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				_starting = value;
 				RaisePropertyChanged();
+				_ = ValidateRangeAsync();
 			}
 		}
 
@@ -82,7 +83,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				_ending = value;
 				RaisePropertyChanged();
-			}
+                _ = ValidateRangeAsync();
+            }
 		}
 
 		private int _copies = 1;
@@ -110,7 +112,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private bool _canCancel = false;
+		private bool _canCancel = true;
 		public bool CanCancel
 		{
 			get => _canCancel;
@@ -121,13 +123,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private async void Print(object a)
+		private void Print(object a)
 		{
-			CanPrint = false;
+			//CanPrint = false;
 			Libmiroppb.Log($"Printing from {Starting} to {Ending}, {Copies} copies, to printer {SelectedPrinter}");
 			_dataProvider.PrintBarcodes(Starting, Ending, Copies, SelectedPrinter);
-			await Task.Delay(2000);
-			CanPrint = true;
+			//CanPrint = true;
 		}
 
 		private void CancelPrinting(object obj)

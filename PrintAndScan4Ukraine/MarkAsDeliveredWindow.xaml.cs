@@ -15,7 +15,7 @@ namespace PrintAndScan4Ukraine
 		public MarkAsDeliveredWindow(Users user)
 		{
 			InitializeComponent();
-			_viewModel = new PackagesViewModel(new PackageDataProvider(), user);
+			_viewModel = new PackagesViewModel(new APIPackageDataProvider(new ApiService(Secrets.ApiKey)), user);
 			DataContext = _viewModel;
 			PreviewKeyDown += _viewModel.PreviewKeyDownEvent;
 			_viewModel.ClosingRequest += (sender, e) => Close();

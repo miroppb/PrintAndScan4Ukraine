@@ -14,7 +14,11 @@
                     <ControlTemplate>
                         <StackPanel>
                             <AdornedElementPlaceholder x:Name="textBox"/>
-                            <TextBlock Text="{Binding [0].ErrorContent}" Foreground="Red"/>
+                            <TextBlock 
+                        Foreground="Red"
+                        FontSize="12"
+                        Text="{Binding Path=AdornedElement.(Validation.Errors)[0].ErrorContent, 
+                                       RelativeSource={RelativeSource AncestorType=Adorner}}" />
                         </StackPanel>
                     </ControlTemplate>
                 </Setter.Value>
@@ -42,7 +46,7 @@
                   ItemsSource="{Binding Printers}" SelectedItem="{Binding SelectedPrinter, Mode=TwoWay}" Width="308" />
         <Label Grid.Row="2" Content="Print labels from" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         <Label Grid.Row="2" Grid.Column="2" Content="to" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox x:Name="TxtFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center">
+        <!--<TextBox x:Name="TxtFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center">
             <TextBox.Text>
                 <Binding Path="Starting" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
                     <Binding.ValidationRules>
@@ -59,7 +63,11 @@
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
-        </TextBox>
+        </TextBox>-->
+        <TextBox x:Name="TxtFrom" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center"
+                 Text="{Binding Starting, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
+        <TextBox x:Name="TxtTo" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center"
+                 Text="{Binding Ending, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
         <Label Grid.Row="3" Content="Copies of each label" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         <TextBox x:Name="TxtCopies" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding Copies}" VerticalAlignment="Center" Width="80" Height="26" VerticalContentAlignment="Center" />
         <Button x:Name="BtnPrint" Grid.Row="3" Grid.Column="4" Content="Print" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" FontWeight="Bold" Command="{Binding PrintCommand, Mode=OneWay}"/>

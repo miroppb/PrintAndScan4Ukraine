@@ -20,7 +20,7 @@ namespace PrintAndScan4Ukraine
 		{
 			InitializeComponent();
 			Libmiroppb.Log("Welcome to (Print) And Scan 4 Ukraine. v" + Assembly.GetEntryAssembly()!.GetName().Version);
-			_viewmodel = new PrintViewModel(new PrintDataProvider());
+			_viewmodel = new PrintViewModel(new PrintDataProvider(new ApiService(Secrets.ApiKey)));
 			DataContext = _viewmodel;
 			Closing += PrintWindow_Closing;
 		}

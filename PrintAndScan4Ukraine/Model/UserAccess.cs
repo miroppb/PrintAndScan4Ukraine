@@ -30,5 +30,6 @@ namespace PrintAndScan4Ukraine.Model
 		public string LastConnectedVersion { get; set; } = string.Empty;
 		public string Lang { get; set; } = string.Empty;
         public DateTime LastCheckin { get; set; }
+		public string Api_key { get; set; } = string.Empty;
     }
 }

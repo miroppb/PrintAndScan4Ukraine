@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -68,12 +69,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 			CheckSystemTime();
 		}
 
-		private void CheckSystemTime()
+		private async void CheckSystemTime()
 		{
 			DateTime SysDate = DateTime.Now;
-			DateTime ServDate = _packageDataProvider.GetServerDate();
+			DateTime ServDate = await _packageDataProvider.GetServerDate();
 			TimeSpan diff = SysDate > ServDate ? SysDate - ServDate : ServDate - SysDate;
-			if (diff.TotalHours > 1)
+			if (diff.TotalHours > 5)
 			{
 				Libmiroppb.Log("System time out of sync");
 				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.SystemTimeOutOfSync", "We detected that the current system time is out of sync. Please fix or run this application as Administrator")}");
@@ -87,14 +88,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 			set
 			{
 				if (_selectedPackage != null && _selectedPackage.Modified) //if package was modified
-					Save(_selectedPackage, -1); //save previous package before changing to new package
+					_ = Save(_selectedPackage, -1); //save previous package before changing to new package
 
 				_selectedPackage = value;
 				RaisePropertyChanged();
 				if (_selectedPackage != null)
 				{
 					IsSelectedPackageShowing = Visibility.Visible;
-					SelectedPackageLastStatus = _packageDataProvider.GetStatusByPackage(_selectedPackage.PackageId)!.LastOrDefault()!;
+					_ = GetPackageLastStatus();
 					SelectedPackage.NewPackageId = SelectedPackage.PackageId.ToLower();
 					StaticSelectedPackage = SelectedPackage;
 					ScrollListBox?.Invoke(this, EventArgs.Empty);
@@ -105,12 +106,17 @@ namespace PrintAndScan4Ukraine.ViewModel
 				ShowHistoryCommand.RaiseCanExecuteChanged();
 			}
 		}
+		private async Task GetPackageLastStatus()
+		{
+			var statuses = await _packageDataProvider.GetStatusByPackage(_selectedPackage!.PackageId);
+			SelectedPackageLastStatus = statuses?.LastOrDefault();
+		}
 
 		public static Package? StaticSelectedPackage { get; set; } = null;
 
-		private Package_Status _SelectedPackageStatus = new();
+		private Package_Status? _SelectedPackageStatus = new();
 
-		public Package_Status SelectedPackageLastStatus
+		public Package_Status? SelectedPackageLastStatus
 		{
 			get => _SelectedPackageStatus;
 			set

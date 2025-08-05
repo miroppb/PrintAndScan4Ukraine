@@ -13,9 +13,6 @@ namespace PrintAndScan4Ukraine.Model
 		public string PackageId { get; set; } = string.Empty;
 		public DateTime CreatedDate { get; set; }
 		public int Status { get; set; }
-		public override string ToString()
-		{
-			return $"{PackageDataProvider.StatusToText(Status)}: {CreatedDate.ToShortDateString()} {CreatedDate.ToShortTimeString()}";
-		}
-	}
+        public override string ToString() => $"{APIPackageDataProvider.StatusToText(Status)}: {CreatedDate.ToShortDateString()} {CreatedDate.ToShortTimeString()}";
+    }
 }

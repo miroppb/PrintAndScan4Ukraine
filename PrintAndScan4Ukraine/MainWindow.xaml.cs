@@ -14,7 +14,7 @@ namespace PrintAndScan4Ukraine
 		public MainWindow()
 		{
 			InitializeComponent();
-			_viewmodel = new MainViewModel(new MainDataProvider());
+			_viewmodel = new MainViewModel(new APIMainDataProvider());
 			DataContext = _viewmodel;
 		}
 	}

@@ -11,7 +11,7 @@ namespace PrintAndScan4Ukraine.Converter
 		{
 			if (value is int)
 			{
-				return PackageDataProvider.StatusToText((int)value);
+				return APIPackageDataProvider.StatusToText((int)value);
 			}
 			else
 				return "";

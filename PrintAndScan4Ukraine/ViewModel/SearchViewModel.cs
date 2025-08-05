@@ -25,6 +25,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
+		public List<string> PackagesOnList = [];
+
 		public DelegateCommand SearchCommand { get; }
 		public DelegateCommand RadioSearchCheckedCommand { get; }
 		public DelegateCommand CloseCommand { get; }
@@ -48,7 +50,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			bool Generating = true;
 			//search for item(s) with DataProvider
-			IPackageDataProvider _provider = new PackageDataProvider();
+			IPackageDataProvider _provider = new APIPackageDataProvider(new ApiService(Secrets.ApiKey));
 			using MySqlConnection conn = Secrets.GetConnectionString();
 			PreviousShipments.Clear();
 			if (WhatAreWeSearchingFor == SearchFor.PackageID)
@@ -56,7 +58,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				Libmiroppb.Log($"Searching for Package: {SearchParam}");
 				TopText = $"Search Results for Package: {SearchParam}";
 				var temp_packages = await _provider.GetPackageAsync(SearchParam, ArchiveChecked);
-				var statuses = _provider.GetStatusByPackage(SearchParam);
+				var statuses = await _provider.GetStatusByPackage(SearchParam);
 				if (temp_packages != null && statuses != null)
 					PreviousShipments.AddDistinctRange(_provider.MapPackagesAndStatusesToLess(temp_packages, statuses));
 				else if (temp_packages == null && statuses != null) //no package but statuses exist
@@ -78,7 +80,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				var temp_packages = await _provider.GetByNameAsync(SearchParam, ArchiveChecked);
 				if (temp_packages != null && temp_packages.Any())
 				{
-					var statuses = _provider.GetAllStatuses(temp_packages.Select(x => x.PackageId).ToList());
+					var statuses = await _provider.GetAllStatuses(temp_packages.Select(x => x.PackageId).ToList());
 					if (statuses != null)
 						PreviousShipments.AddDistinctRange(_provider.MapPackagesAndStatusesToLess(temp_packages, statuses));
 					else

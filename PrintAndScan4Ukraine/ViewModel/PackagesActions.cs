@@ -50,19 +50,19 @@ namespace PrintAndScan4Ukraine.ViewModel
 			return null;
 		}
 
-		public void ExecuteSave(object a)
+		public async void ExecuteSave(object a)
 		{
-			if (Save())
+			if (await Save())
 				System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
 		}
 
-		public bool Save() => Save(SelectedPackage);
+		public async Task<bool> Save() => await Save(SelectedPackage);
 
-		public bool Save(Package package, int type = 0)
+		public async Task<bool> Save(Package package, int type = 0)
 		{
 			if (IsOnline && package != null)
 			{
-				if (_packageDataProvider.UpdateRecords(new List<Package>() { package }, type))
+				if (await _packageDataProvider.UpdateRecords([package], type))
 				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 					package.Modified = false; //setting back as it was saved
@@ -73,10 +73,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 			return false;
 		}
 
-		public void SaveAll(object a)
+		public async void SaveAll(object a)
 		{
 			if (IsOnline && Packages != null)
-				if (_packageDataProvider.UpdateRecords(Packages.ToList()))
+				if (await _packageDataProvider.UpdateRecords(Packages.ToList()))
 				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 					foreach (var package in Packages)
@@ -88,36 +88,36 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		}
 
-		public bool UpdateRecords(List<Package> packages, int type = 0)
+		public async Task<bool> UpdateRecords(List<Package> packages, int type = 0)
 		{
 			if (IsOnline)
-				return _packageDataProvider.UpdateRecords(packages, type);
+				return await _packageDataProvider.UpdateRecords(packages, type);
 			return false;
 		}
 
-		public bool Insert(Package package)
+		public async Task<bool> Insert(Package package)
 		{
 			if (IsOnline)
 			{
-				_packageDataProvider.InsertRecord(package);
+				await _packageDataProvider.InsertRecord(package);
 				return true;
 			}
 			else
 				return false;
 		}
 
-		public bool InsertRecordStatus(List<Package_Status> package_statuses)
+		public async Task<bool> InsertRecordStatus(List<Package_Status> package_statuses)
 		{
 			if (IsOnline)
 			{
-				_packageDataProvider.InsertRecordStatus(package_statuses);
+				await _packageDataProvider.InsertRecordStatus(package_statuses);
 				return true;
 			}
 			else
 				return false;
 		}
 
-		public bool Export(IEnumerable<Package> packages, bool useArchive = false)
+		public async Task<bool> Export(IEnumerable<Package> packages, bool useArchive = false)
 		{
 			Libmiroppb.Log($"Starting Export");
 			SaveFileDialog sfd = new()
@@ -144,14 +144,15 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 
 				//lets get all statuses
-				List<Package_Status>? statuses = _packageDataProvider.GetAllStatuses(packages.Select(x => x.PackageId).ToList(), useArchive)!.ToList();
+				var statuses = await _packageDataProvider.GetAllStatuses([.. packages.Select(x => x.PackageId)], useArchive);
 
-				Libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
+
+                Libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
 				ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
 				using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
 				{
-					List<Package_less> list = _packageDataProvider.MapPackagesAndStatusesToLess(packages, statuses);
+					List<Package_less> list = _packageDataProvider.MapPackagesAndStatusesToLess(packages, statuses!);
 
 					ExcelWorksheet? ws;
 					try
@@ -180,7 +181,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					excelPack.Save();
 				}
 
-				_packageDataProvider.UploadExportedFile(sfd.FileName);
+				await _packageDataProvider.UploadExportedFile(sfd.FileName);
 
 				Libmiroppb.Log($"Packages exported: {JsonConvert.SerializeObject(packages.Select(x => x.Id).ToList())}");
 				System.Windows.MessageBox.Show($"Exported to: {sfd.FileName}");
@@ -234,7 +235,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			scanNewWindow.ShowDialog();
 			if (WasSomethingSet)
 			{
-				Save();
+				await Save();
 				await LoadAsync();
 			}
 			if (BarCodeThatWasSet != string.Empty)
@@ -306,7 +307,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			statuses = statuses.GroupBy(x => x.PackageId).Select(x => x.First()).ToList(); //remove duplicates
 
 			Libmiroppb.Log("Updating statuses");
-			InsertRecordStatus(statuses);
+			await InsertRecordStatus(statuses);
 			Libmiroppb.Log("Done");
 
 			if (status == 2)
@@ -329,10 +330,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 					if (System.Windows.Forms.MessageBox.Show("Do you want a report of the missing packages?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
 					{
-						var lst = _packageDataProvider.FindMissingPackages(BarcodesNotInPackages);
+						var lst = await _packageDataProvider.FindMissingPackages(BarcodesNotInPackages);
 						var CodesWithoutPackage = lst.Where(x => !x.InPackages).ToList();
 						var CodesWithPackages = lst.Where(x => x.InPackages).ToList();
-						var users = _packageDataProvider.GetUserIDsAndNames();
+						var users = await _packageDataProvider.GetUserIDsAndNames();
 
 						using (DocX document = DocX.Create(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\MissingPackages_{DateTime.Now:MM-dd-yyyy}.docx"))
 						{
@@ -381,12 +382,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 				if (packages.Any())
 				{
 					Libmiroppb.Log($"Starting Export as {FromWhere}");
-					Export(packages);
+					await Export(packages);
 					Libmiroppb.Log("Done");
 					if (System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.ScanShippedWindow.RemoveFromListText", "Should we remove these packages from the list?")}", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 					{
 						packages.ForEach(x => x.Removed = true);
-						UpdateRecords(packages, -2);
+						await UpdateRecords(packages, -2);
 						Libmiroppb.Log("Done");
 					}
 				}
@@ -414,7 +415,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				if (packages.Any())
 				{
 					Libmiroppb.Log($"Starting Export as {FromWhere}");
-					Export(packages);
+					await Export(packages);
 					Libmiroppb.Log("Done");
 				}
 			}
@@ -445,7 +446,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			OnClosingRequest();
 
 			if (PackagesFromDates != null)
-				Export(PackagesFromDates);
+				await Export(PackagesFromDates);
 		}
 
 		public void ExecuteRadioDateChecked(object AllOrDates)
@@ -480,16 +481,16 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		public void ReloadPackagesAndUpdateIfChanged()
+		public async void ReloadPackagesAndUpdateIfChanged()
 		{
 			if (IsOnline)
-				_packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
+				await _packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
 		}
 
-		internal bool? VerifyIfExists(string barCode)
+		internal async Task<bool?> VerifyIfExists(string barCode)
 		{
 			if (IsOnline)
-				return _packageDataProvider.VerifyIfExists(barCode);
+				return await _packageDataProvider.VerifyIfExists(barCode);
 			else
 				return null;
 		}
@@ -506,7 +507,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			BarCode += ToChar(e.Key).ToString().Replace("\0", "");
 		}
 
-		public void NewPreviewKeyDownEvent(object sender, System.Windows.Input.KeyEventArgs e)
+		public async void NewPreviewKeyDownEvent(object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			if (AddMultipleNew && IsOnline && e.Key == Key.Enter)
 			{
@@ -514,7 +515,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				string latestBarcode = BarCode.Split(',').ToList().SkipLast(1).Last();
 				if (latestBarcode != string.Empty)
 				{
-					ValidateAndInsertBarcode(latestBarcode);
+					await ValidateAndInsertBarcode(latestBarcode);
 					if (!string.IsNullOrEmpty(BarCodeThatWasSet))
 						barCodes.Add(latestBarcode);
 					AddMultipleText = $"{Loc.Tr("PAS4U.ScanNewWindow.TopTextMultiple", "Scan Multiple Barcodes to Add")}: {barCodes.Count}";
@@ -533,7 +534,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				BarCode = BarCode.Replace("\0", "").Trim();
 				if (BarCode != string.Empty) //make sure that the barcode is an actual alphanumeric string
 				{
-					ValidateAndInsertBarcode(BarCode);
+					await ValidateAndInsertBarcode(BarCode);
 				}
 
 				BarCode = string.Empty;
@@ -546,7 +547,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			AddMultipleVisible = Visibility.Collapsed;
 		}
 
-		private void ValidateAndInsertBarcode(string _barcode)
+		private async Task ValidateAndInsertBarcode(string _barcode)
 		{
 #if DEBUG
 			Regex regex = new("");
@@ -558,7 +559,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				if (Packages.FirstOrDefault(x => x.PackageId == _barcode) == null)
 				{
-					bool? DoubleCheck = VerifyIfExists(_barcode);
+					bool? DoubleCheck = await VerifyIfExists(_barcode);
 					if (DoubleCheck == null) { System.Windows.MessageBox.Show(Loc.Tr("PAS4U.MainWindow.Offline", "You're Offline")); }
 					else if (DoubleCheck.Value)
 					{
@@ -573,17 +574,17 @@ namespace PrintAndScan4Ukraine.ViewModel
 						if (!IsEditingPackageID | (IsEditingPackageID && System.Windows.MessageBox.Show(Loc.Tr("PAS4U.ScanNewWindow.NewWhileEditing", "You're in the process of editing barcodes, and are about to add a new barcode"),
 							"Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes))
 						{
-							Insert(new()
+							var inserted = await Insert(new()
 							{
 								PackageId = _barcode,
 								Contents = JsonConvert.SerializeObject(new List<Contents>() { })
 							});
-							InsertRecordStatus(new()
-							{
-								new() {
+							var insertedstatus = await InsertRecordStatus(
+                            [
+                                new() {
 									PackageId = _barcode, Createdbyuser = CurrentUser.Id, CreatedDate = DateTime.Now, Status = 1
 								}
-							});
+							]);
 							WasSomethingSet = true;
 							BarCodeThatWasSet = _barcode;
 						}
@@ -611,11 +612,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private void ExecuteEditPackageID(object obj)
 		{
 			IsEditingPackageID = !IsEditingPackageID;
+			SelectedPackage.IsPackageBeingEdited = !SelectedPackage.IsPackageBeingEdited;
+			SelectedPackage.OriginalPackageId = SelectedPackage.PackageId;
 		}
 
 		private void ExecuteShowSearch(object obj)
 		{
 			SearchSelectionWindow searchSelection = new();
+			searchSelection._viewmodel.PackagesOnList = [.. Packages.Select(x => x.PackageId)];
 			searchSelection.ShowDialog();
 			if (SearchSelectedPackage != string.Empty)
 			{
@@ -634,5 +638,5 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			AutoUpdater.Start(Secrets.GetUpdateURL());
 		}
-	}
+    }
 }

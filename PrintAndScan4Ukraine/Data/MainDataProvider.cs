@@ -18,14 +18,14 @@ namespace PrintAndScan4Ukraine.Data
 		void Heartbeat(Users user);
 	}
 
-	public class MainDataProvider : IMainDataProvider
+	public class MainDataProvider123 : IMainDataProvider
 	{
 		public async Task<Users> GetUserFromComputerNameAsync(string ComputerName)
 		{
 			Users user = new();
 			using (MySqlConnection db = Secrets.GetConnectionString())
 			{
-				var temp = await db.QueryAsync<Users>($"SELECT id, computername, access, comment, lastconnectedversion, lang, lastcheckin FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
+				var temp = await db.QueryAsync<Users>($"SELECT id, computername, access, comment, lastconnectedversion, lang, lastcheckin, api_key FROM {Secrets.MySqlUserAccessTable} WHERE computername = @computername", new { ComputerName });
 				if (temp != null && temp.Any())
 				{
 					user = temp.First();

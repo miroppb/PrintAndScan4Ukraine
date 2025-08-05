@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace PrintAndScan4Ukraine.Model
 {
 	[Table(Secrets.MySqlPackagesTable)]
-	public class Package : INotifyPropertyChanged
+	public partial class Package : INotifyPropertyChanged
 	{
 		public int Id { get; set; }
 		private string _PackageId = string.Empty;
@@ -199,20 +199,29 @@ namespace PrintAndScan4Ukraine.Model
 		[Computed]
 		public bool PackageIDModified { get; internal set; } = false;
 
-		private string _NewPackageID = string.Empty;
+		private string _NewPackageId = string.Empty;
 		[Write(false)]
 		[Computed]
 		public string NewPackageId
 		{
-			get => _NewPackageID;
+			get => _NewPackageId;
 			set
 			{
-				_NewPackageID = value;
-				if (value != PackageId)
-					PackageIDModified = true;
-				RaisePropertyChanged();
+				if (_NewPackageId != value)
+				{
+					_NewPackageId = value;
+					if (value != PackageId)
+						PackageIDModified = true;
+					RaisePropertyChanged();
+					if (IsPackageBeingEdited)
+						_ = ValidateNewPackageIdAsync();
+                }
 			}
 		}
+
+		[Write(false)]
+		[Computed]
+		public bool IsPackageBeingEdited { get; set; } = false;
 
 		[Write(false)]
 		[Computed]

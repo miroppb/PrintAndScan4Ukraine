@@ -13,7 +13,18 @@
         <local:StatusToTextConverter x:Key="StatusToTextConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip"
+                    Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Red" />
+                    <Setter Property="BorderThickness" Value="2" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
+    
     <Grid Background="#FFD500">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
@@ -147,16 +158,24 @@
             <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.PackageId,
                 Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,0,0" FontSize="20" 
                        Visibility="{Binding IsEditingPackageID, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InvertedBooleanToVisibilityConverter}, FallbackValue='Visible'}" />
-            <TextBox x:Name="TxtPackageId" Grid.Column="1" HorizontalAlignment="Left" Margin="5,0,0,0" FontSize="20" 
-                     Visibility="{Binding IsEditingPackageID, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue='Hidden'}">
+            <TextBox x:Name="TxtPackageId"
+                     Grid.Column="1"
+                     HorizontalAlignment="Left"
+                     Margin="5,0,0,0"
+                     FontSize="20"
+                     Visibility="{Binding IsEditingPackageID, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBox.Text>
-                    <Binding ElementName="LstUPCAndNames" Path="SelectedItem.NewPackageId" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local2:UniqueIDValidationRule />
-                        </Binding.ValidationRules>
-                    </Binding>
+                    <Binding ElementName="LstUPCAndNames"
+                             Path="SelectedItem.NewPackageId"
+                             Mode="TwoWay"
+                             UpdateSourceTrigger="PropertyChanged"
+                             ValidatesOnNotifyDataErrors="True"
+                             NotifyOnValidationError="True" />
                 </TextBox.Text>
             </TextBox>
+            <TextBlock Foreground="Red" FontSize="12" Margin="5,30,0,0" Grid.Column="1" HorizontalAlignment="Left"
+               Visibility="{Binding (Validation.HasError), ElementName=TxtPackageId, Converter={StaticResource BooleanToVisibilityConverter}}"
+               Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TxtPackageId}" />
 
             <TextBlock x:Name="TxtLastStatus" Grid.Column="3" Text="{Tr 'PAS4U.MainWindow.LastStatus', {Binding SelectedPackageLastStatus.Status, Mode=TwoWay, Converter={StaticResource StatusToTextConverter}}, {Binding SelectedPackageLastStatus.CreatedDate}, DefaultText='Last Status'}"
                        Margin="0 0 33 0" TextAlignment="Right" Visibility="{Binding IsSelectedPackageShowing, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
