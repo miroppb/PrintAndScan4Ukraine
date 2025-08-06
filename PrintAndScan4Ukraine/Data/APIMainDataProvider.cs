@@ -1,4 +1,5 @@
-﻿using miroppb;
+﻿using CodingSeb.Localization;
+using miroppb;
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Model;
 using System;
@@ -46,13 +47,13 @@ namespace PrintAndScan4Ukraine.Data
                 }
                 else
                 {
-                    MessageBox.Show("Could not verify access with PAS4U server.");
+                    MessageBox.Show($"{Loc.Tr("PAS4U.API.VerifyAccess", "Could not verify access with PAS4U server.")}");
                     Libmiroppb.Log($"GetUser response error: {await response.Content.ReadAsStringAsync()}");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to connect to PAS4U server.");
+                MessageBox.Show($"{Loc.Tr("PAS4U.API.ConnectionFailed", "Failed to connect to PAS4U server.")}");
                 Libmiroppb.Log($"Exception in GetUser: {ex.Message}");
             }
             return user ?? new();
