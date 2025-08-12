@@ -68,6 +68,7 @@ namespace PrintAndScan4Ukraine.Data
             var requestBody = new
             {
                 id = user.Id,
+                lastcheckin = DateTime.Now
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
