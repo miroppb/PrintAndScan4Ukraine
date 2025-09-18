@@ -1,3 +1,7 @@
+v. 1.6.0.2
+
+- Fixed bug that would cause application to crash if logging database was unreachable
+
 v. 1.6.0.1
 
 - Send current date with heartbeat
@@ -6,7 +10,6 @@ v. 1.6.0.0
 
 - Massive update, in the sense that I've moved every DB call to an API
 - Created integration testing for the Package API calls. Not for Main, because there's only 2
-
 
 v. 1.5.9.0
 
