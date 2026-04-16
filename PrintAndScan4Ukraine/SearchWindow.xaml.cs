@@ -32,7 +32,7 @@ namespace PrintAndScan4Ukraine
 			{
 				PackagesViewModel.SearchSelectedPackage = viewModel.SelectedShipment!.PackageId;
 
-				viewModel.ExecuteCloseCommand(new object());
+				viewModel.ExecuteCloseCommand();
 			}
 		}
 	}

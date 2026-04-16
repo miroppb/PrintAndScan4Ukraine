@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
 using System.Printing;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -16,13 +16,20 @@ namespace PrintAndScan4Ukraine.Data
     public interface IPrintDataProvider
     {
         ObservableCollection<string> LoadPrinters();
-        bool PrintBarcodes(int starting, int ending, int copies, string printer);
+        Task<bool> PrintBarcodes(int starting, int ending, int copies, string printer);
         bool CancelPrinting(string selectedPrinter);
         Task<bool> FindPackagesBetweenRange(int starting, int ending);
     }
 
-    public class PrintDataProvider(IApiService apiService) : IPrintDataProvider
+    public class PrintDataProvider : IPrintDataProvider
     {
+        private readonly IApiService apiService;
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, CancellationTokenSource> _cancellationSources = new();
+
+        public PrintDataProvider(IApiService apiService)
+        {
+            this.apiService = apiService;
+        }
         public ObservableCollection<string> LoadPrinters()
         {
             List<string> temp = new LocalPrintServer().GetPrintQueues().Select(v => v.Name).ToList();
@@ -31,14 +38,31 @@ namespace PrintAndScan4Ukraine.Data
             return list;
         }
 
-        public bool PrintBarcodes(int starting, int ending, int copies, string printer)
+        public async Task<bool> PrintBarcodes(int starting, int ending, int copies, string printer)
         {
+            if (string.IsNullOrEmpty(printer))
+                return false;
+
+            // Cancel any existing print operation for this printer and replace with a new token
             try
             {
+                if (_cancellationSources.TryGetValue(printer, out var existing))
+                {
+                    try { existing.Cancel(); } catch { }
+                    try { existing.Dispose(); } catch { }
+                    _cancellationSources.TryRemove(printer, out _);
+                }
+
+                var cts = new CancellationTokenSource();
+                _cancellationSources[printer] = cts;
+                var token = cts.Token;
+
                 for (int a = starting; a <= ending; a++)
                 {
                     for (int b = 0; b < copies; b++)
                     {
+                        token.ThrowIfCancellationRequested();
+
                         StringBuilder sb = new("^XA");
                         sb.AppendLine();
                         sb.AppendLine("^BY4,2,270");
@@ -46,44 +70,104 @@ namespace PrintAndScan4Ukraine.Data
                         sb.AppendLine();
                         sb.AppendLine("^XZ");
 
-                        PrintDialog prtDlg = new();
-                        FlowDocument doc = new(new Paragraph(new Run(sb.ToString())));
-                        prtDlg.PrintQueue = new PrintQueue(new PrintServer(), printer);
-                        IDocumentPaginatorSource idpSource = doc;
-                        prtDlg.PrintDocument(idpSource.DocumentPaginator, "Hello");
+                        try
+                        {
+                            PrintDialog prtDlg = new();
+                            FlowDocument doc = new(new Paragraph(new Run(sb.ToString())));
+                            prtDlg.PrintQueue = new PrintQueue(new PrintServer(), printer);
+                            IDocumentPaginatorSource idpSource = doc;
+                            prtDlg.PrintDocument(idpSource.DocumentPaginator, "PrintBarcode");
+                        }
+                        catch (Exception ex)
+                        {
+                            Libmiroppb.Log($"Print exception: {ex.Message}");
+                        }
+
+                        // Wait between individual prints so user can cancel
+                        try
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(5), token);
+                        }
+                        catch (OperationCanceledException) { token.ThrowIfCancellationRequested(); }
+                    }
+                }
+
+                return true;
+            }
+            catch (OperationCanceledException)
+            {
+                Libmiroppb.Log("Printing cancelled by user.");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Libmiroppb.Log($"Exception: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(printer))
+                {
+                    if (_cancellationSources.TryRemove(printer, out var finished))
+                    {
+                        try { finished.Dispose(); } catch { }
                     }
                 }
             }
-            catch (Exception ex) { Libmiroppb.Log($"Exception: {ex.Message}"); }
-
-            return true;
         }
 
         public bool CancelPrinting(string selectedPrinter)
         {
-            if (selectedPrinter != null)
-            {
-                StringBuilder sb = new("~JA");
-                PrintDialog prtDlg = new();
-                FlowDocument doc = new(new Paragraph(new Run(sb.ToString())));
-                prtDlg.PrintQueue = new PrintQueue(new PrintServer(), selectedPrinter);
-                IDocumentPaginatorSource idpSource = doc;
-                prtDlg.PrintDocument(idpSource.DocumentPaginator, "Hello");
-                return true;
-                //try
-                //{
-                //	PrintQueue printQueue = new PrintServer().GetPrintQueue(selectedPrinter);
-                //	var jobs = printQueue.GetPrintJobInfoCollection();
+            if (string.IsNullOrEmpty(selectedPrinter))
+                return false;
 
-                //	foreach (var jobInfo in jobs)
-                //	{
-                //		jobInfo.Cancel();
-                //	}
-                //	return true;
-                //}
-                //catch { return false; }
+            try
+            {
+                // Signal cancellation to any running print loop for this printer
+                if (_cancellationSources.TryGetValue(selectedPrinter, out var cts))
+                {
+                    try { cts.Cancel(); } catch { }
+                }
+
+                // Try to cancel jobs in the Windows print queue for this printer
+                try
+                {
+                    var ps = new PrintServer();
+                    var pq = ps.GetPrintQueue(selectedPrinter);
+                    pq.Refresh();
+                    var jobs = pq.GetPrintJobInfoCollection();
+                    foreach (var jobInfo in jobs)
+                    {
+                        try { jobInfo.Cancel(); } catch { }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Libmiroppb.Log($"Cancel print queue exception: {ex.Message}");
+                }
+
+                // Also send a ZPL abort sequence to the printer as a best-effort attempt
+                try
+                {
+                    StringBuilder sb = new("~JA");
+                    PrintDialog prtDlg = new();
+                    FlowDocument doc = new(new Paragraph(new Run(sb.ToString())));
+                    prtDlg.PrintQueue = new PrintQueue(new PrintServer(), selectedPrinter);
+                    IDocumentPaginatorSource idpSource = doc;
+                    prtDlg.PrintDocument(idpSource.DocumentPaginator, "Cancel");
+                }
+                catch (Exception ex)
+                {
+                    Libmiroppb.Log($"Best-effort ZPL cancel failed: {ex.Message}");
+                }
+
+                return true;
             }
-            return false;
+            catch (Exception ex)
+            {
+                Libmiroppb.Log($"CancelPrinting exception: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<bool> FindPackagesBetweenRange(int starting, int ending)

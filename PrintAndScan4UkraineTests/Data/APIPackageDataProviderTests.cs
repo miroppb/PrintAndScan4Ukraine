@@ -84,7 +84,6 @@ namespace PrintAndScan4Ukraine.Data.Tests
         {
             var result = await _provider!.GetServerDate();
 
-            Assert.IsNotNull(result);
             Assert.IsGreaterThan(DateTime.Now, result);
         }
 
@@ -114,7 +113,6 @@ namespace PrintAndScan4Ukraine.Data.Tests
             var result = await _provider!.InsertRecord(new Package() { PackageId = $"apitest{ran}", Sender_Name = "John Doe", Sender_Address = "123 Kyiv Street", Sender_Phone = "+380501234567" });
             var result2 = await _provider!.GetPackageAsync($"apitest{ran}", false);
 
-            Assert.IsNotNull(result);
             Assert.IsTrue(result);
             Assert.IsNotNull(result2);
             Assert.AreEqual("John Doe", result2.First().Sender_Name);
@@ -128,7 +126,6 @@ namespace PrintAndScan4Ukraine.Data.Tests
             var result = await _provider!.InsertRecordStatus([new() { PackageId = $"apitest{ran}", Createdbyuser = 1, CreatedDate = DateTime.Now, Status = 1 }]);
             var result2 = await _provider!.GetStatusByPackage($"apitest{ran}");
 
-            Assert.IsNotNull(result);
             Assert.IsTrue(result);
             Assert.IsNotNull(result2);
             Assert.AreEqual(1, result2.First().Createdbyuser);
@@ -140,7 +137,6 @@ namespace PrintAndScan4Ukraine.Data.Tests
             var result = await _provider!.UpdateRecords([new() { Id = 12776, PackageId = "testmiro123-api", Sender_Name = "John Doe1", Sender_Address = "123 Kyiv Street", Sender_Phone = "+380501234567" }]);
             var result2 = await _provider!.GetPackageAsync("testmiro123-api", false);
 
-            Assert.IsNotNull(result);
             Assert.IsTrue(result);
             Assert.IsNotNull(result2);
             Assert.AreEqual("John Doe1", result2.First().Sender_Name);
@@ -151,7 +147,6 @@ namespace PrintAndScan4Ukraine.Data.Tests
         {
             var result = await _provider!.VerifyIfExists("testmiro123-api");
 
-            Assert.IsNotNull(result);
             Assert.IsTrue(result);
         }
     }

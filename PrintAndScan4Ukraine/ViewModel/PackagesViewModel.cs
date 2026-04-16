@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Data;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
@@ -65,11 +66,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 			EditPackageIDCommand = new DelegateCommand(ExecuteEditPackageID, () => CanEditPackageID);
 			ShowSearchCommand = new DelegateCommand(ExecuteShowSearch, () => AccessToSeePackages && AccessToSeeSender);
 			ShowCheckUpdateCommand = new DelegateCommand(ExecuteCheckUpdate, () => IsOnline);
+            ShowFindRepeatingRecipientsCommand = new DelegateCommand(ExecuteShowFindRepeatingRecipients, () => AccessToSeePackages);
+            ClearSearchCommand = new DelegateCommand(ExecuteClearSearch);
 
 			CheckSystemTime();
 		}
 
-		private async void CheckSystemTime()
+        private async void CheckSystemTime()
 		{
 			DateTime SysDate = DateTime.Now;
 			DateTime ServDate = await _packageDataProvider.GetServerDate();
@@ -336,5 +339,47 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 			return c;
 		}
-	}
+
+        private ICollectionView? _filteredView;
+        private string _searchQuery = string.Empty;
+
+        public ICollectionView FilteredPackages
+        {
+            get
+            {
+                if (_filteredView == null)
+                {
+                    _filteredView = CollectionViewSource.GetDefaultView(Packages);
+                    _filteredView.Filter = o => FilterPackage(o as Package);
+                }
+                return _filteredView;
+            }
+        }
+
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                if (_searchQuery == value) return;
+                _searchQuery = value;
+                RaisePropertyChanged();
+                _filteredView?.Refresh();
+            }
+        }
+
+        private bool FilterPackage(Package? p)
+        {
+            if (p == null) return false;
+            if (string.IsNullOrWhiteSpace(SearchQuery)) return true;
+            try
+            {
+                return p.PackageId != null && p.PackageId.IndexOf(SearchQuery, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+    }
 }

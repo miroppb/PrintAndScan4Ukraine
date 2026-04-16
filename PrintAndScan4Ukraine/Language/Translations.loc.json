@@ -83,6 +83,10 @@
           "en": "S_earch",
           "ru": "_Поиск"
         },
+        "FindRepeating": {
+          "en": "Find Repeating Recipients",
+          "ru": "Найти Повторяющихся Получателей"
+        },
         "Update": {
           "en": "Check for _Update",
           "ru": "Проверить _обновления"
@@ -205,6 +209,22 @@
       "Update": {
         "en": "A mandatory update is available. The application will now update and restart.",
         "ru": "Обновление обязательно. Приложение будет обновлено и перезапущено."
+      },
+      "PackageList": {
+        "en": "Package List",
+        "ru": "Список Посылок"
+      },
+      "Search": {
+        "en": "Search",
+        "ru": "Поиск"
+      },
+      "Clear": {
+        "en": "Clear",
+        "ru": "Очистить"
+      },
+      "Details": {
+        "en": "Details",
+        "ru": "Детали"
       }
     },
     "ScanNewWindow": {

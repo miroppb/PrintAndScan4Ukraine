@@ -11,6 +11,7 @@ using PrintAndScan4Ukraine.Properties;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -37,7 +38,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public MainViewModel(IMainDataProvider mainDataProvider)
 		{
-			LocalizationLoader.Instance.FileLanguageLoaders.Add(new JsonFileLoader());
+#if DEBUG
+			Libmiroppb.ConfigureLogger(Secrets.LogHostName, Secrets.LogPort, "PrintAndScan4Ukraine", Assembly.GetEntryAssembly()!.GetName().Version?.ToString(), environment: "Development");
+#else
+			Libmiroppb.ConfigureLogger(Secrets.LogHostName, Secrets.LogPort, "PrintAndScan4Ukraine", Assembly.GetEntryAssembly()!.GetName().Version?.ToString());
+#endif
+            LocalizationLoader.Instance.FileLanguageLoaders.Add(new JsonFileLoader());
 			LocalizationLoader.Instance.AddDirectory(@"Language");
 
 			_mainDataProvider = mainDataProvider;
@@ -88,9 +94,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 			else
 			{
+				// Only log and upload the error if the update-server is offline, but do not show the error message to the user
 				Libmiroppb.Log($"Error Checking for Update: {args.Error.Message}");
-				await Libmiroppb.UploadLogAsync(Secrets.GetConnectionString().ConnectionString);
-				MessageBox.Show($"Error checking for update: {args.Error.Message}");
+
+				// Do not show the error message if the update-server is offline (e.g., network error, server not found)
+				if (args.Error is not System.Net.WebException)
+				{
+					MessageBox.Show($"Error checking for update: {args.Error.Message}");
+				}
 			}
 		}
 
@@ -132,7 +143,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private void ClickScan(object a)
+		private void ClickScan()
 		{
 			isVisible = false;
 			ScanWindow win = new();
@@ -140,7 +151,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			isVisible = true;
 		}
 
-		private void ClickPrint(object a)
+		private void ClickPrint()
 		{
 			isVisible = false;
 			PrintWindow win = new();

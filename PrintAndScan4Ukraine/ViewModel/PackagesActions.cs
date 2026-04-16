@@ -50,7 +50,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			return null;
 		}
 
-		public async void ExecuteSave(object a)
+		public async void ExecuteSave()
 		{
 			if (await Save())
 				System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
@@ -73,7 +73,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			return false;
 		}
 
-		public async void SaveAll(object a)
+		public async void SaveAll()
 		{
 			if (IsOnline && Packages != null)
 				if (await _packageDataProvider.UpdateRecords(Packages.ToList()))
@@ -148,9 +148,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 
                 Libmiroppb.Log($"Exporting to XLSX. Filename: {sfd.FileName}");
-				ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                ExcelPackage.License.SetNonCommercialOrganization("PrintAndScan4Ukraine");
 
-				using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
+                using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
 				{
 					List<Package_less> list = _packageDataProvider.MapPackagesAndStatusesToLess(packages, statuses!);
 
@@ -189,7 +189,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			return true;
 		}
 
-		private async void ShowHistory(object a)
+		private async void ShowHistory()
 		{
 			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
 			HistoryWindow historyWindow = new(SelectedPackage.Sender_Name!, PreviousPackages);
@@ -209,7 +209,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private async void ShowShipWindow(object a)
+		private async void ShowShipWindow()
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsShippedWindow shippedWindow = new(this);
@@ -219,7 +219,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
 		}
 
-		private async void ShowAddNewWindow(object a)
+		private async void ShowAddNewWindow()
 		{
 			if (IsEditingPackageID)
 			{
@@ -252,10 +252,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 			WasSomethingSet = false;
 			AddMultipleVisible = Visibility.Visible;
 			if (AddMultipleNew)
-				ExecuteAddMultiple(new object()); //flip it back
+				ExecuteAddMultiple(); //flip it back
 		}
 
-		private async void ShowArriveWindow(object a)
+		private async void ShowArriveWindow()
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsArrivedWindow arrivedWindow = new(CurrentUser);
@@ -265,7 +265,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
 		}
 
-		private async void ShowDeliverWindow(object a)
+		private async void ShowDeliverWindow()
 		{
 			int current = SelectedPackage != null ? SelectedPackage.Id! : 0;
 			MarkAsDeliveredWindow deliveredWindow = new(CurrentUser);
@@ -275,7 +275,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			SelectedPackage = Packages.FirstOrDefault(x => x.Id == current)!;
 		}
 
-		private void ExecuteExport(object a)
+		private void ExecuteExport()
 		{
 			ExportButtonEnabled = true;
 			ReportSelection win = new(this);
@@ -424,7 +424,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			OnClosingRequest();
 		}
 
-		public async void ExecuteGenerateReport(object a)
+		public async void ExecuteGenerateReport()
 		{
 			SpinnerVisible = Visibility.Visible;
 			ExportButtonEnabled = false;
@@ -443,11 +443,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 			stopwatch.Stop();
 			Libmiroppb.Log($"Generating report for: {ExportStartDate}, {ExportEndDate}, {ReportLastStatus}. Ran for: {stopwatch.Elapsed}");
 
-			OnClosingRequest();
-
 			if (PackagesFromDates != null)
 				await Export(PackagesFromDates);
-		}
+
+			SpinnerVisible = Visibility.Collapsed;
+            OnClosingRequest();
+        }
 
 		public void ExecuteRadioDateChecked(object AllOrDates)
 		{
@@ -466,7 +467,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				ReportLastStatus = 3;
 		}
 
-		private void ExecuteAddMultiple(object obj)
+		private void ExecuteAddMultiple()
 		{
 			AddMultipleNew = !AddMultipleNew;
 			if (!AddMultipleNew)
@@ -525,7 +526,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 					//we're done
 					BarCode = string.Empty;
 					e.Handled = true;
-					ExecuteAddMultiple(new object()); //set it back
+					ExecuteAddMultiple(); //set it back
 					OnClosingRequest();
 				}
 			}
@@ -638,5 +639,16 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			AutoUpdater.Start(Secrets.GetUpdateURL());
 		}
+
+        private void ExecuteClearSearch(object? _)
+        {
+            SearchQuery = string.Empty;
+        }
+
+        private void ExecuteShowFindRepeatingRecipients(object obj)
+        {
+            FindRepeatingRecipientsWindow win = new(_packageDataProvider);
+            win.ShowDialog();
+        }
     }
 }

@@ -1,24 +1,71 @@
 ﻿<Window x:Class="PrintAndScan4Ukraine.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen" Icon="/barcode.png">
+        Title="Print &amp; Scan"
+        Height="450" Width="800"
+        Background="{StaticResource PageBackground}"
+        WindowStartupLocation="CenterScreen"
+        Icon="/barcode.png">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <Window.Visibility>
-        <Binding Path="isVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibilityConverter}" />
+        <Binding Path="isVisible"
+                 Mode="TwoWay"
+                 Converter="{StaticResource BooleanToVisibilityConverter}" />
     </Window.Visibility>
-    <Grid>
+    <Grid Margin="30">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400" />
-            <ColumnDefinition Width="*"  />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-
-        <Button x:Name="BtnPrint" Grid.Column="0" Content="Print" FontSize="40" FontWeight="Bold" Command="{Binding PrintCommand}" />
-        <Button x:Name="BtnScan" Grid.Column="1" Content="Scan" FontSize="40" FontWeight="Bold" Command="{Binding ScanCommand}" />
-
+        <!-- PRINT CARD -->
+        <Border Style="{StaticResource Card}"
+                Margin="0 0 20 0"
+                Cursor="Hand">
+            <Button Command="{Binding PrintCommand}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Print"
+                               FontSize="40"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource HeaderText}"
+                               HorizontalAlignment="Center"/>
+                    <Border Background="{StaticResource UA_Blue}"
+                            Height="6"
+                            Width="80"
+                            CornerRadius="3"
+                            Margin="0 10 0 0"/>
+                </StackPanel>
+            </Button>
+        </Border>
+        <!-- SCAN CARD -->
+        <Border Style="{StaticResource Card}"
+                Grid.Column="1"
+                Margin="20 0 0 0"
+                Cursor="Hand">
+            <Button Command="{Binding ScanCommand}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Scan"
+                               FontSize="40"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource HeaderText}"
+                               HorizontalAlignment="Center"/>
+                    <Border Background="{StaticResource UA_Yellow}"
+                            Height="6"
+                            Width="80"
+                            CornerRadius="3"
+                            Margin="0 10 0 0"/>
+                </StackPanel>
+            </Button>
+        </Border>
     </Grid>
 </Window>

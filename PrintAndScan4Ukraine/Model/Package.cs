@@ -1,11 +1,9 @@
-﻿using Dapper.Contrib.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace PrintAndScan4Ukraine.Model
 {
-	[Table(Secrets.MySqlPackagesTable)]
 	public partial class Package : INotifyPropertyChanged
 	{
 		public int Id { get; set; }
@@ -146,8 +144,6 @@ namespace PrintAndScan4Ukraine.Model
 		public string? Contents { get; set; } = string.Empty;
 		private List<Contents> _recipient_contents = new() { };
 
-		[Write(false)]
-		[Computed]
 		public List<Contents> Recipient_Contents
 		{
 			get => _recipient_contents;
@@ -163,8 +159,6 @@ namespace PrintAndScan4Ukraine.Model
 
 		private string? _Total = "$0.00";
 
-		[Write(false)]
-		[Computed]
 		public string? Total
 		{
 			get => _Total;
@@ -191,17 +185,11 @@ namespace PrintAndScan4Ukraine.Model
 
 		public bool Removed { get; set; } = false;
 
-		[Write(false)]
-		[Computed]
 		public bool Modified { get; internal set; } = false;
 
-		[Write(false)]
-		[Computed]
 		public bool PackageIDModified { get; internal set; } = false;
 
 		private string _NewPackageId = string.Empty;
-		[Write(false)]
-		[Computed]
 		public string NewPackageId
 		{
 			get => _NewPackageId;
@@ -219,12 +207,8 @@ namespace PrintAndScan4Ukraine.Model
 			}
 		}
 
-		[Write(false)]
-		[Computed]
 		public bool IsPackageBeingEdited { get; set; } = false;
 
-		[Write(false)]
-		[Computed]
 		public bool PackageIdValid { get; set; } = true;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
@@ -233,8 +217,6 @@ namespace PrintAndScan4Ukraine.Model
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
-
-		//private void CalcTotal() => Total = ((double)(Value! + Delivery! + Insurance! + Other!)).ToString("$0.00");
 	}
 
 	public class Package_less

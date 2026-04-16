@@ -8,13 +8,21 @@ namespace PrintAndScan4Ukraine.Command
 		private Action<object> _execute;
 		private readonly Func<bool>? _canExecute;
 
-		public DelegateCommand(Action<object> execute, Func<bool>? canExecute = null)
-		{
-			_execute = execute ?? throw new ArgumentNullException(nameof(execute));
-			_canExecute = canExecute;
-		}
 
-		public event EventHandler? CanExecuteChanged;
+        public DelegateCommand(Action execute, Func<bool>? canExecute = null)
+        {
+            _execute = _ => execute();
+            _canExecute = canExecute;
+        }
+
+        public DelegateCommand(Action<object> execute, Func<bool>? canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+
+        public event EventHandler? CanExecuteChanged;
 
 		public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 

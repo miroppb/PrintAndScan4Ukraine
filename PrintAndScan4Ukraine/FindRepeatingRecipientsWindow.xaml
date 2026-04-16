@@ -1,0 +1,125 @@
+﻿<Window x:Class="PrintAndScan4Ukraine.FindRepeatingRecipientsWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:PrintAndScan4Ukraine.Converter"
+        Title="Find Repeating Recipients"
+        Width="1100" Height="700"
+        Background="#F5F6F7"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <local:GroupCountConverter x:Key="GroupCountConverter"/>
+        <!-- Ukrainian Accent Brushes -->
+        <SolidColorBrush x:Key="UA_Blue" Color="#A7D8FF"/>
+        <SolidColorBrush x:Key="UA_Yellow" Color="#F7D348"/>
+        <SolidColorBrush x:Key="CardBackground" Color="White"/>
+        <SolidColorBrush x:Key="HeaderText" Color="#1F2937"/>
+    </Window.Resources>
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!-- LEFT PANEL -->
+        <Border Background="{StaticResource CardBackground}"
+                CornerRadius="10"
+                Padding="15"
+                Margin="0 0 20 0"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Recent Exports"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource HeaderText}"
+                           Margin="0 0 0 15"/>
+                <ListBox ItemsSource="{Binding RecentFiles}"
+                         SelectedItem="{Binding SelectedFile}"
+                         DisplayMemberPath="Filename"
+                         Height="300"
+                         BorderThickness="1"
+                         BorderBrush="#D1D5DB"
+                         Background="#FAFAFA"/>
+                <Button Content="Load Files"
+                        Command="{Binding LoadFilesCommand}"
+                        Margin="0 15 0 0"
+                        Padding="10"
+                        Background="{StaticResource UA_Blue}"
+                        Foreground="#1F2937"
+                        BorderThickness="0"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"/>
+                <Button Content="Process Selected File"
+                        Command="{Binding ProcessFileCommand}"
+                        Padding="10"
+                        Background="{StaticResource UA_Yellow}"
+                        Foreground="#1F2937"
+                        BorderThickness="0"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+        <!-- RIGHT PANEL -->
+        <ScrollViewer Grid.Column="1">
+            <ItemsControl ItemsSource="{Binding GroupedPackages}">
+                <ItemsControl.GroupStyle>
+                    <!-- Sender Group -->
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="22"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource HeaderText}"
+                                           Margin="0 20 0 10"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                    <!-- Recipient Phone Group -->
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Border Background="{StaticResource UA_Blue}"
+                                        CornerRadius="6"
+                                        Padding="10"
+                                        Margin="0 10 0 5">
+                                    <TextBlock Text="{Binding Converter={StaticResource GroupCountConverter}}"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="#1F2937"/>
+                                </Border>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource CardBackground}"
+                                CornerRadius="8"
+                                Padding="12"
+                                Margin="0 5 0 5"
+                                BorderBrush="#D1D5DB"
+                                BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding PackageId}"
+                                           FontWeight="Bold"
+                                           Foreground="#1F2937"/>
+                                <TextBlock Text="{Binding Recipient_Name}"
+                                           Grid.Column="1"
+                                           Foreground="#1F2937"/>
+                                <TextBlock Text="{Binding Recipient_Address}"
+                                           Grid.Column="2"
+                                           TextWrapping="Wrap"
+                                           Foreground="#1F2937"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Window>

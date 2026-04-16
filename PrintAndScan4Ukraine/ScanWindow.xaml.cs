@@ -48,20 +48,12 @@ namespace PrintAndScan4Ukraine
 			await Task.Delay(20);
 			await _viewModel.LoadAsync();
 			SetupUpdater();
-			SetupLogUploader();
 			SetupSavingOften();
 			SetupReloadingPackages();
 			SetupOnlineCheck();
 			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
-			Closing += ScanWindow_Closing;
-		}
-
-		private async void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
-		{
-			Libmiroppb.Log("Application closing");
-			await UploadLogs(true);
 		}
 
 		private async void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -118,20 +110,8 @@ namespace PrintAndScan4Ukraine
 		private async void AutoUpdater_ApplicationExitEvent()
 		{
 			Libmiroppb.Log("Update starting");
-			await UploadLogs(true);
-			Environment.Exit(0); //Application.Current.Shutdown wasn't working for a customer
-		}
-
-		private void SetupLogUploader()
-		{
-			int minutes = 10;
-			Libmiroppb.Log($"Setting up uploading logs every {minutes} minutes");
-			UploadLogsTimer = new() { Interval = TimeSpan.FromMinutes(minutes) };
-			UploadLogsTimer.Tick += async delegate
-			{
-				await UploadLogs(true);
-			};
-			UploadLogsTimer.Start();
+			await Task.Delay(1000); //delay to allow log to write before app closes, otherwise log may not show update starting
+            Environment.Exit(0); //Application.Current.Shutdown wasn't working for a customer
 		}
 
 		private void SetupSavingOften()
@@ -169,8 +149,6 @@ namespace PrintAndScan4Ukraine
 			};
 			timer.Start();
 		}
-
-		private static async Task UploadLogs(bool deleteAfter) => await Libmiroppb.UploadLogAsync(Secrets.GetConnectionString().ConnectionString, deleteAfter);
 
 		private void MnuEnglish_Click(object sender, RoutedEventArgs e)
 		{

@@ -25,5 +25,8 @@ namespace PrintAndScan4Ukraine.Data
 		List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses);
 		Task<DateTime> GetServerDate();
         Task<long> UploadExportedFile(string fileName);
-	}
+        Task<IEnumerable<Package>> FindRepeatingRecipientsAsync(List<string> package_ids, int max_allowed = 3);
+		Task<IEnumerable<Export>> FindRecentExports();
+		Task<Export> DownloadExportAsync(int id);
+    }
 }

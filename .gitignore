@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # miro
 secrets.cs
 *.ifp
+*.py

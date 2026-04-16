@@ -45,7 +45,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public PrintViewModel(IPrintDataProvider dataProvider)
 		{
 			_dataProvider = dataProvider;
-			PrintCommand = new DelegateCommand(Print, () => CanPrint);
+			PrintCommand = new DelegateCommand(async _ => await Print(), () => CanPrint);
 			CancelCommand = new DelegateCommand(CancelPrinting, () => CanCancel);
 		}
 
@@ -123,15 +123,15 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private void Print(object a)
+		private async Task Print()
 		{
-			//CanPrint = false;
+			CanPrint = false;
 			Libmiroppb.Log($"Printing from {Starting} to {Ending}, {Copies} copies, to printer {SelectedPrinter}");
-			_dataProvider.PrintBarcodes(Starting, Ending, Copies, SelectedPrinter);
-			//CanPrint = true;
+			await _dataProvider.PrintBarcodes(Starting, Ending, Copies, SelectedPrinter);
+			CanPrint = true;
 		}
 
-		private void CancelPrinting(object obj)
+		private void CancelPrinting()
 		{
 			Libmiroppb.Log("Trying to cancel any print jobs...");
 			CanCancel = !_dataProvider.CancelPrinting(SelectedPrinter);

@@ -68,8 +68,8 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
-                MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}:\n{ex.Message}");
+                Libmiroppb.Log($"There is no connection to: {Secrets.ApiBaseUrl}");
+                MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}1:\n{ex.Message}");
             }
 
             return packages;
@@ -107,7 +107,7 @@ namespace PrintAndScan4Ukraine.Data
             catch (Exception ex)
             {
                 Libmiroppb.Log($"Exception: {ex.Message}");
-                MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}:\n{ex.Message}");
+                MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}2:\n{ex.Message}");
             }
 
             return statuses;
@@ -271,7 +271,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch
             {
-                Libmiroppb.Log($"There is no connection to: {Secrets.GetMySQLUrl()}");
+                Libmiroppb.Log($"There is no connection to: {Secrets.ApiBaseUrl}");
                 MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
             }
             return statuses;
@@ -585,6 +585,45 @@ namespace PrintAndScan4Ukraine.Data
             }
 
             return false;
+        }
+
+        public async Task<IEnumerable<Package>> FindRepeatingRecipientsAsync(List<string> package_list, int max_allowed = 3)
+        {
+            if (package_list == null || package_list.Count == 0)
+                return [];
+
+            var payload = new
+            {
+                package_list,
+                max_allowed
+            };
+
+            var json = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("/find-repeating-recipients", content);
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Package>>(responseContent)!;
+        }
+
+        public async Task<IEnumerable<Export>> FindRecentExports()
+        {
+            var response = await _httpClient.GetAsync("/uploaded-exports");
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Export>>(responseContent)!;
+        }
+
+        public async Task<Export> DownloadExportAsync(int id)
+        {
+            var response = await _httpClient.GetAsync($"/export/{id}");
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Export>(json)!;
         }
 
         public static string StatusToText(int status)

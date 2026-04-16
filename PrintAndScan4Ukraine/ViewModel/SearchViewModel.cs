@@ -1,6 +1,5 @@
 ﻿using CodingSeb.Localization;
 using miroppb;
-using MySqlConnector;
 using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
@@ -46,12 +45,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 				WhatAreWeSearchingFor = SearchFor.Name;
 		}
 
-		private async void ExecuteSearchCommand(object obj)
+		private async void ExecuteSearchCommand()
 		{
 			bool Generating = true;
 			//search for item(s) with DataProvider
 			IPackageDataProvider _provider = new APIPackageDataProvider(new ApiService(Secrets.ApiKey));
-			using MySqlConnection conn = Secrets.GetConnectionString();
 			PreviousShipments.Clear();
 			if (WhatAreWeSearchingFor == SearchFor.PackageID)
 			{
@@ -108,7 +106,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		public void ExecuteCloseCommand(object obj)
+		public void ExecuteCloseCommand()
 		{
 			OnClosingRequest();
 		}
