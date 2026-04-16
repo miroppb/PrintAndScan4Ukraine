@@ -1,3 +1,11 @@
+v. 1.7.0.0
+
+- Re-themed the entire application. More modern?
+- Removed dependency on MySql/Dapper
+- Minor bug fixes
+- Added window to find Recipients with matching Numbers
+- Changed logging mechanism
+
 v. 1.6.0.2
 
 - Fixed bug that would cause application to crash if logging database was unreachable
