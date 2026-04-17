@@ -1,12 +1,9 @@
-﻿using OfficeOpenXml;
-using PrintAndScan4Ukraine.Command;
+﻿using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
+using PrintAndScan4Ukraine.Helpers;
 using PrintAndScan4Ukraine.Model;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -35,7 +32,6 @@ namespace PrintAndScan4Ukraine.ViewModel
             }
         }
 
-        public DelegateCommand LoadFilesCommand { get; }
         public DelegateCommand ProcessFileCommand { get; }
 
         private readonly IPackageDataProvider _packageDataProvider;
@@ -43,8 +39,6 @@ namespace PrintAndScan4Ukraine.ViewModel
         public FindRepeatingRecipientsViewModel(IPackageDataProvider packageDataProvider)
         {
             _packageDataProvider = packageDataProvider;
-
-            LoadFilesCommand = new DelegateCommand(async _ => await LoadFiles());
             ProcessFileCommand = new DelegateCommand(async _ => await ProcessFile());
 
             var cvs = new CollectionViewSource { Source = OffendingPackages };
@@ -56,6 +50,8 @@ namespace PrintAndScan4Ukraine.ViewModel
             GroupedPackages.GroupDescriptions.Clear();
             GroupedPackages.GroupDescriptions.Add(new PropertyGroupDescription("Sender_Name"));
             GroupedPackages.GroupDescriptions.Add(new PropertyGroupDescription("Recipient_Phone"));
+
+            LoadFiles().ConfigureAwait(false);
 
         }
 
@@ -74,7 +70,7 @@ namespace PrintAndScan4Ukraine.ViewModel
                 return;
 
             var export = await _packageDataProvider.DownloadExportAsync(SelectedFile.Id);
-            var ids = await ExtractPackageIdsFromExportAsync(export);
+            var ids = await ReadAndExtractExport.ExtractPackageIdsFromExportAsync(export);
 
             var results = await _packageDataProvider.FindRepeatingRecipientsAsync(ids);
 
@@ -89,35 +85,7 @@ namespace PrintAndScan4Ukraine.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private async Task<List<string>> ExtractPackageIdsFromExportAsync(Export export)
-        {
-            // Step 2: Convert base64 to bytes
-            byte[] fileBytes = Convert.FromBase64String(export.Content);
 
-            ExcelPackage.License.SetNonCommercialOrganization("PrintAndScan4Ukraine");
-
-            using var ms = new MemoryStream(fileBytes);
-            using var package = new ExcelPackage(ms);
-
-            var ws = package.Workbook.Worksheets[0]; // first worksheet
-
-            var ids = new List<string>();
-            int row = 7; // skip 5 rows + header row
-
-            while (true)
-            {
-                var cellValue = ws.Cells[row, 1].Text?.Trim();
-
-                if (string.IsNullOrWhiteSpace(cellValue))
-                    break; // stop when we hit an empty row
-
-                ids.Add(cellValue);
-                row++;
-            }
-
-            return ids;
-
-        }
 
     }
 }

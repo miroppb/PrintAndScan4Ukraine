@@ -17,10 +17,11 @@ namespace PrintAndScan4Ukraine.Converter
             // If this is the second-level group (Recipient Phone)
             if (group.Items.Count > 0 && group.Items[0] is Package p)
             {
+                string senderPhone = p.Sender_Phone;
                 string phone = p.Recipient_Phone ?? "";
                 int count = group.ItemCount;
 
-                return $"{phone}   ({count} packages)";
+                return $"{senderPhone} → {phone}   ({count} packages)";
             }
 
             return sender;

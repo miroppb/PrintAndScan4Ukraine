@@ -68,8 +68,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 			ShowCheckUpdateCommand = new DelegateCommand(ExecuteCheckUpdate, () => IsOnline);
             ShowFindRepeatingRecipientsCommand = new DelegateCommand(ExecuteShowFindRepeatingRecipients, () => AccessToSeePackages);
             ClearSearchCommand = new DelegateCommand(ExecuteClearSearch);
+            ShowEditPreviousShipmentCommand = new DelegateCommand(ExecuteShowEditPreviousShipment, () => AccessToSeePackages & CanShip);
+            CompletePreviousCommand = new DelegateCommand(ExecuteCompletePrevious, () => EditingPreviousShipment);
 
-			CheckSystemTime();
+
+            CheckSystemTime();
 		}
 
         private async void CheckSystemTime()
@@ -381,5 +384,7 @@ namespace PrintAndScan4Ukraine.ViewModel
                 return true;
             }
         }
+
+		public bool EditingPreviousShipment { get; set; } = false;
     }
 }

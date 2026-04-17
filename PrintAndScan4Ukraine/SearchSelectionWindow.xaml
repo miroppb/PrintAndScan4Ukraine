@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
-        Title="{Tr 'PAS4U.MainMenu.SearchSelectionWindow.Title', DefaultText='Search Selection'}"
+        Title="{Tr 'PAS4U.SearchSelectionWindow.Title', DefaultText='Search Selection'}"
         Height="320" Width="380"
         Background="{StaticResource PageBackground}"
         WindowStartupLocation="CenterScreen"
@@ -38,7 +38,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <!-- HEADER -->
-                <TextBlock Text="Search Options"
+                <TextBlock Text="{Tr 'PAS4U.SearchSelectionWindow.SearchOptions', DefaultText='Search Parameter'}"
                            Grid.ColumnSpan="2"
                            FontSize="20"
                            FontWeight="Bold"
@@ -55,11 +55,12 @@
                         HorizontalAlignment="Center"
                         Margin="0 0 0 20"/>
                 <!-- SEARCH PARAMETER -->
-                <TextBlock Text="Search Parameter:"
+                <TextBlock Text="{Tr 'PAS4U.SearchSelectionWindow.SearchParameter', DefaultText='Search Parameter'}"
                            Grid.Row="2" Grid.Column="0"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Right"
                            FontWeight="Bold"
+                           Margin="0 0 0 10"
                            Foreground="{StaticResource HeaderText}"/>
                 <TextBox x:Name="TxtSearch"
                          Grid.Row="2" Grid.Column="1"

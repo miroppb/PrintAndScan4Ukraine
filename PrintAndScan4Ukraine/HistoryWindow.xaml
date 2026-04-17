@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:PrintAndScan4Ukraine"
         mc:Ignorable="d"
-        Title="Shipment History"
+        Title="{Tr 'PAS4U.HistoryWindow.Title', DefaultText='Shipment History'}"
         Height="450" Width="650"
         Background="{StaticResource PageBackground}"
         WindowStartupLocation="CenterScreen"
@@ -18,7 +18,7 @@
         <!-- HEADER CARD -->
         <Border Style="{StaticResource Card}">
             <StackPanel>
-                <TextBlock Text="Shipment History"
+                <TextBlock Text="{Tr 'PAS4U.HistoryWindow.Title', DefaultText='Shipment History'}"
                            FontSize="22"
                            FontWeight="Bold"
                            Foreground="{StaticResource HeaderText}"

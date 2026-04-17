@@ -62,7 +62,10 @@
                 </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Header', DefaultText='_Tools'}">
                     <MenuItem x:Name="MnuSearch" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Search', DefaultText='S_earch'}" Command="{Binding ShowSearchCommand}" />
-                    <MenuItem x:Name="MnuFindRepeating" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.FindRepeating', DefaultText='Find Repeating Recipients'}" Command="{Binding ShowFindRepeatingRecipientsCommand}" />
+                    <MenuItem x:Name="MnuFindRepeating" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.FindRepeating', DefaultText='Find Repeating Recipients'}" Command="{Binding ShowFindRepeatingRecipientsCommand}"
+                              Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <MenuItem x:Name="MnuEditPreviousShipment" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.EditPreviousShipment', DefaultText='Edit Previous Shipment'}" Command="{Binding ShowEditPreviousShipmentCommand}"
+                              Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <MenuItem x:Name="MnuCheckUpdate" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Update', DefaultText='_Update'}" Command="{Binding ShowCheckUpdateCommand}" />
                 </MenuItem>
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.Language', DefaultText='_Language'}">
@@ -168,19 +171,22 @@
                                Foreground="#4B5563"/>
                 </Grid>
             </Border>
-            <!-- MIDDLE CARD: SENDER / RECEIVER / STATUS -->
+            <!-- MIDDLE CARD: CLEAN, FIXED, NO OVERLAPS -->
             <Border Grid.Column="1"
-                Style="{StaticResource Card}"
-                Margin="8 0 8 0"
-                Padding="20">
+        Style="{StaticResource Card}"
+        Padding="20"
+        Margin="8 0 8 0">
+
                 <Grid>
+
+                    <!-- ROW DEFINITIONS -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <!-- Title and Accent -->
-                        <RowDefinition Height="30"/>
-                        <!-- Package ID + Status -->
+                        <!-- Header -->
                         <RowDefinition Height="Auto"/>
-                        <!-- Package ID + Status -->
+                        <!-- Accent -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Package ID -->
                         <RowDefinition Height="Auto"/>
                         <!-- Sender Name -->
                         <RowDefinition Height="Auto"/>
@@ -198,180 +204,193 @@
                         <RowDefinition Height="*"/>
                         <!-- Spacer -->
                     </Grid.RowDefinitions>
+
+                    <!-- COLUMN DEFINITIONS -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
                         <!-- Labels -->
                         <ColumnDefinition Width="*"/>
+                        <!-- Inputs -->
+                        <ColumnDefinition Width="Auto"/>
+                        <!-- Status / Buttons -->
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.ColumnSpan="3">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="{Tr 'PAS4U.MainWindow.Details', DefaultText='Details'}"
-                           FontSize="18"
-                           FontWeight="Bold"
-                           TextAlignment="Center"
-                           Foreground="{StaticResource HeaderText}"
-                           Grid.Column="1"
-                           HorizontalAlignment="Center"
-                           Margin="0 0 0 6"/>
-                        <Border
-                            Background="{StaticResource UA_Yellow}"
-                            Height="4"
-                            Width="80"
-                            CornerRadius="2"
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            HorizontalAlignment="Center"
-                            Margin="0 0 0 10"/>
-                    </Grid>
-                    <!-- PACKAGE ID + STATUS -->
-                    <TextBlock Text="{Tr 'PAS4U.MainWindow.PackageId', DefaultText='Package ID'}"
-                       Grid.Row="1" Grid.Column="0"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Right"
-                       FontWeight="Bold"
-                               Margin="0 0 0 10"
-                       Foreground="{StaticResource HeaderText}"/>
-                    <!-- Package ID (view mode) -->
-                    <TextBlock Grid.Row="1" Grid.Column="1"
-                       HorizontalAlignment="Left"
-                       Margin="6 -12 0 0"
-                       FontSize="20"
-                               VerticalAlignment="Center"
-                       Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.PackageId}"
-                       Visibility="{Binding IsEditingPackageID, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"/>
-                    <!-- Package ID (edit mode) -->
-                    <TextBox x:Name="TxtPackageId"
-                        Grid.Row="1" Grid.Column="1"
-                        HorizontalAlignment="Left"
-                        Margin="6 0 0 0"
-                        FontSize="20"
-                             
-                        Visibility="{Binding IsEditingPackageID, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                    <!-- HEADER -->
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                   Text="{Tr 'PAS4U.MainWindow.Details', DefaultText='Details'}"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <!-- ACCENT BAR -->
+                    <Border Grid.Row="1" Grid.ColumnSpan="3"
+                Background="{StaticResource UA_Yellow}"
+                Height="4"
+                Width="100"
+                HorizontalAlignment="Center"
+                CornerRadius="2"
+                Margin="0 8 0 16"/>
+
+                    <!-- PACKAGE ID LABEL -->
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                   Text="{Tr 'PAS4U.MainWindow.PackageId', DefaultText='Package ID'}"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <!-- PACKAGE ID VIEW MODE -->
+                    <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                   x:Name="TxtPackageIdView"
+                   Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.PackageId}"
+                   FontSize="20"
+                   VerticalAlignment="Center"
+                   Visibility="{Binding IsEditingPackageID, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"/>
+
+                    <!-- PACKAGE ID EDIT MODE -->
+                    <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                 x:Name="TxtPackageIdEdit"
+                 FontSize="20"
+                 Width="200"
+                             HorizontalAlignment="Left"
+                 VerticalContentAlignment="Center"
+                 Visibility="{Binding IsEditingPackageID, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBox.Text>
                             <Binding ElementName="LstUPCAndNames"
-                                 Path="SelectedItem.NewPackageId"
-                                 Mode="TwoWay"
-                                 UpdateSourceTrigger="PropertyChanged"
-                                 ValidatesOnNotifyDataErrors="True"
-                                 NotifyOnValidationError="True"/>
+                         Path="SelectedItem.NewPackageId"
+                         Mode="TwoWay"
+                         UpdateSourceTrigger="PropertyChanged"
+                         ValidatesOnNotifyDataErrors="True"
+                         NotifyOnValidationError="True"/>
                         </TextBox.Text>
                     </TextBox>
-                    <!-- Validation -->
-                    <TextBlock Foreground="Red"
-                        FontSize="12"
-                        Margin="6 26 0 0"
-                        Grid.Row="1" Grid.Column="1"
-                        HorizontalAlignment="Left"
-                        Visibility="{Binding (Validation.HasError), ElementName=TxtPackageId, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TxtPackageId}"/>
-                    <!-- Last Status -->
-                    <TextBlock x:Name="TxtLastStatus"
-                       Grid.Row="1" Grid.Column="2"
-                       Text="{Tr 'PAS4U.MainWindow.LastStatus', {Binding SelectedPackageLastStatus.Status, Mode=TwoWay, Converter={StaticResource StatusToTextConverter}}, {Binding SelectedPackageLastStatus.CreatedDate}, DefaultText='Last Status'}"
-                       Margin="10 0 0 0"
-                       TextAlignment="Right"
-                       Visibility="{Binding IsSelectedPackageShowing}"/>
-                    <!-- DIVIDER -->
-                    <Rectangle Grid.Row="2" Grid.ColumnSpan="3"
-                       Height="1"
-                       Fill="{StaticResource UA_Yellow}"/>
-                    <!-- SENDER NAME -->
+
+                    <!-- PACKAGE ID VALIDATION -->
+                    <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                   Foreground="Red"
+                   FontSize="12"
+                   Margin="0 28 0 0"
+                   Visibility="{Binding (Validation.HasError), ElementName=TxtPackageIdEdit, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TxtPackageIdEdit}"/>
+
+                    <!-- LAST STATUS -->
+                    <TextBlock Grid.Row="2" Grid.Column="2"
+                   x:Name="TxtLastStatus"
+                   Text="{Tr 'PAS4U.MainWindow.LastStatus', {Binding SelectedPackageLastStatus.Status, Converter={StaticResource StatusToTextConverter}}, {Binding SelectedPackageLastStatus.CreatedDate}}"
+                   VerticalAlignment="Center"
+                   Margin="10 0 0 0"
+                   TextAlignment="Right"
+                   Visibility="{Binding IsSelectedPackageShowing}"/>
+
+                    <!-- SENDER NAME LABEL -->
                     <TextBlock Grid.Row="3" Grid.Column="0"
-                       Text="{Tr 'PAS4U.MainWindow.SenderName', DefaultText='Sender Name'}"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"
-                               Margin="0 10 0 0"
-                       Foreground="{StaticResource HeaderText}"/>
-                    <StackPanel Grid.Row="3" Grid.Column="1"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Margin="6 12 0 2">
+                   Text="{Tr 'PAS4U.MainWindow.SenderName', DefaultText='Sender Name'}"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <!-- SENDER NAME + HISTORY BUTTON -->
+                    <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Margin="0 4 0 4">
+
                         <TextBox x:Name="TxtSenderName"
-                             Width="260"
-                             Height="28"
-                             VerticalContentAlignment="Center"
-                             Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             IsReadOnly="{Binding AccessToEditSender}"/>
-                        <!-- SEARCH PREVIOUS PACKAGES BUTTON -->
+                     Width="260"
+                     Height="28"
+                     VerticalContentAlignment="Center"
+                     Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name, Mode=TwoWay}"
+                     IsReadOnly="{Binding AccessToEditSender}"/>
+
                         <Button Content="{Tr 'PAS4U.MainWindow.ShowHistoryButton', DefaultText='History'}"
-                            Height="26"
-                            Margin="10 0 0 0"
-                            Command="{Binding ShowHistoryCommand}"
-                            Style="{StaticResource SmallAccentButton}"/>
+                    Height="26"
+                    Margin="10 0 0 0"
+                    Command="{Binding ShowHistoryCommand}"
+                    Style="{StaticResource SmallAccentButton}"/>
                     </StackPanel>
+
                     <!-- SENDER ADDRESS -->
                     <TextBlock Grid.Row="4" Grid.Column="0"
-                       Text="{Tr 'PAS4U.MainWindow.SenderAddress', DefaultText='Sender Address'}"
-                       FontWeight="Bold"
-                       Foreground="{StaticResource HeaderText}"/>
-                    <TextBox x:Name="TxtSenderAddress"
-                         Grid.Row="4" Grid.Column="1"
-                         Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsReadOnly="{Binding AccessToEditSender}"
-                         Height="70"
-                         Margin="6 2 0 2"
-                         VerticalContentAlignment="Top"
-                         AcceptsReturn="True"
-                         Padding="0 4 0 0"/>
+                   Text="{Tr 'PAS4U.MainWindow.SenderAddress', DefaultText='Sender Address'}"
+                   FontWeight="Bold"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
+                 x:Name="TxtSenderAddress"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Address, Mode=TwoWay}"
+                 IsReadOnly="{Binding AccessToEditSender}"
+                 Height="70"
+                 VerticalContentAlignment="Top"
+                 AcceptsReturn="True"
+                 Padding="4"/>
+
                     <!-- SENDER PHONE -->
                     <TextBlock Grid.Row="5" Grid.Column="0"
-                       Text="{Tr 'PAS4U.MainWindow.SenderPhone', DefaultText='Sender Phone'}"
-                       FontWeight="Bold"
-                               VerticalAlignment="Center"
-                       Foreground="{StaticResource HeaderText}"/>
-                    <TextBox x:Name="TxtSenderPhone"
-                         Grid.Row="5" Grid.Column="1"
-                         Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsReadOnly="{Binding AccessToEditSender}"
-                         Height="28"
-                         Margin="6 2 0 2"/>
+                   Text="{Tr 'PAS4U.MainWindow.SenderPhone', DefaultText='Sender Phone'}"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
+                 x:Name="TxtSenderPhone"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Phone, Mode=TwoWay}"
+                 IsReadOnly="{Binding AccessToEditSender}"
+                 Height="28"
+                 VerticalContentAlignment="Center"/>
+
                     <!-- DIVIDER -->
                     <Rectangle Grid.Row="6" Grid.ColumnSpan="3"
-                       Height="1"
-                       Fill="{StaticResource UA_Yellow}"/>
+                   Height="1"
+                   Fill="{StaticResource UA_Yellow}"
+                   Margin="0 10 0 10"/>
+
                     <!-- RECEIVER NAME -->
                     <TextBlock Grid.Row="7" Grid.Column="0"
-                       Text="{Tr 'PAS4U.MainWindow.ReceiverName', DefaultText='Receiver Name'}"
-                       FontWeight="Bold"
-                               VerticalAlignment="Center"
-                       Foreground="{StaticResource HeaderText}"/>
-                    <TextBox x:Name="TxtRecipientFName"
-                         Grid.Row="7" Grid.Column="1"
-                         Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsReadOnly="{Binding AccessToEditReceipient}"
-                         Height="28"
-                         Margin="6 2 0 2"/>
+                   Text="{Tr 'PAS4U.MainWindow.ReceiverName', DefaultText='Receiver Name'}"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2"
+                 x:Name="TxtRecipientFName"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Name, Mode=TwoWay}"
+                 IsReadOnly="{Binding AccessToEditReceipient}"
+                 Height="28"
+                 VerticalContentAlignment="Center"/>
+
                     <!-- RECEIVER ADDRESS -->
                     <TextBlock Grid.Row="8" Grid.Column="0"
-                       Text="{Tr 'PAS4U.MainWindow.ReceiverAddress', DefaultText='Receiver Address'}"
-                       FontWeight="Bold"
-                       Foreground="{StaticResource HeaderText}"/>
-                    <TextBox x:Name="TxtRecipientAddress"
-                         Grid.Row="8" Grid.Column="1"
-                         Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsReadOnly="{Binding AccessToEditReceipient}"
-                         Height="70"
-                         Margin="6 2 0 2"
-                         VerticalContentAlignment="Top"
-                         AcceptsReturn="True"
-                         Padding="0 4 0 0"/>
+                   Text="{Tr 'PAS4U.MainWindow.ReceiverAddress', DefaultText='Receiver Address'}"
+                   FontWeight="Bold"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2"
+                 x:Name="TxtRecipientAddress"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Address, Mode=TwoWay}"
+                 IsReadOnly="{Binding AccessToEditReceipient}"
+                 Height="70"
+                 VerticalContentAlignment="Top"
+                 AcceptsReturn="True"
+                 Padding="4"/>
+
                     <!-- RECEIVER PHONE -->
                     <TextBlock Grid.Row="9" Grid.Column="0"
-                           Text="{Tr 'PAS4U.MainWindow.ReceiverPhone', DefaultText='Receiver Phone'}"
-                           FontWeight="Bold"
-                               VerticalAlignment="Center"
-                           Foreground="{StaticResource HeaderText}"/>
-                    <TextBox x:Name="TxtRecipientPhone"
-                         Grid.Row="9" Grid.Column="1"
-                         Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsReadOnly="{Binding AccessToEditReceipient}"
-                         Height="28"
-                         Margin="6 2 0 2"/>
+                   Text="{Tr 'PAS4U.MainWindow.ReceiverPhone', DefaultText='Receiver Phone'}"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Foreground="{StaticResource HeaderText}"/>
+
+                    <TextBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2"
+                 x:Name="TxtRecipientPhone"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Phone, Mode=TwoWay}"
+                 IsReadOnly="{Binding AccessToEditReceipient}"
+                 Height="28"
+                 VerticalContentAlignment="Center"/>
+
                 </Grid>
             </Border>
+
+
             <!-- RIGHT CARD: CONTENTS / VALUE / WEIGHT / DELIVERY -->
             <Border Grid.Column="2"
                     Style="{StaticResource Card}"
@@ -478,6 +497,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
@@ -499,8 +519,18 @@
                            TextWrapping="Wrap"
                            Visibility="{Binding IsOnline, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"
                            Foreground="Red"/>
+                <Button x:Name="BtnCompletePrevious"
+                            Content="{Tr 'PAS4U.MainWindow.CompletePreviousButton', DefaultText='Complete Previous'}"
+                        Grid.Column="2"
+                            Height="30"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Visibility="{Binding EditingPreviousShipment, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            HorizontalAlignment="Left"
+                            Command="{Binding CompletePreviousCommand, Mode=OneTime}"
+                            Style="{StaticResource SmallAccentButtonYellow}"/>
                 <TextBlock x:Name="TxtTotal"
-                           Grid.Column="2"
+                           Grid.Column="3"
                            Text="{Tr 'PAS4U.MainWindow.Total', {Binding SelectedPackage.Total}, DefaultText='Total'}"
                            FontSize="16"
                            VerticalAlignment="Center"

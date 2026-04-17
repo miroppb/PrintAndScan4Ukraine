@@ -166,7 +166,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 						int row = ws.Dimension.End.Row;
 						ws.Cells[row + 1, 1].LoadFromCollection(list, false, OfficeOpenXml.Table.TableStyles.Light8);
 					}
-					ws.Cells.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+					ws.Cells.Style.Font.Name = "Calibri";
+					ws.Cells.Style.Font.Size = 11;
+                    ws.Cells.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
 					ws.Cells[$"D7:D{ws.Dimension.End.Row}"].Style.WrapText = true; //Sender Address
 					ws.Cells[$"G7:G{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Recipient Address
 					ws.Cells[$"I7:I{ws.Dimension.End.Row + 1}"].Style.WrapText = true; //Contents
@@ -484,7 +486,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public async void ReloadPackagesAndUpdateIfChanged()
 		{
-			if (IsOnline)
+			if (IsOnline && !EditingPreviousShipment)
 				await _packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
 		}
 
@@ -610,14 +612,14 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		private void ExecuteEditPackageID(object obj)
+		private void ExecuteEditPackageID()
 		{
 			IsEditingPackageID = !IsEditingPackageID;
 			SelectedPackage.IsPackageBeingEdited = !SelectedPackage.IsPackageBeingEdited;
 			SelectedPackage.OriginalPackageId = SelectedPackage.PackageId;
 		}
 
-		private void ExecuteShowSearch(object obj)
+		private void ExecuteShowSearch()
 		{
 			SearchSelectionWindow searchSelection = new();
 			searchSelection._viewmodel.PackagesOnList = [.. Packages.Select(x => x.PackageId)];
@@ -635,20 +637,42 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public static string SearchSelectedPackage = string.Empty;
 
-		private void ExecuteCheckUpdate(object obj)
+		private void ExecuteCheckUpdate()
 		{
 			AutoUpdater.Start(Secrets.GetUpdateURL());
 		}
 
-        private void ExecuteClearSearch(object? _)
+        private void ExecuteClearSearch()
         {
             SearchQuery = string.Empty;
         }
 
-        private void ExecuteShowFindRepeatingRecipients(object obj)
+        private void ExecuteShowFindRepeatingRecipients()
         {
             FindRepeatingRecipientsWindow win = new(_packageDataProvider);
             win.ShowDialog();
+        }
+
+		private void ExecuteShowEditPreviousShipment()
+		{
+			EditPreviousShipmentWindow shipmentWindow = new(this, _packageDataProvider);
+			shipmentWindow.ShowDialog();
+			CompletePreviousCommand.RaiseCanExecuteChanged();
+			RaisePropertyChanged("EditingPreviousShipment");
+        }
+
+		private async void ExecuteCompletePrevious()
+		{
+			if (System.Windows.MessageBox.Show("Are you done with this shipment? This will clear the previous list of packages and load the current shipment. Make sure you have exported any work you want to keep before proceeding.", "Complete Previous Shipment", MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
+                return;
+            if (System.Windows.MessageBox.Show("Do you want to re-export this shipment to an Excel file?", "Complete Previous Shipment", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+            {
+                await Export(Packages);
+            }
+            EditingPreviousShipment = false;
+			await LoadAsync();
+            CompletePreviousCommand.RaiseCanExecuteChanged();
+            RaisePropertyChanged("EditingPreviousShipment");
         }
     }
 }

@@ -54,9 +54,16 @@ namespace PrintAndScan4Ukraine
 			PreviewKeyDown += ScanWindow_PreviewKeyDown; //iffy
 
 			AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
-		}
+            Closing += ScanWindow_Closing;
+        }
 
-		private async void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        private async void ScanWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Libmiroppb.Log("Application closing");
+			await Task.Delay(1000); //delay to allow log to write before app closes, otherwise log may not show application closing
+        }
+
+        private async void ScanWindow_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			ListViewItem? lvi = Keyboard.FocusedElement as ListViewItem;
 			TextBox? tb = Keyboard.FocusedElement as TextBox;
@@ -73,7 +80,7 @@ namespace PrintAndScan4Ukraine
 				}
 				else if (sw == null && lvi == null && tb!.Name.Contains("PackageId"))
 				{
-					_viewModel.SelectedPackage.PackageIdValid = !Validation.GetHasError(TxtPackageId);
+					_viewModel.SelectedPackage.PackageIdValid = !Validation.GetHasError(TxtPackageIdEdit);
 					if (e.Key == Key.Enter && _viewModel.SelectedPackage.PackageIdValid)
 					{
 						if (await _viewModel.Save())
@@ -87,7 +94,6 @@ namespace PrintAndScan4Ukraine
 			catch { }
 		}
 
-		DispatcherTimer UploadLogsTimer = new();
 		DispatcherTimer SavingOftenTimer = new();
 		DispatcherTimer ReloadingPackagesTimer = new();
 

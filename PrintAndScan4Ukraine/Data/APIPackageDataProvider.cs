@@ -180,6 +180,25 @@ namespace PrintAndScan4Ukraine.Data
             var json = await response.Content.ReadAsStringAsync();
             var packages = JsonConvert.DeserializeObject<List<Package>>(json) ?? new();
 
+            foreach (var pkg in packages)
+            {
+                if (!string.IsNullOrWhiteSpace(pkg.Contents))
+                {
+                    try
+                    {
+                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents) ?? [];
+                    }
+                    catch
+                    {
+                        pkg.Recipient_Contents = [];
+                    }
+                }
+                else
+                {
+                    pkg.Recipient_Contents = [];
+                }
+            }
+
             return packages;
         }
 
@@ -201,7 +220,27 @@ namespace PrintAndScan4Ukraine.Data
             response.EnsureSuccessStatusCode();
 
             var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<Package>>(responseContent)!;
+            var packages = JsonConvert.DeserializeObject<List<Package>>(responseContent)!;
+
+            foreach (var pkg in packages)
+            {
+                if (!string.IsNullOrWhiteSpace(pkg.Contents))
+                {
+                    try
+                    {
+                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents) ?? [];
+                    }
+                    catch
+                    {
+                        pkg.Recipient_Contents = [];
+                    }
+                }
+                else
+                {
+                    pkg.Recipient_Contents = [];
+                }
+            }
+            return packages;
         }
 
         public async Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start_date, DateTime end_date, int status_code)

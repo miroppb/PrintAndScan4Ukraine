@@ -87,6 +87,10 @@
           "en": "Find Repeating Recipients",
           "ru": "Найти Повторяющихся Получателей"
         },
+        "EditPreviousShipment": {
+          "en": "Edit Previous Shipment",
+          "ru": "Изменить Предыдущую Посылку"
+        },
         "Update": {
           "en": "Check for _Update",
           "ru": "Проверить _обновления"
@@ -95,6 +99,42 @@
       "Language": {
         "en": "Language",
         "ru": "Язык"
+      },
+      "PreviousShipment": {
+        "EditPreviousShipment": {
+          "en": "Edit Previous Shipment",
+          "ru": "Изменить Предыдущий Контейнер"
+        },
+        "PreviousShipments": {
+          "en": "Previous Shipments",
+          "ru": "Предыдущие Посылки"
+        },
+        "ShipmentPreview": {
+          "en": "Shipment Preview",
+          "ru": "Предпросмотр Посылкок"
+        },
+        "LoadShipment": {
+          "en": "Load Shipment",
+          "ru": "Загрузить Посылки"
+        },
+        "Cancel": {
+          "en": "Cancel",
+          "ru": "Отмена"
+        }
+      },
+      "RepeatingRecipients": {
+        "FindRepeatingRecipients": {
+          "en": "Find Repeating Recipients",
+          "ru": "Найти Повторяющихся Получателей"
+        },
+        "RecentExports": {
+          "en": "Recent Exports",
+          "ru": "Недавнии Экспорты"
+        },
+        "ProcessFile": {
+          "en": "Process File",
+          "ru": "Обработать Файл"
+        }
       }
     },
     "MainWindow": {
@@ -363,8 +403,8 @@
     },
     "HistoryWindow": {
       "Title": {
-        "en": "History",
-        "ru": "История"
+        "en": "Shipment History",
+        "ru": "История Посылок"
       },
       "TopText": {
         "en": "Select a previous shipment from: {0}.\nDouble-click to use for current package.",
@@ -391,6 +431,14 @@
       "Title": {
         "en": "Search Selection Window",
         "ru": "Выбор Поиска"
+      },
+      "SearchOptions": {
+        "en": "Search Options",
+        "ru": "Параметры Поиска"
+      },
+      "SearchParameter": {
+        "en": "Search Parameter",
+        "ru": "Параметр Поиска"
       },
       "Package": {
         "en": "Package",

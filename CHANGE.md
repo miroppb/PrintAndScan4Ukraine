@@ -1,3 +1,9 @@
+v. 1.7.0.1
+
+- Cosmetical changes
+- Translation updates
+- Ability to edit a previously-shipped items, and re-export
+
 v. 1.7.0.0
 
 - Re-themed the entire application. More modern?
