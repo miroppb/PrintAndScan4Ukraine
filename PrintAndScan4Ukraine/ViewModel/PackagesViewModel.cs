@@ -368,6 +368,10 @@ namespace PrintAndScan4Ukraine.ViewModel
                 _searchQuery = value;
                 RaisePropertyChanged();
                 _filteredView?.Refresh();
+				if (FilteredPackages != null && !FilteredPackages.IsEmpty)
+                {
+                    SelectedPackage = FilteredPackages.Cast<Package>().First();
+                }
             }
         }
 

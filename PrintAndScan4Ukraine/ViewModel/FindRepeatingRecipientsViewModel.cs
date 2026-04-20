@@ -1,4 +1,5 @@
-﻿using PrintAndScan4Ukraine.Command;
+﻿using miroppb;
+using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Helpers;
 using PrintAndScan4Ukraine.Model;
@@ -38,6 +39,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
         public FindRepeatingRecipientsViewModel(IPackageDataProvider packageDataProvider)
         {
+            Libmiroppb.Log("Opened Find Repeating Recipients window");
             _packageDataProvider = packageDataProvider;
             ProcessFileCommand = new DelegateCommand(async _ => await ProcessFile());
 

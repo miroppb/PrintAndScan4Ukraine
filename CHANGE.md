@@ -1,3 +1,7 @@
+v. 1.7.0.2
+
+- Fixed issue with Printers not loading on the Print window
+
 v. 1.7.0.1
 
 - Cosmetical changes

@@ -22,7 +22,8 @@ namespace PrintAndScan4Ukraine
 			Libmiroppb.Log("Welcome to (Print) And Scan 4 Ukraine. v" + Assembly.GetEntryAssembly()!.GetName().Version);
 			_viewmodel = new PrintViewModel(new PrintDataProvider(new ApiService(Secrets.ApiKey)));
 			DataContext = _viewmodel;
-		}
+			this.Loaded += Window_Loaded;
+        }
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
@@ -37,5 +38,5 @@ namespace PrintAndScan4Ukraine
 			catch (Exception ex) { Libmiroppb.Log($"Exception: {ex.Message}"); }
 			
 		}
-	}
+    }
 }

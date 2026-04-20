@@ -1,16 +1,13 @@
-﻿using PrintAndScan4Ukraine.Command;
+﻿using miroppb;
+using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
 using PrintAndScan4Ukraine.Helpers;
 using PrintAndScan4Ukraine.Model;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace PrintAndScan4Ukraine.ViewModel
 {
@@ -31,6 +28,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
         public EditPreviousShipmentViewModel(PackagesViewModel packagesViewModel, IPackageDataProvider packageDataProvider)
         {
+            Libmiroppb.Log("Opened Edit Previous Shipment window");
             MainViewModel = packagesViewModel;
             _packageDataProvider = packageDataProvider;
             LoadShipmentCommand = new DelegateCommand(async _ => await LoadShipment(), () => SelectedExport != null);
@@ -59,6 +57,7 @@ namespace PrintAndScan4Ukraine.ViewModel
                 "Confirm Load Previous Shipment", MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
                 return;
 
+            Libmiroppb.Log("Loading previous shipment with export ID: " + SelectedExport?.Id);
             MainViewModel.Packages.Clear();
             MainViewModel.EditingPreviousShipment = true;
             var TempPackages = await _packageDataProvider.GetPackagesAsync([.. PreviewPackageIds]);

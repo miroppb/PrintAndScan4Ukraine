@@ -665,8 +665,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			if (System.Windows.MessageBox.Show("Are you done with this shipment? This will clear the previous list of packages and load the current shipment. Make sure you have exported any work you want to keep before proceeding.", "Complete Previous Shipment", MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
                 return;
+			Libmiroppb.Log("Completing previous shipment");
             if (System.Windows.MessageBox.Show("Do you want to re-export this shipment to an Excel file?", "Complete Previous Shipment", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
             {
+				Libmiroppb.Log("Exporting previous shipment before completing");
                 await Export(Packages);
             }
             EditingPreviousShipment = false;
