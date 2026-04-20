@@ -1,3 +1,7 @@
+v. 1.7.0.3
+
+- Fixed issue with print-pauses happening at the wrong spot
+
 v. 1.7.0.2
 
 - Fixed issue with Printers not loading on the Print window

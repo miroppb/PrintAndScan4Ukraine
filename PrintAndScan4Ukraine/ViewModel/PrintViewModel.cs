@@ -134,7 +134,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private void CancelPrinting()
 		{
 			Libmiroppb.Log("Trying to cancel any print jobs...");
-			CanCancel = !_dataProvider.CancelPrinting(SelectedPrinter);
+			_dataProvider.CancelPrinting(SelectedPrinter);
 		}
 
 		public void LoadPrinters()

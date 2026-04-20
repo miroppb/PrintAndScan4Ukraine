@@ -82,14 +82,13 @@ namespace PrintAndScan4Ukraine.Data
                         {
                             Libmiroppb.Log($"Print exception: {ex.Message}");
                         }
-
-                        // Wait between individual prints so user can cancel
-                        try
-                        {
-                            await Task.Delay(TimeSpan.FromSeconds(5), token);
-                        }
-                        catch (OperationCanceledException) { token.ThrowIfCancellationRequested(); }
                     }
+                    // Wait between individual numbers so user can cancel
+                    try
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(5), token);
+                    }
+                    catch (OperationCanceledException) { token.ThrowIfCancellationRequested(); }
                 }
 
                 return true;
