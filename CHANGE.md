@@ -1,3 +1,7 @@
+v. 1.7.0.4
+
+- Lowering the pause between printing
+
 v. 1.7.0.3
 
 - Fixed issue with print-pauses happening at the wrong spot

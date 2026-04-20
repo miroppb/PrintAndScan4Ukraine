@@ -86,7 +86,7 @@ namespace PrintAndScan4Ukraine.Data
                     // Wait between individual numbers so user can cancel
                     try
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(5), token);
+                        await Task.Delay(TimeSpan.FromMilliseconds(500), token);
                     }
                     catch (OperationCanceledException) { token.ThrowIfCancellationRequested(); }
                 }
