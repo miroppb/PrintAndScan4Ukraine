@@ -1,3 +1,7 @@
+v. 1.7.0.6
+
+- Copy over Sender Address from History
+
 v. 1.7.0.5
 
 - Sort packages by package ID when exporting (can't believe took me this long)
