@@ -21,8 +21,7 @@ namespace PrintAndScan4Ukraine
 	public partial class ScanWindow : Window
 	{
 		private readonly PackagesViewModel _viewModel;
-
-
+		
 		public ScanWindow()
 		{
 			InitializeComponent();
@@ -35,9 +34,17 @@ namespace PrintAndScan4Ukraine
 
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
+
+            _viewModel.HistoryShown += _viewModel_HistoryShown;
 		}
 
-		private void ViewModel_ScrollListBox(object? sender, EventArgs e)
+        private void _viewModel_HistoryShown(object? sender, EventArgs e)
+        {
+            TxtSenderName.Focus();
+			TxtSenderName.CaretIndex = TxtSenderName.Text.Length;
+        }
+
+        private void ViewModel_ScrollListBox(object? sender, EventArgs e)
 		{
 			LstUPCAndNames.ScrollIntoView(_viewModel.SelectedPackage);
 		}
@@ -74,19 +81,27 @@ namespace PrintAndScan4Ukraine
 				{
 					if (e.Key == Key.Enter)
 					{
-						_viewModel.AddNewCommand.Execute(null);
-						e.Handled = true;
+						//lets attempt to save current package before creating new one, if there is a problem with saving, we dont want to lose data by creating new package
+						if (_viewModel.SelectedPackage != null)
+						{
+							if (await _viewModel.Save())
+							{
+								_viewModel.AddNewCommand.Execute(null);
+								e.Handled = true;
+							}
+						}
 					}
 				}
 				else if (sw == null && lvi == null && tb!.Name.Contains("PackageId"))
 				{
 					_viewModel.SelectedPackage.PackageIdValid = !Validation.GetHasError(TxtPackageIdEdit);
-					if (e.Key == Key.Enter && _viewModel.SelectedPackage.PackageIdValid)
+					_viewModel.SaveCommand.RaiseCanExecuteChanged();
+                    if (e.Key == Key.Enter)
 					{
 						if (await _viewModel.Save())
 							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageSaved", "Package has been saved manually")}", "");
 						else
-							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageNotSaved", "Error saving package.")}", "");
+							MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageNotSaved", "Error saving package. Please check the package details and try again.")}", "");
 						e.Handled = true;
 					}
 				}

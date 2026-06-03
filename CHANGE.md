@@ -1,3 +1,12 @@
+v. 1.7.0.5
+
+- Sort packages by package ID when exporting (can't believe took me this long)
+- Cosmetic updates
+- Phone Number Length validation
+- Focus Sender Name after showing History
+- History shows Recipient Phone Number
+- Other minor fixes
+
 v. 1.7.0.4
 
 - Lowering the pause between printing

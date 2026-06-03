@@ -45,7 +45,7 @@
                 <MenuItem Header="{Tr 'PAS4U.MainMenu.FileMenuItem.Header', DefaultText='_File'}">
                     <MenuItem x:Name="MnuSaveAll" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.SaveAllItem.Header', DefaultText='_Save All'}" Command="{Binding SaveAllCommand}" />
                     <MenuItem x:Name="MnuNew" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanNewItem.Header', DefaultText='Scan _New'}" Command="{Binding AddNewCommand}"
-                              Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                              Visibility="{Binding AccessToAddNew, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <MenuItem x:Name="MnuShipped" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanShippedItem.Header', DefaultText='Scan S_hipped'}" Command="{Binding ShipCommand}"
                               Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <MenuItem x:Name="MnuArrive" Header="{Tr 'PAS4U.MainMenu.FileMenuItem.ScanArriveItem.Header', DefaultText='Scan _Arrived'}" Command="{Binding ArriveCommand}"
@@ -207,7 +207,7 @@
 
                     <!-- COLUMN DEFINITIONS -->
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="130"/>
                         <!-- Labels -->
                         <ColumnDefinition Width="*"/>
                         <!-- Inputs -->
@@ -267,11 +267,11 @@
 
                     <!-- PACKAGE ID VALIDATION -->
                     <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
-                   Foreground="Red"
-                   FontSize="12"
-                   Margin="0 28 0 0"
-                   Visibility="{Binding (Validation.HasError), ElementName=TxtPackageIdEdit, Converter={StaticResource BooleanToVisibilityConverter}}"
-                   Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TxtPackageIdEdit}"/>
+                       Foreground="Red"
+                       FontSize="12"
+                       Margin="0 28 0 0"
+                       Visibility="{Binding (Validation.HasError), ElementName=TxtPackageIdEdit, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=TxtPackageIdEdit}"/>
 
                     <!-- LAST STATUS -->
                     <TextBlock Grid.Row="2" Grid.Column="2"
@@ -326,16 +326,16 @@
 
                     <!-- SENDER PHONE -->
                     <TextBlock Grid.Row="5" Grid.Column="0"
-                   Text="{Tr 'PAS4U.MainWindow.SenderPhone', DefaultText='Sender Phone'}"
-                   FontWeight="Bold"
-                   VerticalAlignment="Center"
-                   Foreground="{StaticResource HeaderText}"/>
+                       Text="{Tr 'PAS4U.MainWindow.SenderPhone', DefaultText='Sender Phone'}"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource HeaderText}"/>
 
                     <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
-                 x:Name="TxtSenderPhone"
-                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Phone, Mode=TwoWay}"
-                 IsReadOnly="{Binding AccessToEditSender}"
-                 Height="28"
+                         x:Name="TxtSenderPhone"
+                        Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsReadOnly="{Binding AccessToEditSender}"
+                         Height="28"
                  VerticalContentAlignment="Center"/>
 
                     <!-- DIVIDER -->
@@ -381,10 +381,10 @@
                    Foreground="{StaticResource HeaderText}"/>
 
                     <TextBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2"
-                 x:Name="TxtRecipientPhone"
-                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Phone, Mode=TwoWay}"
-                 IsReadOnly="{Binding AccessToEditReceipient}"
-                 Height="28"
+                     x:Name="TxtRecipientPhone"
+                     Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Phone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     IsReadOnly="{Binding AccessToEditReceipient}"
+                     Height="28"
                  VerticalContentAlignment="Center"/>
 
                 </Grid>

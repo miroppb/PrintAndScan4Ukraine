@@ -1,4 +1,5 @@
-﻿using PrintAndScan4Ukraine.Data;
+﻿using CodingSeb.Localization;
+using PrintAndScan4Ukraine.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -54,6 +55,21 @@ namespace PrintAndScan4Ukraine.Model
             IPackageDataProvider _packageDataProvider = new APIPackageDataProvider(new ApiService(Secrets.ApiKey));
             if (await _packageDataProvider.VerifyIfExists(NewPackageId))
                 AddError(nameof(NewPackageId), "ID already exists.");
+        }
+
+        private void ValidatePhone(string property, string? value)
+        {
+            ClearErrors(property);
+
+            if (!string.IsNullOrEmpty(value) && value.Length > 15)
+            {
+                AddError(property, Loc.Tr("PAS4U.MainWindow.PhoneNumberLessThan15Digits", "Phone number has to be less than 15 digits"));
+            }
+
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(property));
+
+            RaisePropertyChanged(nameof(PhoneNumbersValid));
+            RaisePropertyChanged(nameof(HasErrors));
         }
     }
 }

@@ -32,6 +32,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 				var packages = await _packageDataProvider.GetAllAsync(true);
 				packages?.ToList().ForEach(Packages.Add);
+
+				if (packages?.Any() == true)
+				{
+                    SelectedPackage = Packages.First();
+                }
 			}
 		}
 
@@ -60,7 +65,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public async Task<bool> Save(Package package, int type = 0)
 		{
-			if (IsOnline && package != null)
+			if (CanSave)
 			{
 				if (await _packageDataProvider.UpdateRecords([package], type))
 				{
@@ -70,7 +75,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 					return true;
 				}
 			}
-			return false;
+			else if (!IsOnline)
+                System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "Can't save. Make sure you have an internet connection.")}", "");
+			else if (!CanSave)
+                System.Windows.MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.PackageNotSaved", "Can't save. Error saving package")}", "");
+            return false;
 		}
 
 		public async void SaveAll()
@@ -152,7 +161,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 
                 using (var excelPack = new ExcelPackage(new FileInfo(sfd.FileName)))
 				{
-					List<Package_less> list = _packageDataProvider.MapPackagesAndStatusesToLess(packages, statuses!);
+					List<Package_less> list = _packageDataProvider.MapPackagesAndStatusesToLess(packages.OrderBy(x => x.PackageId), statuses!);
 
 					ExcelWorksheet? ws;
 					try
@@ -191,8 +200,12 @@ namespace PrintAndScan4Ukraine.ViewModel
 			return true;
 		}
 
+		public event EventHandler? HistoryShown;
+
 		private async void ShowHistory()
 		{
+			if (SelectedPackage.Sender_Name == string.Empty)
+				return;
 			List<Package>? PreviousPackages = await LoadByNameAsync(SelectedPackage.Sender_Name!);
 			HistoryWindow historyWindow = new(SelectedPackage.Sender_Name!, PreviousPackages);
 			Libmiroppb.Log($"Showing History for {SelectedPackage.Sender_Name!}: {JsonConvert.SerializeObject(PreviousPackages!.Select(x => x.PackageId).ToList())}");
@@ -208,7 +221,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 				SelectedPackage.Recipient_Contents = p.Recipient_Contents.Count > 0 ? p.Recipient_Contents : SelectedPackage.Recipient_Contents;
 				SelectedPackage.Weight = p.Weight != null ? p.Weight : SelectedPackage.Weight;
 				SelectedPackage.Value = p.Value != null ? p.Value : SelectedPackage.Value;
-			}
+
+				HistoryShown?.Invoke(this, EventArgs.Empty);
+            }
 		}
 
 		private async void ShowShipWindow()

@@ -39,9 +39,9 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public MainViewModel(IMainDataProvider mainDataProvider)
 		{
 #if DEBUG
-			Libmiroppb.ConfigureLogger(Secrets.LogHostName, Secrets.LogPort, "PrintAndScan4Ukraine", Assembly.GetEntryAssembly()!.GetName().Version?.ToString(), environment: "Development");
+			Libmiroppb.ConfigureLogger(Secrets.LogHostName, "PrintAndScan4Ukraine", Assembly.GetEntryAssembly()!.GetName().Version?.ToString(), environment: "Development");
 #else
-			Libmiroppb.ConfigureLogger(Secrets.LogHostName, Secrets.LogPort, "PrintAndScan4Ukraine", Assembly.GetEntryAssembly()!.GetName().Version?.ToString());
+			Libmiroppb.ConfigureLogger(Secrets.LogHostName, "PrintAndScan4Ukraine", Assembly.GetEntryAssembly()!.GetName().Version?.ToString());
 #endif
             LocalizationLoader.Instance.FileLanguageLoaders.Add(new JsonFileLoader());
 			LocalizationLoader.Instance.AddDirectory(@"Language");

@@ -76,6 +76,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <TextBlock Text="{Binding Recipient_Name}"
                                        FontWeight="Bold"
@@ -83,6 +84,10 @@
                                        Foreground="#1F2937"/>
                             <TextBlock Text="{Binding Recipient_Address}"
                                        Grid.Row="1"
+                                       Foreground="#374151"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding Recipient_Phone}"
+                                       Grid.Row="2"
                                        Foreground="#374151"
                                        TextWrapping="Wrap"/>
                         </Grid>

@@ -93,11 +93,24 @@ namespace PrintAndScan4Ukraine.ViewModel
 			get => _selectedPackage!;
 			set
 			{
-				if (_selectedPackage != null && _selectedPackage.Modified) //if package was modified
-					_ = Save(_selectedPackage, -1); //save previous package before changing to new package
+                if (_selectedPackage != null)
+                {
+                    _selectedPackage.ErrorsChanged -= (s, e) => SaveCommand.RaiseCanExecuteChanged();
+                    _selectedPackage.PropertyChanged -= (s, e) => SaveCommand.RaiseCanExecuteChanged();
 
-				_selectedPackage = value;
-				RaisePropertyChanged();
+                    if (_selectedPackage.Modified)
+                        _ = Save(_selectedPackage, -1); // Save previous package
+                }
+
+                _selectedPackage = value;
+
+                if (_selectedPackage != null)
+                {
+                    _selectedPackage.ErrorsChanged += (s, e) => SaveCommand.RaiseCanExecuteChanged();
+                    _selectedPackage.PropertyChanged += (s, e) => SaveCommand.RaiseCanExecuteChanged();
+                }
+
+                RaisePropertyChanged();
 				if (_selectedPackage != null)
 				{
 					IsSelectedPackageShowing = Visibility.Visible;
@@ -108,6 +121,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				}
 				else
 					IsSelectedPackageShowing = Visibility.Hidden;
+
 				SaveCommand.RaiseCanExecuteChanged();
 				ShowHistoryCommand.RaiseCanExecuteChanged();
 			}

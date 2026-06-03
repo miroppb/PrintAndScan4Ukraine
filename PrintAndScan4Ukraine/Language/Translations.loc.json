@@ -227,8 +227,8 @@
         "ru": "Посылка была сохранена вручную"
       },
       "PackageNotSaved": {
-        "en": "Error saving package",
-        "ru": "Ошибка произошла и посылка не была сохранена"
+        "en": "Error saving package. Please check the package details and try again.",
+        "ru": "Ошибка произошла и посылка не была сохранена. Пожалуйста, проверьте детали посылки и попробуйте снова."
       },
       "ShortcutDoesNotExist": {
         "en": "Shortcut doesn't exist on the desktop. Create it?",
@@ -265,6 +265,10 @@
       "Details": {
         "en": "Details",
         "ru": "Детали"
+      },
+      "PhoneNumberLessThan15Digits": {
+        "en": "Phone number should be less than 15 digits",
+        "ru": "Номер телефона должен быть меньше 15 цифр"
       }
     },
     "ScanNewWindow": {
