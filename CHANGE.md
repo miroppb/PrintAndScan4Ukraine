@@ -1,3 +1,7 @@
+v. 1.7.0.7
+
+- Phone Number Validation Update
+
 v. 1.7.0.6
 
 - Copy over Sender Address from History

@@ -212,7 +212,7 @@ namespace PrintAndScan4Ukraine.Model
         public bool IsPackageBeingEdited { get; set; } = false;
 
         public bool PackageIdValid { get; set; } = true;
-        public bool PhoneNumbersValid => !string.IsNullOrEmpty(Sender_Phone) && !string.IsNullOrEmpty(Recipient_Phone) && !HasErrors;
+        public bool PhoneNumbersValid => Sender_Phone?.Length <= 15 && Recipient_Phone?.Length <= 15 && !HasErrors;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
