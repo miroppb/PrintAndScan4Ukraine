@@ -1,3 +1,7 @@
+v. 1.7.0.9
+
+- Double-clicking history then cancelling still copied over history
+
 v. 1.7.0.8
 
 - Copy over Sender Phone from History

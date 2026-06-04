@@ -46,9 +46,9 @@ namespace PrintAndScan4Ukraine
 					{
 						_viewmodel.SelectedShipment.Value = null;
 					}
-				}
-				DoubleClicked = true;
-				Close();
+                    DoubleClicked = true;
+                    Close();
+                }
 			}
 		}
 
