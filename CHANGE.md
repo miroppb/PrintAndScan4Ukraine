@@ -1,3 +1,8 @@
+v. 1.7.0.10
+
+- Trims package's strings when saving
+- Auto-focus to Sender Name after scanning new
+
 v. 1.7.0.9
 
 - Double-clicking history then cancelling still copied over history

@@ -3,6 +3,7 @@ using CodingSeb.Localization;
 using miroppb;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using PrintAndScan4Ukraine.Extensions;
 using PrintAndScan4Ukraine.Model;
 using ServiceStack;
 using System;
@@ -67,6 +68,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			if (CanSave)
 			{
+				package.Trim();
 				if (await _packageDataProvider.UpdateRecords([package], type))
 				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
@@ -262,7 +264,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 				try
 				{
 					SelectedPackage = Packages.FirstOrDefault(x => x.PackageId == BarCodeThatWasSet)!;
-				}
+                    HistoryShown?.Invoke(this, EventArgs.Empty);
+                }
 				catch { }
 			}
 			BarCode = string.Empty;

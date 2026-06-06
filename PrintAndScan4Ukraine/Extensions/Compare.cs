@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-public static class Extensions
+public static class CompareExtension
 {
 	public static List<Variance> Compare<T>(this T val1, T val2)
 	{
