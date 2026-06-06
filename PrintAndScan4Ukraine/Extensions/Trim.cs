@@ -20,7 +20,7 @@ namespace PrintAndScan4Ukraine.Extensions
             pkg.Recipient_Name = pkg.Recipient_Name?.Trim()!;
             pkg.Recipient_Address = pkg.Recipient_Address?.Trim()!;
             pkg.Recipient_Phone = pkg.Recipient_Phone?.Trim()!;
-            pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents!)!;
+
             pkg.Recipient_Contents.ForEach(x => x.Name = x.Name?.Trim()!);
             if (pkg.Recipient_Contents.Count > 0)
                 pkg.Contents = JsonConvert.SerializeObject(pkg.Recipient_Contents);
