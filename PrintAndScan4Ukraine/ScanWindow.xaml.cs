@@ -36,7 +36,14 @@ namespace PrintAndScan4Ukraine
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
 
             _viewModel.HistoryShown += _viewModel_HistoryShown;
-		}
+            TxtCost.GotFocus += Txt_Int_GotFocus;
+			TxtWeight.GotFocus += Txt_Int_GotFocus;
+        }
+
+        private void Txt_Int_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
+        }
 
         private void _viewModel_HistoryShown(object? sender, EventArgs e)
         {

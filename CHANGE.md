@@ -1,4 +1,8 @@
-v. 1.7.0.10
+v. 1.7.0.11
+
+- Focusing Value and Weight textboxes selects-all textbox
+
+1.7.0.10
 
 - Trims package's strings when saving
 - Auto-focus to Sender Name after scanning new
