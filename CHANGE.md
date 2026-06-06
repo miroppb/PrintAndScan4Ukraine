@@ -1,7 +1,7 @@
 v. 1.7.0.12
 
 - Fixed textbox binding
-- Pressing Enter from Search won't start new pacakge
+- Pressing Enter from Search won't start new package
 
 v. 1.7.0.11
 
