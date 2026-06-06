@@ -1,3 +1,8 @@
+v. 1.7.0.12
+
+- Fixed textbox binding
+- Pressing Enter from Search won't start new pacakge
+
 v. 1.7.0.11
 
 - Focusing Value and Weight textboxes selects-all textbox

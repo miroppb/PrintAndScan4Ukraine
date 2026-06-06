@@ -299,7 +299,7 @@
                      Width="260"
                      Height="28"
                      VerticalContentAlignment="Center"
-                     Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name, Mode=TwoWay}"
+                     Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      IsReadOnly="{Binding AccessToEditSender}"/>
 
                         <Button Content="{Tr 'PAS4U.MainWindow.ShowHistoryButton', DefaultText='History'}"
@@ -317,7 +317,7 @@
 
                     <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
                  x:Name="TxtSenderAddress"
-                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Address, Mode=TwoWay}"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Sender_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  IsReadOnly="{Binding AccessToEditSender}"
                  Height="70"
                  VerticalContentAlignment="Top"
@@ -353,7 +353,7 @@
 
                     <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2"
                  x:Name="TxtRecipientFName"
-                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Name, Mode=TwoWay}"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  IsReadOnly="{Binding AccessToEditReceipient}"
                  Height="28"
                  VerticalContentAlignment="Center"/>
@@ -366,7 +366,7 @@
 
                     <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2"
                  x:Name="TxtRecipientAddress"
-                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Address, Mode=TwoWay}"
+                 Text="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  IsReadOnly="{Binding AccessToEditReceipient}"
                  Height="70"
                  VerticalContentAlignment="Top"
