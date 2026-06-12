@@ -217,6 +217,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				Libmiroppb.Log($"Replacing current Package {SelectedPackage.Id} with {JsonConvert.SerializeObject(historyWindow.SelectedPackageToUse)}");
 				Package p = historyWindow.SelectedPackageToUse;
+				SelectedPackage.Sender_Name = p.Sender_Name; //in case we do a partial search
 				SelectedPackage.Sender_Address = p.Sender_Address;
 				SelectedPackage.Sender_Phone = p.Sender_Phone;
                 SelectedPackage.Recipient_Name = p.Recipient_Name;

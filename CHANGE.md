@@ -1,3 +1,9 @@
+v. 1.7.1.0
+
+- Trying to fix crashing (no catch on throw during api calls)
+- Pressing Enter on Sender Name now opens the History window
+- Partial searching from Sender Name is possible, and accepting a past shipment will replace the Sender Name
+
 v. 1.7.0.12
 
 - Fixed textbox binding

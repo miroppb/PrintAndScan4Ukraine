@@ -39,7 +39,8 @@ namespace PrintAndScan4Ukraine.Data
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to get missing packages: {response.StatusCode} - {error}");
+                Libmiroppb.Log($"Failed to get missing packages: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"Failed to get missing packages: {response.StatusCode} - {error}");
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -130,7 +131,9 @@ namespace PrintAndScan4Ukraine.Data
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"API call failed: {response.StatusCode} - {error}");
+                Libmiroppb.Log($"Failed to get packages by name: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"API call failed: {response.StatusCode} - {error}");
+                return [];
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -174,7 +177,9 @@ namespace PrintAndScan4Ukraine.Data
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to get package: {response.StatusCode} - {error}");
+                Libmiroppb.Log($"Failed to get package: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"Failed to get package: {response.StatusCode} - {error}");
+                return [];
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -276,7 +281,9 @@ namespace PrintAndScan4Ukraine.Data
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to get server date: {response.StatusCode} - {error}");
+                Libmiroppb.Log("Failed to get server date: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"Failed to get server date: {response.StatusCode} - {error}");
+                return DateTime.Now;
             }
 
             var json = await response.Content.ReadAsStringAsync();
