@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.8" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="libmiroppb">
-      <HintPath>..\..\libmiroppb\libmiroppb\bin\Debug\net7.0\libmiroppb.dll</HintPath>
+      <HintPath>..\..\libmiroppb\libmiroppb\bin\Debug\net8.0\libmiroppb.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -35,7 +35,7 @@ namespace PrintAndScan4Ukraine
 				if (_viewmodel.Printers.Count > 0)
 					_viewmodel.SelectedPrinter = _viewmodel.Printers.Where(x => x.Contains("ZPL")).FirstOrDefault()!;
 			}
-			catch (Exception ex) { Libmiroppb.Log($"Exception: {ex.Message}"); }
+			catch (Exception ex) { Libmiroppb.Log(ex, "Exception in Window_Loaded"); }
 			
 		}
     }

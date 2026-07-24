@@ -54,7 +54,7 @@ namespace PrintAndScan4Ukraine.Data
             catch (Exception ex)
             {
                 MessageBox.Show($"{Loc.Tr("PAS4U.API.ConnectionFailed", "Failed to connect to PAS4U server.")}");
-                Libmiroppb.Log($"Exception in GetUser: {ex.Message}");
+                Libmiroppb.Log(ex, "Exception in GetUser");
             }
             return user ?? new();
         }

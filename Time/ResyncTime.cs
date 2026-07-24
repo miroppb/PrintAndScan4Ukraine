@@ -39,7 +39,7 @@ namespace Time
 			catch (Exception ex)
 			{
 				// Handle any exceptions here
-				Libmiroppb.Log($"Error with request: {ex.Message}");
+				Libmiroppb.Log(ex, $"Error with request, {ex.Message}");
 				return false;
 			}
 		}

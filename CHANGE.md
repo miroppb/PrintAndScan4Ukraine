@@ -1,3 +1,7 @@
+v. 1.7.1.2
+
+- Changed logging to correctly store exceptions
+
 v. 1.7.1.1
 
 - Search in History window

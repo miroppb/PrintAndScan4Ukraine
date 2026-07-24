@@ -80,7 +80,7 @@ namespace PrintAndScan4Ukraine.Data
                         }
                         catch (Exception ex)
                         {
-                            Libmiroppb.Log($"Print exception: {ex.Message}");
+                            Libmiroppb.Log(ex, "Print exception");
                         }
                     }
                     // Wait between individual numbers so user can cancel
@@ -100,7 +100,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"Exception: {ex.Message}");
+                Libmiroppb.Log(ex, "Exception in PrintBarcodes");
                 return false;
             }
             finally
@@ -142,7 +142,7 @@ namespace PrintAndScan4Ukraine.Data
                 }
                 catch (Exception ex)
                 {
-                    Libmiroppb.Log($"Cancel print queue exception: {ex.Message}");
+                    Libmiroppb.Log(ex, "Cancel print queue exception");
                 }
 
                 // Also send a ZPL abort sequence to the printer as a best-effort attempt
@@ -157,14 +157,14 @@ namespace PrintAndScan4Ukraine.Data
                 }
                 catch (Exception ex)
                 {
-                    Libmiroppb.Log($"Best-effort ZPL cancel failed: {ex.Message}");
+                    Libmiroppb.Log(ex, "Best-effort ZPL cancel failed");
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"CancelPrinting exception: {ex.Message}");
+                Libmiroppb.Log(ex, "CancelPrinting exception");
                 return false;
             }
         }

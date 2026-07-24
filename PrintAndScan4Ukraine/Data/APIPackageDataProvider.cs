@@ -69,7 +69,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"There is no connection to: {Secrets.ApiBaseUrl}");
+                Libmiroppb.Log(ex, "There is no connection to: {Secrets.ApiBaseUrl}");
                 MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}1:\n{ex.Message}");
             }
 
@@ -107,7 +107,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"Exception: {ex.Message}");
+                Libmiroppb.Log(ex, "Exception in GetAllStatuses");
                 MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}2:\n{ex.Message}");
             }
 
@@ -375,7 +375,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"Exception: {ex.Message}");
+                Libmiroppb.Log(ex, "Failed to insert into database");
                 return false;
             }
         }
@@ -563,7 +563,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"Exception in UpdateRecordsAsync: {ex.Message}");
+                Libmiroppb.Log(ex, "Exception in UpdateRecordsAsync");
                 MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
                 return false;
             }
@@ -599,7 +599,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Libmiroppb.Log($"Error in UploadExportedFileAsync: {ex.Message}");
+                Libmiroppb.Log(ex, "Error in UploadExportedFileAsync");
                 MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
                 return -1;
             }
@@ -627,7 +627,7 @@ namespace PrintAndScan4Ukraine.Data
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception: {ex.Message}");
+                Libmiroppb.Log(ex, "Exception in VerifyIfExists");
             }
 
             return false;
