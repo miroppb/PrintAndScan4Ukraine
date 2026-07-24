@@ -1,3 +1,7 @@
+v. 1.7.1.1
+
+- Search in History window
+
 v. 1.7.1.0
 
 - Trying to fix crashing (no catch on throw during api calls)
