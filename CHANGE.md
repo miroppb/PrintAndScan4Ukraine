@@ -1,3 +1,7 @@
+v. 1.7.1.3
+
+- Try not to crash when searching for previous packages
+
 v. 1.7.1.2
 
 - Changed logging to correctly store exceptions

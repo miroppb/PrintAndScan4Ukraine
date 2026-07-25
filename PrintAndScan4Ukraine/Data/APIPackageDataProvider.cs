@@ -123,42 +123,52 @@ namespace PrintAndScan4Ukraine.Data
                 use_archive = useArchive
             };
 
-            var response = await _httpClient.PostAsync(
-                "/packages-by-name",
-                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-            );
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Libmiroppb.Log($"Failed to get packages by name: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
-                MessageBox.Show($"API call failed: {response.StatusCode} - {error}");
-                return [];
-            }
 
-            var json = await response.Content.ReadAsStringAsync();
-            var packages = JsonConvert.DeserializeObject<List<Package>>(json) ?? [];
+                var response = await _httpClient.PostAsync(
+                    "/packages-by-name",
+                    new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
+                ).ConfigureAwait(false);
 
-            foreach (var pkg in packages)
-            {
-                if (!string.IsNullOrWhiteSpace(pkg.Contents))
+                if (!response.IsSuccessStatusCode)
                 {
-                    try
+                    var error = await response.Content.ReadAsStringAsync();
+                    Libmiroppb.Log($"Failed to get packages by name: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                    MessageBox.Show($"API call failed: {response.StatusCode} - {error}");
+                    return [];
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                var packages = JsonConvert.DeserializeObject<List<Package>>(json) ?? [];
+
+                foreach (var pkg in packages)
+                {
+                    if (!string.IsNullOrWhiteSpace(pkg.Contents))
                     {
-                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents) ?? [];
+                        try
+                        {
+                            pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents) ?? [];
+                        }
+                        catch
+                        {
+                            pkg.Recipient_Contents = [];
+                        }
                     }
-                    catch
+                    else
                     {
                         pkg.Recipient_Contents = [];
                     }
                 }
-                else
-                {
-                    pkg.Recipient_Contents = [];
-                }
-            }
 
-            return packages;
+                return packages;
+            }
+            catch (Exception ex)
+            {
+                Libmiroppb.Log(ex, "Exception in GetByNameAsync");
+                MessageBox.Show($"{Loc.Tr("PAS4U.SearchSelectionWindow.Error", "Error occured")}3:\n{ex.Message}");
+                return [];
+            }
         }
 
         public async Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive)
@@ -172,7 +182,7 @@ namespace PrintAndScan4Ukraine.Data
             var response = await _httpClient.PostAsync(
                 "/package-by-id",
                 new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-            );
+            ).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
