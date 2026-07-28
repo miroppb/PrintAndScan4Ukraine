@@ -54,13 +54,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 			Task<int> done = Task.Run(GetAccess);
 			int d = done.Result;
 
-			Loc.Instance.CurrentLanguage = Settings.Default.Language;
+			Loc.Instance.CurrentLanguage = AppSettingsManager.GetLanguage() ?? Loc.Instance.CurrentLanguage;
 			if (!CurrentUser.Lang.Contains("en") && Loc.Instance.CurrentLanguage == "en")
 			{
 				if (MessageBox.Show("Мы обнаружили что ваш язык не английский. Поменять на русский?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
 				{
-					Settings.Default.Language = Loc.Instance.CurrentLanguage = "ru";
-					Settings.Default.Save();
+					Loc.Instance.CurrentLanguage = "ru";
+					AppSettingsManager.SetLanguage("ru");
 				}
 			}
 

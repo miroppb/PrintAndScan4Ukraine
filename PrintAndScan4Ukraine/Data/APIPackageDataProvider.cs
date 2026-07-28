@@ -465,10 +465,25 @@ namespace PrintAndScan4Ukraine.Data
 
         private static void ReplaceProperties(Package? FromPrevious, List<Variance> Variances) //no need
         {
+            if (FromPrevious == null) return;
+
             foreach (Variance v in Variances)
             {
-                PropertyInfo pi = FromPrevious!.GetType().GetProperty(v.Prop!)!;
-                pi.SetValue(FromPrevious, v.ValB, null);
+                if (string.IsNullOrEmpty(v.Prop))
+                    continue;
+
+                PropertyInfo? pi = FromPrevious.GetType().GetProperty(v.Prop);
+                if (pi == null) continue;
+
+                // Only set the property when the value actually differs.
+                var current = pi.GetValue(FromPrevious, null);
+                var newVal = v.ValB;
+
+                // Use object.Equals to handle nulls and value comparisons properly.
+                if (!object.Equals(current, newVal))
+                {
+                    pi.SetValue(FromPrevious, newVal, null);
+                }
             }
         }
 

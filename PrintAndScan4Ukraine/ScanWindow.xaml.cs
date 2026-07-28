@@ -27,6 +27,12 @@ namespace PrintAndScan4Ukraine
 			InitializeComponent();
 
 			Libmiroppb.Log($"Welcome to Print And (Scan) 4 Ukraine. v{Assembly.GetEntryAssembly()!.GetName().Version}");
+			// Ensure appsettings.json exists and load language
+			var lang = AppSettingsManager.GetLanguage();
+			if (!string.IsNullOrWhiteSpace(lang))
+				Loc.Instance.CurrentLanguage = lang;
+			else
+				AppSettingsManager.SetLanguage(Loc.Instance.CurrentLanguage ?? "en");
 			_viewModel = new PackagesViewModel(new APIPackageDataProvider(new ApiService(Secrets.ApiKey)), MainViewModel.GetUser());
 			DataContext = _viewModel;
 			Loaded += ScanWindow_Loaded;
@@ -189,8 +195,7 @@ namespace PrintAndScan4Ukraine
 		private void MnuEnglish_Click(object sender, RoutedEventArgs e)
 		{
 			Loc.Instance.CurrentLanguage = "en";
-			Settings.Default.Language = Loc.Instance.CurrentLanguage;
-			Settings.Default.Save();
+			AppSettingsManager.SetLanguage("en");
 			MnuEnglish.IsChecked = true;
 			MnuRussian.IsChecked = false;
 		}
@@ -198,8 +203,7 @@ namespace PrintAndScan4Ukraine
 		private void MnuRussian_Click(object sender, RoutedEventArgs e)
 		{
 			Loc.Instance.CurrentLanguage = "ru";
-			Settings.Default.Language = Loc.Instance.CurrentLanguage;
-			Settings.Default.Save();
+			AppSettingsManager.SetLanguage("ru");
 			MnuEnglish.IsChecked = false;
 			MnuRussian.IsChecked = true;
 		}

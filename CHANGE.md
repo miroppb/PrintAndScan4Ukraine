@@ -1,3 +1,8 @@
+v. 1.7.1.4
+
+- Attempt to fix cursor jumping to first position while updating
+- Refactored how language locale is saved (appsettings)
+
 v. 1.7.1.3
 
 - Try not to crash when searching for previous packages
