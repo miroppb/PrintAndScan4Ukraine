@@ -1,4 +1,4 @@
-v. 1.7.1.5-6
+v. 1.7.1.5-7
 
 - Another attempt to fix cursor jumping
 
