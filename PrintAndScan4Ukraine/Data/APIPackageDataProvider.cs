@@ -516,7 +516,8 @@ namespace PrintAndScan4Ukraine.Data
         {
             try
             {
-                packages.ForEach(p => p.Contents = JsonConvert.SerializeObject(p.Recipient_Contents));
+                // Do not mutate the passed-in Package instances (they are bound to the UI).
+                // Prepare serialized contents locally for the payload instead of assigning back to p.Contents
 
                 if (type == -2)
                 {
@@ -527,6 +528,7 @@ namespace PrintAndScan4Ukraine.Data
                     Libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Records: {JsonConvert.SerializeObject(packages)}");
                 }
 
+                // Validate package ID changes without mutating UI-bound properties.
                 foreach (var p in packages)
                 {
                     if (p.PackageIDModified && string.IsNullOrWhiteSpace(p.NewPackageId))
@@ -538,38 +540,38 @@ namespace PrintAndScan4Ukraine.Data
 
                     if (p.PackageIDModified)
                     {
-                        p.NewPackageId = p.NewPackageId.ToLower();
+                        var newPackageIdLocal = p.NewPackageId?.ToLower();
 
 #if DEBUG
                         var regex = new Regex("");
 #else
-                var regex = new Regex("^cv\\d{7,9}us$");
+                        var regex = new Regex("^cv\\d{7,9}us$");
 #endif
-                        var match = regex.Match(p.NewPackageId);
+                        var match = regex.Match(newPackageIdLocal ?? string.Empty);
                         bool forceSave = true;
 
                         if (!match.Success)
                         {
                             forceSave = MessageBox.Show(
-                                string.Format(Loc.Tr("PAS4U.MainWindow.NewWrongPackageIDFormat", "New Package ID isn't in the correct format:\n\nScanned: {0}\n\nAppropriate: CV#########US\n\n Force save?"), p.NewPackageId),
+                                string.Format(Loc.Tr("PAS4U.MainWindow.NewWrongPackageIDFormat", "New Package ID isn't in the correct format:\n\nScanned: {0}\n\nAppropriate: CV#########US\n\n Force save?"), newPackageIdLocal),
                                 "Incorrect format", MessageBoxButton.YesNo, MessageBoxImage.Warning
                             ) == MessageBoxResult.Yes;
                         }
 
                         if (!forceSave) return false;
 
-                        Libmiroppb.Log($"Package ID updated from {p.PackageId} to {p.NewPackageId}");
-                        //p.PackageId = p.NewPackageId;
-                        //p.PackageIDModified = false;
-                        //this happens in the api
+                        Libmiroppb.Log($"Package ID updated from {p.PackageId} to {newPackageIdLocal}");
+                        // The actual assignment of NewPackageId / PackageId is performed by the API/server.
+                        // Avoid mutating the UI-bound object here to prevent binding updates that can reset caret.
                     }
                 }
 
+                // Build payload without changing model properties
                 var payload = packages.Select(p => new
                 {
                     id = p.Id,
                     packageid = p.PackageId,
-                    newpackageid = p.NewPackageId,
+                    newpackageid = p.NewPackageId?.ToLower(),
                     packageidmodified = p.PackageIDModified,
 
                     sender_name = p.Sender_Name,
@@ -580,7 +582,7 @@ namespace PrintAndScan4Ukraine.Data
                     recipient_phone = p.Recipient_Phone,
                     weight = p.Weight,
                     value = p.Value,
-                    contents = p.Contents,
+                    contents = JsonConvert.SerializeObject(p.Recipient_Contents),
                     delivery = p.Delivery,
                     removed = p.Removed
                 });
