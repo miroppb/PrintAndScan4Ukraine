@@ -13,17 +13,38 @@ namespace PrintAndScan4Ukraine.Extensions
         /// <returns>Trimmed Package object</returns>
         public static Package Trim(this Package pkg)
         {
-            //go through each string property and trim it
-            pkg.Sender_Name = pkg.Sender_Name?.Trim()!;
-            pkg.Sender_Address = pkg.Sender_Address?.Trim()!;
-            pkg.Sender_Phone = pkg.Sender_Phone?.Trim()!;
-            pkg.Recipient_Name = pkg.Recipient_Name?.Trim()!;
-            pkg.Recipient_Address = pkg.Recipient_Address?.Trim()!;
-            pkg.Recipient_Phone = pkg.Recipient_Phone?.Trim()!;
+            // Trim each string property but only assign back when the trimmed value differs
+            var s = pkg.Sender_Name?.Trim();
+            if (s != pkg.Sender_Name) pkg.Sender_Name = s!;
 
-            pkg.Recipient_Contents.ForEach(x => x.Name = x.Name?.Trim()!);
+            var sa = pkg.Sender_Address?.Trim();
+            if (sa != pkg.Sender_Address) pkg.Sender_Address = sa!;
+
+            var sp = pkg.Sender_Phone?.Trim();
+            if (sp != pkg.Sender_Phone) pkg.Sender_Phone = sp!;
+
+            var rn = pkg.Recipient_Name?.Trim();
+            if (rn != pkg.Recipient_Name) pkg.Recipient_Name = rn!;
+
+            var ra = pkg.Recipient_Address?.Trim();
+            if (ra != pkg.Recipient_Address) pkg.Recipient_Address = ra!;
+
+            var rp = pkg.Recipient_Phone?.Trim();
+            if (rp != pkg.Recipient_Phone) pkg.Recipient_Phone = rp!;
+
+            // Trim content item names only when changed to avoid unnecessary notifications
+            for (int i = 0; i < pkg.Recipient_Contents.Count; i++)
+            {
+                var item = pkg.Recipient_Contents[i];
+                var tn = item.Name?.Trim();
+                if (tn != item.Name) item.Name = tn!;
+            }
+
             if (pkg.Recipient_Contents.Count > 0)
-                pkg.Contents = JsonConvert.SerializeObject(pkg.Recipient_Contents);
+            {
+                var serialized = JsonConvert.SerializeObject(pkg.Recipient_Contents);
+                if (serialized != pkg.Contents) pkg.Contents = serialized;
+            }
 
             return pkg;
         }
