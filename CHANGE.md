@@ -1,3 +1,7 @@
+v. 1.7.1.5
+
+- Another attempt to fix cursor jumping
+
 v. 1.7.1.4
 
 - Attempt to fix cursor jumping to first position while updating

@@ -71,7 +71,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 				package.Trim();
 				if (await _packageDataProvider.UpdateRecords([package], type))
 				{
-					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+					LastSaved = $"Last Saved {SelectedPackage.Id}: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
 					package.Modified = false; //setting back as it was saved
 					package.PackageIDModified = false;
 					return true;
@@ -89,7 +89,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (IsOnline && Packages != null)
 				if (await _packageDataProvider.UpdateRecords(Packages.ToList()))
 				{
-					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+					LastSaved = $"Last Saved {SelectedPackage.Id}: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
 					foreach (var package in Packages)
 					{
 						package.Modified = false; //everything was saved
@@ -508,7 +508,10 @@ namespace PrintAndScan4Ukraine.ViewModel
 		public async void ReloadPackagesAndUpdateIfChanged()
 		{
 			if (IsOnline && !EditingPreviousShipment)
+			{
 				await _packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
+				LastSaved = $"Last Refreshed {SelectedPackage.Id}: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
+            }
 		}
 
 		internal async Task<bool?> VerifyIfExists(string barCode)

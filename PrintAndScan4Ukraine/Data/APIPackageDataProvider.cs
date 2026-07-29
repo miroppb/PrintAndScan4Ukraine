@@ -454,8 +454,18 @@ namespace PrintAndScan4Ukraine.Data
                         (bool, List<Variance>) Ret = ComparePackages(FromPrevious, package);
                         if (!Ret.Item1)
                         {
-                            if (package.Id != CurrentlySelected.Id) //Refresh only for non-current package. Otherwise could cause discrepencies
-                                ReplaceProperties(FromPrevious, Ret.Item2);
+                            // Don't update the package that's currently shown/edited in the UI.
+                            // Compare by reference and by both Id (int) and PackageId (string) to be robust
+                            // against different instances representing the same logical package.
+                            if (FromPrevious == CurrentlySelected ||
+                                (CurrentlySelected != null &&
+                                 (package.Id == CurrentlySelected.Id || package.PackageId == CurrentlySelected.PackageId)))
+                            {
+                                // skip updating the currently selected package
+                                continue;
+                            }
+
+                            ReplaceProperties(FromPrevious, Ret.Item2);
                         }
                     }
                 }
