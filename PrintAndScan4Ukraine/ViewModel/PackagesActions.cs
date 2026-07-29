@@ -510,7 +510,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (IsOnline && !EditingPreviousShipment)
 			{
 				await _packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage);
-				LastSaved = $"Last Refreshed {SelectedPackage.Id}: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
+				LastSaved = $"Last Refreshed {SelectedPackage.PackageId}: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
             }
 		}
 
