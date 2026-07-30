@@ -227,6 +227,19 @@ namespace PrintAndScan4Ukraine.ViewModel
 				SelectedPackage.Weight = p.Weight != null ? p.Weight : SelectedPackage.Weight;
 				SelectedPackage.Value = p.Value != null ? p.Value : SelectedPackage.Value;
 
+				// Immediately save the replaced values to avoid the periodic autosave
+				// later firing while the user is editing and causing caret jumps.
+				// Save will clear Modified when successful.
+				try
+				{
+					if (IsOnline)
+					{
+						// Fire-and-forget but observe exceptions
+						var _ = Save(SelectedPackage);
+					}
+				}
+				catch { }
+
 				HistoryShown?.Invoke(this, EventArgs.Empty);
             }
 		}
