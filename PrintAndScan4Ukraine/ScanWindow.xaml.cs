@@ -41,9 +41,17 @@ namespace PrintAndScan4Ukraine
 			MnuEnglish.IsChecked = Loc.Instance.CurrentLanguage == "en";
 			MnuRussian.IsChecked = Loc.Instance.CurrentLanguage == "ru";
 
-            _viewModel.HistoryShown += _viewModel_HistoryShown;
-            TxtCost.GotFocus += Txt_Int_GotFocus;
+			_viewModel.HistoryShown += _viewModel_HistoryShown;
+			TxtCost.GotFocus += Txt_Int_GotFocus;
 			TxtWeight.GotFocus += Txt_Int_GotFocus;
+
+			// Suppress autosave while the user is actively editing recipient fields
+			TxtRecipientFName.GotFocus += (s, e) => _viewModel.IsUserEditingField = true;
+			TxtRecipientFName.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
+			TxtRecipientAddress.GotFocus += (s, e) => _viewModel.IsUserEditingField = true;
+			TxtRecipientAddress.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
+			TxtRecipientPhone.GotFocus += (s, e) => _viewModel.IsUserEditingField = true;
+			TxtRecipientPhone.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
         }
 
         private void Txt_Int_GotFocus(object sender, RoutedEventArgs e)
@@ -162,7 +170,8 @@ namespace PrintAndScan4Ukraine
 			SavingOftenTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
 			SavingOftenTimer.Tick += delegate
 			{
-				if (_viewModel.SelectedPackage != null && _viewModel.SelectedPackage.Modified) //only saving current package
+				// Only autosave when there is a modified package and the user is not editing recipient fields
+				if (_viewModel.SelectedPackage != null && _viewModel.SelectedPackage.Modified && !_viewModel.IsUserEditingField) //only saving current package
 					_ = _viewModel.Save();
 			};
 			SavingOftenTimer.Start();

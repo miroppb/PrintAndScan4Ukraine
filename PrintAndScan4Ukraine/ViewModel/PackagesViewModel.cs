@@ -34,6 +34,11 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 		public ObservableCollection<Package> Packages { get; } = new();
 
+		// Indicates the user currently has keyboard focus in an editable field
+		// (e.g. recipient name/address/phone). Autosave should be suppressed
+		// while this is true to avoid disrupting typing.
+		public bool IsUserEditingField { get; set; } = false;
+
 		private Visibility _IsSelectedPackageShowing = Visibility.Hidden;
 
 		public Visibility IsSelectedPackageShowing

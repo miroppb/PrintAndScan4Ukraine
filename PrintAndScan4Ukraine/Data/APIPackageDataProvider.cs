@@ -115,20 +115,23 @@ namespace PrintAndScan4Ukraine.Data
         }
 
 
-        public async Task<IEnumerable<Package>?> GetByNameAsync(string SenderName, bool useArchive = false)
+        public async Task<IEnumerable<Package>?> GetByNameAsync(string senderName, bool senderOnly = true, bool useArchive = false)
         {
             var payload = new
             {
-                sender_name = SenderName,
+                sender_name = senderName,
+                sender_only = senderOnly,
                 use_archive = useArchive
             };
 
             try
             {
-
                 var response = await _httpClient.PostAsync(
                     "/packages-by-name",
-                    new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
+                    new StringContent(
+                        JsonConvert.SerializeObject(payload),
+                        Encoding.UTF8,
+                        "application/json")
                 ).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)

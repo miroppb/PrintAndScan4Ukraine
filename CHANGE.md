@@ -1,3 +1,11 @@
+v. 1.7.1.13
+
+- Another attempt to fix cursor jumping
+
+v. 1.7.1.12
+
+- Searching History only searches by sender name
+
 v. 1.7.1.5-11
 
 - Another attempt to fix cursor jumping

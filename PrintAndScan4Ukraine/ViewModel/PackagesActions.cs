@@ -41,13 +41,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
-		public async Task<List<Package>?> LoadByNameAsync(string SenderName)
+		public async Task<List<Package>?> LoadByNameAsync(string SenderName, bool senderOnly = true, bool useArchive = false)
 		{
 			if (IsOnline)
 			{
 				List<Package> ListOfPackages = new List<Package>();
 
-				var packages = await _packageDataProvider.GetByNameAsync(SenderName);
+				var packages = await _packageDataProvider.GetByNameAsync(SenderName, senderOnly, useArchive);
 				if (packages != null)
 					packages.ToList().ForEach(ListOfPackages.Add);
 
@@ -74,13 +74,13 @@ namespace PrintAndScan4Ukraine.ViewModel
 				if (package != null) package.SuppressNotify = true;
 				try
 				{
-					if (await _packageDataProvider.UpdateRecords([package], type))
-				{
-					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
-					package.Modified = false; //setting back as it was saved
-					package.PackageIDModified = false;
-					return true;
-				}
+					if (await _packageDataProvider.UpdateRecords([package!], type))
+					{
+						LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
+						package!.Modified = false; //setting back as it was saved
+						package!.PackageIDModified = false;
+						return true;
+					}
 				}
 				finally
 				{

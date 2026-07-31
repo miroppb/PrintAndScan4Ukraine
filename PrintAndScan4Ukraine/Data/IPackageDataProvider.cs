@@ -9,7 +9,7 @@ namespace PrintAndScan4Ukraine.Data
     public interface IPackageDataProvider
 	{
 		Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad);
-		Task<IEnumerable<Package>?> GetByNameAsync(string SenderName, bool useArchive = false);
+		Task<IEnumerable<Package>?> GetByNameAsync(string senderName, bool senderOnly = true, bool useArchive = false);
 		Task<IEnumerable<Package_Status>?> GetAllStatuses(List<string> ids, bool useArchive = false);
 		Task<IEnumerable<Package_Status>?> GetStatusByPackage(string packageid);
 		Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start, DateTime end, int status);

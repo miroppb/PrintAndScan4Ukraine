@@ -50,7 +50,7 @@ namespace PrintAndScan4Ukraine.Data.Tests
         [TestMethod()]
         public async Task GetByNameAsyncTest()
         {
-            var result = await _provider!.GetByNameAsync("Darina Oliinyk", false);
+            var result = await _provider!.GetByNameAsync("Darina Oliinyk", false, false);
 
             Assert.IsNotNull(result);
             Assert.Contains("Darina Oliinyk", result.First().Sender_Name);

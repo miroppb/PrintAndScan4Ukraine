@@ -75,7 +75,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
 				Libmiroppb.Log($"Searching by Sender: {SearchParam}");
 				TopText = $"Search Results for Sender: {SearchParam}";
-				var temp_packages = await _provider.GetByNameAsync(SearchParam, ArchiveChecked);
+				var temp_packages = await _provider.GetByNameAsync(SearchParam, false, ArchiveChecked);
 				if (temp_packages != null && temp_packages.Any())
 				{
 					var statuses = await _provider.GetAllStatuses(temp_packages.Select(x => x.PackageId).ToList());
