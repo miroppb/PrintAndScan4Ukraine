@@ -6,6 +6,10 @@ namespace PrintAndScan4Ukraine.Model
 {
     public partial class Package : INotifyPropertyChanged, INotifyDataErrorInfo
     {
+        // When true, RaisePropertyChanged will be a no-op. Use to avoid UI updates
+        // during background operations (autosave) that would disrupt user input.
+        public bool SuppressNotify { get; set; } = false;
+
         public int Id { get; set; }
         private string _PackageId = string.Empty;
 
@@ -218,6 +222,9 @@ namespace PrintAndScan4Ukraine.Model
 
         protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
+            if (SuppressNotify)
+                return;
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }

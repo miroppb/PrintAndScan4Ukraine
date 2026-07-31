@@ -69,12 +69,22 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (CanSave)
 			{
 				package.Trim();
-				if (await _packageDataProvider.UpdateRecords([package], type))
+				// Suppress PropertyChanged notifications during the background update
+				// to avoid UI updates (which can reset TextBox caret) while saving.
+				if (package != null) package.SuppressNotify = true;
+				try
+				{
+					if (await _packageDataProvider.UpdateRecords([package], type))
 				{
 					LastSaved = $"Last Saved: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
 					package.Modified = false; //setting back as it was saved
 					package.PackageIDModified = false;
 					return true;
+				}
+				}
+				finally
+				{
+					if (package != null) package.SuppressNotify = false;
 				}
 			}
 			else if (!IsOnline)
