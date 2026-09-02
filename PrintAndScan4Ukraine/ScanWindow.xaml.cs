@@ -177,19 +177,22 @@ namespace PrintAndScan4Ukraine
 			SavingOftenTimer.Start();
 		}
 
-		private void SetupReloadingPackages()
-		{
-			int minutes = 2;
-			Libmiroppb.Log($"Setting up refreshing packages every {minutes} minute(s)");
-			ReloadingPackagesTimer = new() { Interval = TimeSpan.FromMinutes(minutes) };
-			ReloadingPackagesTimer.Tick += delegate
-			{
-				_viewModel.ReloadPackagesAndUpdateIfChanged();
-			};
-			ReloadingPackagesTimer.Start();
-		}
+        private void SetupReloadingPackages()
+        {
+            int minutes = 2;
+            Libmiroppb.Log($"Setting up refreshing packages every {minutes} minute(s)");
+            ReloadingPackagesTimer = new()
+            {
+                Interval = TimeSpan.FromMinutes(minutes)
+            };
+            ReloadingPackagesTimer.Tick += async (_, _) =>
+            {
+                await _viewModel.ReloadPackagesAndUpdateIfChanged();
+            };
+            ReloadingPackagesTimer.Start();
+        }
 
-		private void SetupOnlineCheck()
+        private void SetupOnlineCheck()
 		{
 			int minutes = 1;
 			Libmiroppb.Log($"Setting up checking Internet every {minutes} minutes");
