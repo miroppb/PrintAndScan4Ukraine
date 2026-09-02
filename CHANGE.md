@@ -1,3 +1,7 @@
+v. 1.7.1.15
+
+- When verifying, duplicates don't count
+
 v. 1.7.1.14
 
 - Verify Packages window to see if the scanned packages are in the database or missing

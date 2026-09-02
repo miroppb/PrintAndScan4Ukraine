@@ -84,6 +84,13 @@ namespace PrintAndScan4Ukraine
                 statusText = "Invalid format";
             }
 
+            // Ensure uniqueness: if this barcode was already scanned, replace the previous entry
+            var existing = ScannedItems.FirstOrDefault(i => i.Barcode == code);
+            if (existing != null)
+            {
+                ScannedItems.Remove(existing);
+            }
+
             ScannedItems.Insert(0, new ScannedItem { Barcode = code, Exists = exists, StatusText = statusText });
 
             // Flash animation
