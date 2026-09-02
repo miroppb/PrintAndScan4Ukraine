@@ -1,3 +1,7 @@
+v. 1.7.1.14
+
+- Verify Packages window to see if the scanned packages are in the database or missing
+
 v. 1.7.1.13
 
 - Another attempt to fix cursor jumping

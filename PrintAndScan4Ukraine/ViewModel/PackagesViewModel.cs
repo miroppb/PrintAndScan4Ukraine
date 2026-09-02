@@ -75,6 +75,7 @@ namespace PrintAndScan4Ukraine.ViewModel
             ClearSearchCommand = new DelegateCommand(ExecuteClearSearch);
             ShowEditPreviousShipmentCommand = new DelegateCommand(ExecuteShowEditPreviousShipment, () => AccessToSeePackages & CanShip);
             CompletePreviousCommand = new DelegateCommand(ExecuteCompletePrevious, () => EditingPreviousShipment);
+			ShowVerifyPackagesCommand = new DelegateCommand(ExecuteShowVerifyPackages, () => AccessToSeePackages & CanAddNew);
 
 
             CheckSystemTime();

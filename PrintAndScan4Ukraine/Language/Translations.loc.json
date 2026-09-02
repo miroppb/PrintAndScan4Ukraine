@@ -91,6 +91,10 @@
           "en": "Edit Previous Shipment",
           "ru": "Изменить Предыдущую Посылку"
         },
+        "VerifyPackages": {
+          "en": "Verify Packages",
+          "ru": "Проверить Посылки"
+        },
         "Update": {
           "en": "Check for _Update",
           "ru": "Проверить _обновления"

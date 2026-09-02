@@ -25,6 +25,7 @@ namespace PrintAndScan4Ukraine.ViewModel
         public DelegateCommand ClearSearchCommand { get; set; }
 		public DelegateCommand ShowEditPreviousShipmentCommand { get; }
 		public DelegateCommand CompletePreviousCommand { get; }
+		public DelegateCommand ShowVerifyPackagesCommand { get; }
 
     }
 }

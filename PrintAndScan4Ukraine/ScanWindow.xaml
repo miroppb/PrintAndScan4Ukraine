@@ -65,6 +65,8 @@
                     <MenuItem x:Name="MnuFindRepeating" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.FindRepeating', DefaultText='Find Repeating Recipients'}" Command="{Binding ShowFindRepeatingRecipientsCommand}"
                               Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <MenuItem x:Name="MnuEditPreviousShipment" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.EditPreviousShipment', DefaultText='Edit Previous Shipment'}" Command="{Binding ShowEditPreviousShipmentCommand}"
+                              Visibility="{Binding AccessToAddNew, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <MenuItem x:Name="MnuVerifyPackages" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.VerifyPackages', DefaultText='Verify Packages'}" Command="{Binding ShowVerifyPackagesCommand}"
                               Visibility="{Binding AccessToShip, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <MenuItem x:Name="MnuCheckUpdate" Header="{Tr 'PAS4U.MainMenu.ToolsMenu.Update', DefaultText='_Update'}" Command="{Binding ShowCheckUpdateCommand}" />
                 </MenuItem>

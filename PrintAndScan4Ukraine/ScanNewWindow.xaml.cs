@@ -17,7 +17,7 @@ namespace PrintAndScan4Ukraine
 			InitializeComponent();
 			_viewModel = vm;
 			DataContext = _viewModel;
-			PreviewKeyDown += _viewModel.NewPreviewKeyDownEvent;
+			PreviewKeyDown +=  _viewModel.NewPreviewKeyDownEvent;
 			_viewModel.ClosingRequest += (sender, e) => Close();
 
             if (DataContext is INotifyPropertyChanged npc)
