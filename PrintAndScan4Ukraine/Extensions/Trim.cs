@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using PrintAndScan4Ukraine.Model;
-using System.Collections.Generic;
 
 namespace PrintAndScan4Ukraine.Extensions
 {
@@ -39,6 +38,8 @@ namespace PrintAndScan4Ukraine.Extensions
                 var tn = item.Name?.Trim();
                 if (tn != item.Name) item.Name = tn!;
             }
+
+            pkg.Recipient_Contents.RemoveAll(x => string.IsNullOrWhiteSpace(x.Name) && x.Amount == 0);
 
             if (pkg.Recipient_Contents.Count > 0)
             {

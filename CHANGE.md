@@ -1,3 +1,7 @@
+v. 1.7.1.16
+
+- When Trimming parts of a Package, remove empty Contents
+
 v. 1.7.1.15
 
 - When verifying, duplicates don't count
