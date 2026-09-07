@@ -61,8 +61,8 @@ namespace PrintAndScan4Ukraine.Data
                     packages = [.. result.Select(x =>
                     {
                         x.Recipient_Contents = !string.IsNullOrEmpty(x.Contents)
-                            ? JsonConvert.DeserializeObject<List<Contents>>(x.Contents)!
-                            : [];
+                            ? JsonConvert.DeserializeObject<ObservableCollection<Contents>>(x.Contents)!
+                            : new ObservableCollection<Contents>();
                         return x;
                     })];
                 }
@@ -151,7 +151,7 @@ namespace PrintAndScan4Ukraine.Data
                     {
                         try
                         {
-                            pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents) ?? [];
+                            pkg.Recipient_Contents = JsonConvert.DeserializeObject<ObservableCollection<Contents>>(pkg.Contents) ?? [];
                         }
                         catch
                         {
@@ -204,16 +204,16 @@ namespace PrintAndScan4Ukraine.Data
                 {
                     try
                     {
-                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents) ?? [];
+                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<ObservableCollection<Contents>>(pkg.Contents) ?? new ObservableCollection<Contents>();
                     }
                     catch
                     {
-                        pkg.Recipient_Contents = [];
+                        pkg.Recipient_Contents = new ObservableCollection<Contents>();
                     }
                 }
                 else
                 {
-                    pkg.Recipient_Contents = [];
+                    pkg.Recipient_Contents = new ObservableCollection<Contents>();
                 }
             }
 
@@ -246,16 +246,16 @@ namespace PrintAndScan4Ukraine.Data
                 {
                     try
                     {
-                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<List<Contents>>(pkg.Contents) ?? [];
+                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<ObservableCollection<Contents>>(pkg.Contents) ?? new ObservableCollection<Contents>();
                     }
                     catch
                     {
-                        pkg.Recipient_Contents = [];
+                        pkg.Recipient_Contents = new ObservableCollection<Contents>();
                     }
                 }
                 else
                 {
-                    pkg.Recipient_Contents = [];
+                    pkg.Recipient_Contents = new ObservableCollection<Contents>();
                 }
             }
             return packages;
@@ -425,7 +425,7 @@ namespace PrintAndScan4Ukraine.Data
             foreach (Package package in packages)
             {
                 Package temp = package.CreateCopy();
-                List<Contents> t = package.Recipient_Contents.CreateCopy();
+                ObservableCollection<Contents> t = package.Recipient_Contents.CreateCopy();
                 List<string> output = [];
                 foreach (var item in t) { output.Add($"{item.Name}: {item.Amount}"); }
 

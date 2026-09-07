@@ -1,3 +1,7 @@
+v. 1.7.1.17
+
+- Changed Recipient_Contents to be an ObservableCollection instead of List. This should help with crashing in the Contents grid
+
 v. 1.7.1.16
 
 - When Trimming parts of a Package, remove empty Contents

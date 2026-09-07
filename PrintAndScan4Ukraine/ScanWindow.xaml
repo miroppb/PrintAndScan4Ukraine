@@ -431,17 +431,20 @@
                             Width="100"
                             CornerRadius="2"
                             Margin="0 0 0 10"/>
-                    <DataGrid x:Name="LstContents"
-                              Grid.Row="2" Grid.ColumnSpan="2"
-                              Height="220"
-                              ItemsSource="{Binding ElementName=LstUPCAndNames, Path=SelectedItem.Recipient_Contents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="True"
-                              CanUserSortColumns="False"
-                              CanUserReorderColumns="False"
-                              CanUserResizeRows="False"
-                              CanUserDeleteRows="True"
-                              IsReadOnly="{Binding AccessToEditReceipient}">
+                    <DataGrid
+                        x:Name="LstContents"
+                        Grid.Row="2"
+                        Grid.ColumnSpan="2"
+                        Height="220"
+                        ItemsSource="{Binding ElementName=LstUPCAndNames,
+                                              Path=SelectedItem.Recipient_Contents}"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="True"
+                        CanUserSortColumns="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserDeleteRows="True"
+                        IsReadOnly="{Binding AccessToEditReceipient}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{Tr 'PAS4U.MainWindow.ContentsName', DefaultText='Name'}"
                                                 Width="*"

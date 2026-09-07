@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -148,17 +149,14 @@ namespace PrintAndScan4Ukraine.Model
             }
         }
         public string? Contents { get; set; } = string.Empty;
-        private List<Contents> _recipient_contents = new() { };
+        private ObservableCollection<Contents> _recipient_contents = new();
 
-        public List<Contents> Recipient_Contents
+        public ObservableCollection<Contents> Recipient_Contents
         {
             get => _recipient_contents;
             set
             {
-                if (value == null)
-                    _recipient_contents = new List<Contents>();
-                else
-                    _recipient_contents = value;
+                _recipient_contents = value ?? new ObservableCollection<Contents>();
                 RaisePropertyChanged();
             }
         }
@@ -267,6 +265,9 @@ namespace PrintAndScan4Ukraine.Model
 
     public class Contents
     {
+        public Contents()
+        {
+        }
         public string Name { get; set; } = string.Empty;
         public int Amount { get; set; }
     }
