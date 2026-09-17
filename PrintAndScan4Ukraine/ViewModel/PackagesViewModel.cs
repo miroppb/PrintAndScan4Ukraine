@@ -101,8 +101,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 			{
                 if (_selectedPackage != null)
                 {
-                    _selectedPackage.ErrorsChanged -= (s, e) => SaveCommand.RaiseCanExecuteChanged();
-                    _selectedPackage.PropertyChanged -= (s, e) => SaveCommand.RaiseCanExecuteChanged();
+                    _selectedPackage.ErrorsChanged -= SelectedPackage_ErrorsChanged;
+                    _selectedPackage.PropertyChanged -= SelectedPackage_PropertyChanged;
 
                     if (_selectedPackage.Modified)
                         _ = Save(_selectedPackage, -1); // Save previous package
@@ -112,8 +112,8 @@ namespace PrintAndScan4Ukraine.ViewModel
 
                 if (_selectedPackage != null)
                 {
-                    _selectedPackage.ErrorsChanged += (s, e) => SaveCommand.RaiseCanExecuteChanged();
-                    _selectedPackage.PropertyChanged += (s, e) => SaveCommand.RaiseCanExecuteChanged();
+                    _selectedPackage.ErrorsChanged += SelectedPackage_ErrorsChanged;
+                    _selectedPackage.PropertyChanged += SelectedPackage_PropertyChanged;
                 }
 
                 RaisePropertyChanged();
@@ -132,7 +132,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 				ShowHistoryCommand.RaiseCanExecuteChanged();
 			}
 		}
-		private async Task GetPackageLastStatus()
+
+        private void SelectedPackage_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            SaveCommand.RaiseCanExecuteChanged();
+        }
+
+        private void SelectedPackage_ErrorsChanged(object? sender, DataErrorsChangedEventArgs e)
+        {
+            SaveCommand.RaiseCanExecuteChanged();
+        }
+
+        private async Task GetPackageLastStatus()
 		{
 			var statuses = await _packageDataProvider.GetStatusByPackage(_selectedPackage!.PackageId);
 			SelectedPackageLastStatus = statuses?.LastOrDefault();

@@ -31,15 +31,16 @@
                     <TextBlock VerticalAlignment="Center" Foreground="#6B7280" Text="Search"/>
                     <TextBlock Text="" Width="8"/>
                     <TextBox x:Name="TxtSearch"
-                             Width="300"
-                             Height="32"
-                             VerticalAlignment="Center"
-                             VerticalContentAlignment="Center"
-                             TextAlignment="Left"
-                             Padding="4,0"
-                             Style="{StaticResource AppTextBox}"
-                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                             ToolTip="Search by recipient name, address or phone"/>
+                         Width="300"
+                         Height="32"
+                         VerticalAlignment="Center"
+                         VerticalContentAlignment="Center"
+                         TextAlignment="Left"
+                         Padding="4,0"
+                         Style="{StaticResource AppTextBox}"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Search by recipient name, address or phone"
+                         KeyDown="TxtSearch_KeyDown"/>
                 </StackPanel>
             </StackPanel>
         </Border>

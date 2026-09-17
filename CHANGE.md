@@ -1,3 +1,9 @@
+v. 1.7.2.0
+
+- Attempt to fix cursor jumping, again
+- History Window, press Enter to close without selecting anything
+- Cosmetic fixes
+
 v. 1.7.1.17
 
 - Changed Recipient_Contents to be an ObservableCollection instead of List. This should help with crashing in the Contents grid

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace PrintAndScan4Ukraine.Model
@@ -220,10 +222,15 @@ namespace PrintAndScan4Ukraine.Model
 
         protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
+            //Debug.WriteLine(
+            //    $"{DateTime.Now:HH:mm:ss.fff} PropertyChanged: {propertyName}");
+
             if (SuppressNotify)
                 return;
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(propertyName));
         }
     }
 
