@@ -59,6 +59,13 @@ namespace PrintAndScan4Ukraine
             TxtSenderAddress.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
             TxtSenderPhone.GotFocus += (s, e) => _viewModel.IsUserEditingField = true;
             TxtSenderPhone.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
+
+            LstContents.GotFocus += (s, e) => _viewModel.IsUserEditingField = true;
+            LstContents.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
+            TxtCost.GotFocus += (s, e) => _viewModel.IsUserEditingField = true;
+            TxtCost.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
+            TxtWeight.GotFocus += (s, e) => _viewModel.IsUserEditingField = true;
+            TxtWeight.LostFocus += (s, e) => _viewModel.IsUserEditingField = false;
         }
 
         private void Txt_Int_GotFocus(object sender, RoutedEventArgs e)

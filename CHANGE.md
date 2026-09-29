@@ -1,3 +1,7 @@
+v. 1.7.2.1
+
+- Fix for Content List clearing
+
 v. 1.7.2.0
 
 - Attempt to fix cursor jumping, again
