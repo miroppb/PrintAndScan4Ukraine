@@ -14,16 +14,29 @@ namespace PrintAndScan4Ukraine.Data
     {
         public HttpClient Client { get; }
 
-        public ApiService(string token)
+        public ApiService(string? token = null)
         {
-            if (token == null || string.IsNullOrEmpty(token))
-                Application.Current.Shutdown();
-            Client = new HttpClient
+            // Use SocketsHttpHandler for better connection pooling and reuse
+            var handler = new SocketsHttpHandler
             {
-                BaseAddress = new Uri(Secrets.ApiBaseUrl)
+                PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+                PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2),
+                MaxConnectionsPerServer = 10,
+                EnableMultipleHttp2Connections = true
             };
-            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-    }
 
+            Client = new HttpClient(handler, disposeHandler: true)
+            {
+                BaseAddress = new Uri(Secrets.ApiBaseUrl.TrimEnd('/') + "/"),
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+        }
+
+
+    }
 }

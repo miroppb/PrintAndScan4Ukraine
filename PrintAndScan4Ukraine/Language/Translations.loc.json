@@ -514,6 +514,10 @@
         "en": "Failed to connect to PAS4U server.",
         "ru": "Не удалось подключиться к серверу PAS4U."
       },
+      "RequestTimedOut": {
+        "en": "Request timed out. Please try again.",
+        "ru": "Время ожидания запроса истекло. Пожалуйста, попробуйте снова."
+      },
       "VerifyAccess": {
         "en": "Could not verify access with PAS4U server.",
         "ru": "Не удалось проверить доступ с помощью сервера PAS4U."

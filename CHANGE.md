@@ -1,4 +1,4 @@
-v. 1.7.2.1
+v. 1.7.3.0
 
 - Fix for Content List clearing
 

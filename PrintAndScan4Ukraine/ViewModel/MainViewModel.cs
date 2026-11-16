@@ -30,14 +30,16 @@ namespace PrintAndScan4Ukraine.ViewModel
 
 
 		private readonly IMainDataProvider _mainDataProvider;
+		private readonly string? _apiToken;
 
 		public DelegateCommand PrintCommand { get; }
 		public DelegateCommand ScanCommand { get; }
 
 		DispatcherTimer CheckinTimer = new();
 
-		public MainViewModel(IMainDataProvider mainDataProvider)
+		public MainViewModel(IMainDataProvider mainDataProvider, string? token = null)
 		{
+			_apiToken = token;
 #if DEBUG
 			Libmiroppb.ConfigureLogger(Secrets.LogHostName, "PrintAndScan4Ukraine", Assembly.GetEntryAssembly()!.GetName().Version?.ToString(), environment: "Development");
 #else
@@ -114,9 +116,16 @@ namespace PrintAndScan4Ukraine.ViewModel
 		{
 			Libmiroppb.Log("Setting up saving every 1 minute");
 			CheckinTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
-			CheckinTimer.Tick += delegate
+			CheckinTimer.Tick += async (sender, e) =>
 			{
-				_mainDataProvider.Heartbeat(CurrentUser);
+				try
+				{
+					await _mainDataProvider.Heartbeat(CurrentUser);
+				}
+				catch (Exception ex)
+				{
+					Libmiroppb.Log(ex, "Exception in Heartbeat timer");
+				}
 			};
 			CheckinTimer.Start();
 		}

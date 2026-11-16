@@ -14,7 +14,11 @@ namespace PrintAndScan4Ukraine
 		public MainWindow()
 		{
 			InitializeComponent();
-			_viewmodel = new MainViewModel(new APIMainDataProvider());
+			
+			string? apiToken = !string.IsNullOrEmpty(Secrets.ApiKey) ? Secrets.ApiKey : null;
+			var apiService = new ApiService(apiToken);
+			var mainDataProvider = new APIMainDataProvider(apiService);
+			_viewmodel = new MainViewModel(mainDataProvider, apiToken);
 			DataContext = _viewmodel;
 		}
 	}

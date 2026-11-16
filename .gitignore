@@ -366,3 +366,4 @@ FodyWeavers.xsd
 secrets.cs
 *.ifp
 *.py
+*.env

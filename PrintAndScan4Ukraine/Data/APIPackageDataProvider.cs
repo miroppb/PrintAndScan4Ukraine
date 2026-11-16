@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -24,38 +25,42 @@ namespace PrintAndScan4Ukraine.Data
     {
         private readonly HttpClient _httpClient = apiService.Client;
 
-        public async Task<IEnumerable<MissingPackages>> FindMissingPackages(List<string> barcodesNotInPackages)
+        public async Task<IEnumerable<MissingPackages>> FindMissingPackages(List<string> barcodesNotInPackages, CancellationToken cancellationToken = default)
         {
-            var requestBody = new
-            {
-                barcodes = barcodesNotInPackages
-            };
+            var requestBody = new { barcodes = barcodesNotInPackages };
 
-            var response = await _httpClient.PostAsync(
-                "/find-missing-packages",
-                new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json")
-            );
+            var response = await _httpClient.PostAsJsonAsync("/find-missing-packages", requestBody, cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 Libmiroppb.Log($"Failed to get missing packages: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                 MessageBox.Show($"Failed to get missing packages: {response.StatusCode} - {error}");
+                return new List<MissingPackages>();
             }
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<List<MissingPackages>>(json) ?? new List<MissingPackages>();
         }
 
-        public async Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad)
+        public async Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad, CancellationToken cancellationToken = default)
         {
             Libmiroppb.Log($"Get List of Packages{(initialLoad ? "" : " for a refresh")}");
             IEnumerable<Package> packages = [];
             try
             {
-                var response = await _httpClient.GetStringAsync("/packages");
+                var response = await _httpClient.GetAsync("/packages", cancellationToken).ConfigureAwait(false);
 
-                var result = JsonConvert.DeserializeObject<List<Package>>(response);
+                if (!response.IsSuccessStatusCode)
+                {
+                    string error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    Libmiroppb.Log($"Failed to get packages: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                    MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}1:\n{error}");
+                    return packages;
+                }
+
+                var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                var result = JsonConvert.DeserializeObject<List<Package>>(json);
                 if (result != null)
                 {
                     packages = [.. result.Select(x =>
@@ -76,7 +81,7 @@ namespace PrintAndScan4Ukraine.Data
             return packages;
         }
 
-        public async Task<IEnumerable<Package_Status>?> GetAllStatuses(List<string> ids, bool useArchive = false)
+        public async Task<IEnumerable<Package_Status>?> GetAllStatuses(List<string> ids, bool useArchive = false, CancellationToken cancellationToken = default)
         {
             Libmiroppb.Log("Get List of Packages Statuses");
 
@@ -84,23 +89,17 @@ namespace PrintAndScan4Ukraine.Data
 
             try
             {
-                var requestBody = new
-                {
-                    ids,
-                    use_archive = useArchive
-                };
+                var requestBody = new { ids, use_archive = useArchive };
 
-                var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.PostAsync("/package-statuses", content);
+                var response = await _httpClient.PostAsJsonAsync("/package-statuses", requestBody, cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    string json = await response.Content.ReadAsStringAsync();
+                    string json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     statuses = JsonConvert.DeserializeObject<List<Package_Status>>(json);
                 }
                 else
                 {
-                    string error = await response.Content.ReadAsStringAsync();
+                    string error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     Libmiroppb.Log($"Server returned error: {error}");
                     MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
                 }
@@ -114,8 +113,7 @@ namespace PrintAndScan4Ukraine.Data
             return statuses;
         }
 
-
-        public async Task<IEnumerable<Package>?> GetByNameAsync(string senderName, bool senderOnly = true, bool useArchive = false)
+        public async Task<IEnumerable<Package>?> GetByNameAsync(string senderName, bool senderOnly = true, bool useArchive = false, CancellationToken cancellationToken = default)
         {
             var payload = new
             {
@@ -126,23 +124,17 @@ namespace PrintAndScan4Ukraine.Data
 
             try
             {
-                var response = await _httpClient.PostAsync(
-                    "/packages-by-name",
-                    new StringContent(
-                        JsonConvert.SerializeObject(payload),
-                        Encoding.UTF8,
-                        "application/json")
-                ).ConfigureAwait(false);
+                var response = await _httpClient.PostAsJsonAsync("/packages-by-name", payload, cancellationToken).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
+                    var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     Libmiroppb.Log($"Failed to get packages by name: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                     MessageBox.Show($"API call failed: {response.StatusCode} - {error}");
                     return [];
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 var packages = JsonConvert.DeserializeObject<List<Package>>(json) ?? [];
 
                 foreach (var pkg in packages)
@@ -174,7 +166,7 @@ namespace PrintAndScan4Ukraine.Data
             }
         }
 
-        public async Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive)
+        public async Task<IEnumerable<Package>> GetPackageAsync(string packageid, bool useArchive, CancellationToken cancellationToken = default)
         {
             var payload = new
             {
@@ -182,20 +174,17 @@ namespace PrintAndScan4Ukraine.Data
                 use_archive = useArchive
             };
 
-            var response = await _httpClient.PostAsync(
-                "/package-by-id",
-                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-            ).ConfigureAwait(false);
+            var response = await _httpClient.PostAsJsonAsync("/package-by-id", payload, cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 Libmiroppb.Log($"Failed to get package: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                 MessageBox.Show($"Failed to get package: {response.StatusCode} - {error}");
                 return [];
             }
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             var packages = JsonConvert.DeserializeObject<List<Package>>(json) ?? new();
 
             foreach (var pkg in packages)
@@ -220,7 +209,7 @@ namespace PrintAndScan4Ukraine.Data
             return packages;
         }
 
-        public async Task<IEnumerable<Package>> GetPackagesAsync(List<string> package_ids, bool useArchive = false)
+        public async Task<IEnumerable<Package>> GetPackagesAsync(List<string> package_ids, bool useArchive = false, CancellationToken cancellationToken = default)
         {
             if (package_ids == null || package_ids.Count == 0)
                 return [];
@@ -231,14 +220,20 @@ namespace PrintAndScan4Ukraine.Data
                 use_archive = useArchive
             };
 
-            var json = JsonConvert.SerializeObject(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsJsonAsync("/packages-batch", payload, cancellationToken).ConfigureAwait(false);
 
-            var response = await _httpClient.PostAsync("/packages-batch", content);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Failed to get packages batch: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"Failed to get packages: {response.StatusCode} - {error}");
+                return [];
+            }
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var packages = JsonConvert.DeserializeObject<List<Package>>(responseContent)!;
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            var packages = JsonConvert.DeserializeObject<List<Package>>(responseContent);
+            if (packages == null)
+                return [];
 
             foreach (var pkg in packages)
             {
@@ -261,7 +256,7 @@ namespace PrintAndScan4Ukraine.Data
             return packages;
         }
 
-        public async Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start_date, DateTime end_date, int status_code)
+        public async Task<IEnumerable<Package>?> GetPackagesByDateAndLastStatusAsync(DateTime start_date, DateTime end_date, int status_code, CancellationToken cancellationToken = default)
         {
             var payload = new
             {
@@ -270,89 +265,84 @@ namespace PrintAndScan4Ukraine.Data
                 status_code
             };
 
-            var response = await _httpClient.PostAsync(
-                "/packages-by-date-and-status",
-                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-            );
+            var response = await _httpClient.PostAsJsonAsync("/packages-by-date-and-status", payload, cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                Libmiroppb.Log($"Error retrieving packages: {response.StatusCode}");
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Error retrieving packages: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                 return [];
             }
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             var packages = JsonConvert.DeserializeObject<List<Package>>(json) ?? [];
-
             return packages;
         }
 
-        public async Task<DateTime> GetServerDate()
+        public async Task<DateTime> GetServerDate(CancellationToken cancellationToken = default)
         {
-            var response = await _httpClient.GetAsync("/server-date");
+            var response = await _httpClient.GetAsync("/server-date", cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Libmiroppb.Log("Failed to get server date: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Failed to get server date: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                 MessageBox.Show($"Failed to get server date: {response.StatusCode} - {error}");
                 return DateTime.Now;
             }
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             var result = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            if (result != null)
-                return DateTime.Parse(result["server_time"]);
+            if (result != null && result.TryGetValue("server_time", out var serverTime))
+                return DateTime.Parse(serverTime);
             else
                 return DateTime.Now;
         }
 
-        public async Task<IEnumerable<Package_Status>?> GetStatusByPackage(string packageid)
+        public async Task<IEnumerable<Package_Status>?> GetStatusByPackage(string packageid, CancellationToken cancellationToken = default)
         {
             Libmiroppb.Log($"Get List of Package Statuses for {packageid}");
             IEnumerable<Package_Status>? statuses = [];
             try
             {
-                var response = await _httpClient.GetAsync($"/package-status?packageid={Uri.EscapeDataString(packageid)}");
+                var response = await _httpClient.GetAsync($"/package-status?packageid={Uri.EscapeDataString(packageid)}", cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    string json = await response.Content.ReadAsStringAsync();
+                    string json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     statuses = JsonConvert.DeserializeObject<List<Package_Status>>(json);
                 }
                 else
                 {
-                    string error = await response.Content.ReadAsStringAsync();
+                    string error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     Libmiroppb.Log($"Server returned error: {error}");
                     MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
                 }
-
-                Libmiroppb.Log(JsonConvert.SerializeObject(statuses));
             }
-            catch
+            catch (Exception ex)
             {
-                Libmiroppb.Log($"There is no connection to: {Secrets.ApiBaseUrl}");
+                Libmiroppb.Log(ex, "Exception in GetStatusByPackage");
                 MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
             }
             return statuses;
         }
 
-        public async Task<IEnumerable<Users>> GetUserIDsAndNames()
+        public async Task<IEnumerable<Users>> GetUserIDsAndNames(CancellationToken cancellationToken = default)
         {
-            var response = await _httpClient.GetAsync("/user-ids-and-names");
+            var response = await _httpClient.GetAsync("/user-ids-and-names", cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                Libmiroppb.Log($"Error retrieving user IDs and names: {response.StatusCode}");
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Error retrieving user IDs and names: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                 return [];
             }
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             var users = JsonConvert.DeserializeObject<List<Users>>(json) ?? [];
-
             return users;
         }
 
-        public async Task<bool> InsertRecord(Package package)
+        public async Task<bool> InsertRecord(Package package, CancellationToken cancellationToken = default)
         {
             Libmiroppb.Log($"Inserting into Database: {JsonConvert.SerializeObject(package)}");
 
@@ -374,15 +364,15 @@ namespace PrintAndScan4Ukraine.Data
                     removed = false
                 };
 
-                var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.PostAsync("/insert-package", content);
+                var response = await _httpClient.PostAsJsonAsync("/insert-package", requestBody, cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
                     return true;
                 }
                 else
                 {
+                    var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    Libmiroppb.Log($"Failed to insert package: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                     return false;
                 }
             }
@@ -393,7 +383,7 @@ namespace PrintAndScan4Ukraine.Data
             }
         }
 
-        public async Task<bool> InsertRecordStatus(List<Package_Status> statuses)
+        public async Task<bool> InsertRecordStatus(List<Package_Status> statuses, CancellationToken cancellationToken = default)
         {
             var payload = statuses.Select(p => new
             {
@@ -404,22 +394,19 @@ namespace PrintAndScan4Ukraine.Data
                 status = p.Status
             });
 
-            var json = JsonConvert.SerializeObject(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync("/insert-package-statuses", content);
+            var response = await _httpClient.PostAsJsonAsync("/insert-package-statuses", payload, cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Libmiroppb.Log($"Failed to insert statuses: {response.StatusCode} - {error}");
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Failed to insert statuses: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                 return false;
             }
 
             return true;
         }
 
-        public List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses) //no need
+        public List<Package_less> MapPackagesAndStatusesToLess(IEnumerable<Package> packages, IEnumerable<Package_Status> statuses)
         {
             List<Package_less> list = [];
             foreach (Package package in packages)
@@ -443,10 +430,10 @@ namespace PrintAndScan4Ukraine.Data
             return list;
         }
 
-        public async Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected) //no need
+        public async Task<bool> ReloadPackagesAndUpdateIfChanged(ObservableCollection<Package> packages, Package CurrentlySelected, CancellationToken cancellationToken = default)
         {
             if (CurrentlySelected == null) return false;
-            IEnumerable<Package>? RefreshedPackages = await GetAllAsync(false);
+            IEnumerable<Package>? RefreshedPackages = await GetAllAsync(false, cancellationToken).ConfigureAwait(false);
             if (RefreshedPackages != null)
             {
                 foreach (Package package in RefreshedPackages.ToList())
@@ -457,14 +444,10 @@ namespace PrintAndScan4Ukraine.Data
                         (bool, List<Variance>) Ret = ComparePackages(FromPrevious, package);
                         if (!Ret.Item1)
                         {
-                            // Don't update the package that's currently shown/edited in the UI.
-                            // Compare by reference and by both Id (int) and PackageId (string) to be robust
-                            // against different instances representing the same logical package.
                             if (FromPrevious == CurrentlySelected ||
                                 (CurrentlySelected != null &&
                                  (package.Id == CurrentlySelected.Id || package.PackageId == CurrentlySelected.PackageId)))
                             {
-                                // skip updating the currently selected package
                                 continue;
                             }
 
@@ -476,7 +459,7 @@ namespace PrintAndScan4Ukraine.Data
             return true;
         }
 
-        private static void ReplaceProperties(Package? FromPrevious, List<Variance> Variances) //no need
+        private static void ReplaceProperties(Package? FromPrevious, List<Variance> Variances)
         {
             if (FromPrevious == null) return;
 
@@ -488,11 +471,9 @@ namespace PrintAndScan4Ukraine.Data
                 PropertyInfo? pi = FromPrevious.GetType().GetProperty(v.Prop);
                 if (pi == null) continue;
 
-                // Only set the property when the value actually differs.
                 var current = pi.GetValue(FromPrevious, null);
                 var newVal = v.ValB;
 
-                // Use object.Equals to handle nulls and value comparisons properly.
                 if (!object.Equals(current, newVal))
                 {
                     pi.SetValue(FromPrevious, newVal, null);
@@ -500,14 +481,14 @@ namespace PrintAndScan4Ukraine.Data
             }
         }
 
-        private static (bool, List<Variance>) ComparePackages(Package p, Package n) //no need
+        private static (bool, List<Variance>) ComparePackages(Package p, Package n)
         {
             bool same = true;
 
             List<Variance> rt = p.Compare(n);
             foreach (Variance v in rt)
             {
-                if (v.Prop == "Recipient_Contents") { } //Doesn't compare well the Recipient Contents for some reason
+                if (v.Prop == "Recipient_Contents") { }
                 else
                     same = false;
             }
@@ -515,13 +496,10 @@ namespace PrintAndScan4Ukraine.Data
             return (same, rt);
         }
 
-        public async Task<bool> UpdateRecords(List<Package> packages, int type = 0)
+        public async Task<bool> UpdateRecords(List<Package> packages, int type = 0, CancellationToken cancellationToken = default)
         {
             try
             {
-                // Do not mutate the passed-in Package instances (they are bound to the UI).
-                // Prepare serialized contents locally for the payload instead of assigning back to p.Contents
-
                 if (type == -2)
                 {
                     Libmiroppb.Log($"Saving Removed Records: {JsonConvert.SerializeObject(packages.Select(p => p.Id))}");
@@ -531,7 +509,6 @@ namespace PrintAndScan4Ukraine.Data
                     Libmiroppb.Log($"Saving {(type == -1 ? "Previous" : "Current")} Records: {JsonConvert.SerializeObject(packages)}");
                 }
 
-                // Validate package ID changes without mutating UI-bound properties.
                 foreach (var p in packages)
                 {
                     if (p.PackageIDModified && string.IsNullOrWhiteSpace(p.NewPackageId))
@@ -564,12 +541,9 @@ namespace PrintAndScan4Ukraine.Data
                         if (!forceSave) return false;
 
                         Libmiroppb.Log($"Package ID updated from {p.PackageId} to {newPackageIdLocal}");
-                        // The actual assignment of NewPackageId / PackageId is performed by the API/server.
-                        // Avoid mutating the UI-bound object here to prevent binding updates that can reset caret.
                     }
                 }
 
-                // Build payload without changing model properties
                 var payload = packages.Select(p => new
                 {
                     id = p.Id,
@@ -590,11 +564,12 @@ namespace PrintAndScan4Ukraine.Data
                     removed = p.Removed
                 });
 
-                var response = await _httpClient.PostAsJsonAsync($"/update-packages", payload);
+                var response = await _httpClient.PostAsJsonAsync("/update-packages", payload, cancellationToken).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Libmiroppb.Log($"Failed to update records: {response.StatusCode}");
+                    var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    Libmiroppb.Log($"Failed to update records: {response.StatusCode} - {error}");
                     MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
                     return false;
                 }
@@ -609,7 +584,7 @@ namespace PrintAndScan4Ukraine.Data
             }
         }
 
-        public async Task<long> UploadExportedFile(string fileName)
+        public async Task<long> UploadExportedFile(string fileName, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -620,16 +595,17 @@ namespace PrintAndScan4Ukraine.Data
                     content_base64 = Convert.ToBase64String(fileBytes)
                 };
 
-                var response = await _httpClient.PostAsJsonAsync($"/upload-export", payload);
+                var response = await _httpClient.PostAsJsonAsync("/upload-export", payload, cancellationToken).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Libmiroppb.Log($"Failed to upload export: {response.StatusCode}");
+                    var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    Libmiroppb.Log($"Failed to upload export: {response.StatusCode} - {error}");
                     MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.Offline", "There is no connection")}");
                     return -1;
                 }
 
-                var result = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>();
+                var result = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>(cancellationToken).ConfigureAwait(false);
                 if (result != null && result.TryGetValue("id", out JsonElement idElement) && idElement.ValueKind == JsonValueKind.Number)
                 {
                     return idElement.GetInt64();
@@ -645,24 +621,23 @@ namespace PrintAndScan4Ukraine.Data
             }
         }
 
-        public async Task<bool> VerifyIfExists(string packageid)
+        public async Task<bool> VerifyIfExists(string packageid, CancellationToken cancellationToken = default)
         {
             Libmiroppb.Log($"Verifying if package exists: {packageid}");
 
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync($"/package-exists?packageid={Uri.EscapeDataString(packageid)}");
+                var response = await _httpClient.GetAsync($"/package-exists?packageid={Uri.EscapeDataString(packageid)}", cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    string content = await response.Content.ReadAsStringAsync();
-                    // Expecting { "exists": true } from FastAPI
+                    string content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                     var json = JsonConvert.DeserializeObject<Dictionary<string, bool>>(content);
                     return json != null && json.TryGetValue("exists", out bool exists) && exists;
                 }
                 else
                 {
-                    Libmiroppb.Log($"Server returned error: {response.StatusCode}");
-                    Debug.WriteLine($"API error: {response.StatusCode}");
+                    var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    Libmiroppb.Log($"Server returned error: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
                 }
             }
             catch (Exception ex)
@@ -673,7 +648,7 @@ namespace PrintAndScan4Ukraine.Data
             return false;
         }
 
-        public async Task<IEnumerable<Package>> FindRepeatingRecipientsAsync(List<string> package_list, int max_allowed = 3)
+        public async Task<IEnumerable<Package>> FindRepeatingRecipientsAsync(List<string> package_list, int max_allowed = 3, CancellationToken cancellationToken = default)
         {
             if (package_list == null || package_list.Count == 0)
                 return [];
@@ -684,32 +659,50 @@ namespace PrintAndScan4Ukraine.Data
                 max_allowed
             };
 
-            var json = JsonConvert.SerializeObject(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsJsonAsync("/find-repeating-recipients", payload, cancellationToken).ConfigureAwait(false);
 
-            var response = await _httpClient.PostAsync("/find-repeating-recipients", content);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Failed to find repeating recipients: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"Failed to find repeating recipients: {response.StatusCode} - {error}");
+                return [];
+            }
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<Package>>(responseContent)!;
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<List<Package>>(responseContent) ?? [];
         }
 
-        public async Task<IEnumerable<Export>> FindRecentExports()
+        public async Task<IEnumerable<Export>> FindRecentExports(CancellationToken cancellationToken = default)
         {
-            var response = await _httpClient.GetAsync("/uploaded-exports");
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync("/uploaded-exports", cancellationToken).ConfigureAwait(false);
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<Export>>(responseContent)!;
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Failed to get recent exports: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"Failed to get recent exports: {response.StatusCode} - {error}");
+                return [];
+            }
+
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<List<Export>>(responseContent) ?? [];
         }
 
-        public async Task<Export> DownloadExportAsync(int id)
+        public async Task<Export> DownloadExportAsync(int id, CancellationToken cancellationToken = default)
         {
-            var response = await _httpClient.GetAsync($"/export/{id}");
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"/export/{id}", cancellationToken).ConfigureAwait(false);
 
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<Export>(json)!;
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Failed to download export: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                MessageBox.Show($"Failed to download export: {response.StatusCode} - {error}");
+                return new Export();
+            }
+
+            var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<Export>(json) ?? new Export();
         }
 
         public static string StatusToText(int status)
