@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>barcode.ico</ApplicationIcon>
@@ -15,17 +15,6 @@
     <None Remove="Language\Translations.loc.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <COMReference Include="IWshRuntimeLibrary">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="barcode.ico" />
@@ -37,7 +26,7 @@
     <PackageReference Include="CodingSeb.Localization.JsonFileLoader" Version="1.4.0" />
     <PackageReference Include="CodingSeb.Localization.WPF" Version="1.4.1" />
     <PackageReference Include="DocX" Version="5.2.0" />
-    <PackageReference Include="EPPlus" Version="8.7.0" />
+    <PackageReference Include="EPPlus" Version="8.7.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
@@ -46,8 +35,8 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="9.0.2" />
     <PackageReference Include="ServiceStack.Text.Core" Version="8.10.0" />
-    <PackageReference Include="System.Formats.Asn1" Version="10.0.11" />
-    <PackageReference Include="System.Text.Json" Version="10.0.11" />
+    <PackageReference Include="System.Formats.Asn1" Version="11.0.0" />
+    <PackageReference Include="System.Text.Json" Version="11.0.0" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
   </ItemGroup>
 
