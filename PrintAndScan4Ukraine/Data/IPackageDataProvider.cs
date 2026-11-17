@@ -10,6 +10,8 @@ namespace PrintAndScan4Ukraine.Data
     public interface IPackageDataProvider
     {
         Task<IEnumerable<Package>?> GetAllAsync(bool initialLoad, CancellationToken cancellationToken = default);
+  Task<PackageSyncPage> GetPackageChangesAsync(string? since, string? cursor, int limit = 500, CancellationToken cancellationToken = default);
+  void ApplyPackageChanges(ObservableCollection<Package> packages, Package? currentlySelected, IEnumerable<Package> changed);
         Task<IEnumerable<Package>?> GetByNameAsync(string senderName, bool senderOnly = true, bool useArchive = false, CancellationToken cancellationToken = default);
         Task<IEnumerable<Package_Status>?> GetAllStatuses(List<string> ids, bool useArchive = false, CancellationToken cancellationToken = default);
         Task<IEnumerable<Package_Status>?> GetStatusByPackage(string packageid, CancellationToken cancellationToken = default);

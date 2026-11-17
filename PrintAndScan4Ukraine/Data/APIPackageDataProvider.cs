@@ -81,6 +81,98 @@ namespace PrintAndScan4Ukraine.Data
             return packages;
         }
 
+        public async Task<PackageSyncPage> GetPackageChangesAsync(string? since, string? cursor, int limit = 500, CancellationToken cancellationToken = default)
+        {
+            var url = $"/packages/sync?limit={limit}";
+            if (!string.IsNullOrWhiteSpace(since))
+                url += $"&since={Uri.EscapeDataString(since)}";
+            if (!string.IsNullOrWhiteSpace(cursor))
+                url += $"&cursor={Uri.EscapeDataString(cursor)}";
+
+            var response = await _httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                Libmiroppb.Log($"Failed to get package changes: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
+                return new PackageSyncPage();
+            }
+
+            var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            var page = JsonConvert.DeserializeObject<PackageSyncPage>(json) ?? new PackageSyncPage();
+
+            foreach (var pkg in page.Packages)
+            {
+                if (!string.IsNullOrWhiteSpace(pkg.Contents))
+                {
+                    try
+                    {
+                        pkg.Recipient_Contents = JsonConvert.DeserializeObject<ObservableCollection<Contents>>(pkg.Contents) ?? new ObservableCollection<Contents>();
+                    }
+                    catch
+                    {
+                        pkg.Recipient_Contents = new ObservableCollection<Contents>();
+                    }
+                }
+                else
+                {
+                    pkg.Recipient_Contents = new ObservableCollection<Contents>();
+                }
+            }
+
+            return page;
+        }
+
+        public void ApplyPackageChanges(ObservableCollection<Package> packages, Package? currentlySelected, IEnumerable<Package> changed)
+        {
+            if (changed == null) return;
+
+            foreach (var package in changed)
+            {
+                if (package.Recipient_Contents == null)
+                {
+                    if (!string.IsNullOrWhiteSpace(package.Contents))
+                    {
+                        try { package.Recipient_Contents = JsonConvert.DeserializeObject<ObservableCollection<Contents>>(package.Contents) ?? new ObservableCollection<Contents>(); }
+                        catch { package.Recipient_Contents = new ObservableCollection<Contents>(); }
+                    }
+                    else
+                    {
+                        package.Recipient_Contents = new ObservableCollection<Contents>();
+                    }
+                }
+
+                if (package.Removed)
+                {
+                    var existing = packages.FirstOrDefault(x => x.Id == package.Id || x.PackageId == package.PackageId);
+                    if (existing != null && (currentlySelected == null || existing.Id != currentlySelected.Id))
+                    {
+                        packages.Remove(existing);
+                    }
+                    continue;
+                }
+
+                var fromPrevious = packages.FirstOrDefault(x => x.Id == package.Id || x.PackageId == package.PackageId);
+                if (fromPrevious != null)
+                {
+                    if (currentlySelected != null &&
+                        (fromPrevious.Id == currentlySelected.Id || fromPrevious.PackageId == currentlySelected.PackageId))
+                    {
+                        continue;
+                    }
+
+                    var (same, variances) = ComparePackages(fromPrevious, package);
+                    if (!same)
+                    {
+                        ReplaceProperties(fromPrevious, variances);
+                    }
+                }
+                else
+                {
+                    packages.Add(package);
+                }
+            }
+        }
+
         public async Task<IEnumerable<Package_Status>?> GetAllStatuses(List<string> ids, bool useArchive = false, CancellationToken cancellationToken = default)
         {
             Libmiroppb.Log("Get List of Packages Statuses");

@@ -279,6 +279,20 @@ namespace PrintAndScan4Ukraine.Model
         public int Amount { get; set; }
     }
 
+    public class PackageCache
+    {
+        public int Version { get; set; }
+        public string? SyncToken { get; set; }
+        public List<Package>? Packages { get; set; }
+    }
+
+    public class PackageSyncPage
+    {
+        public List<Package> Packages { get; set; } = new();
+        public string? NextCursor { get; set; }
+        public string? ServerTime { get; set; }
+    }
+
     public class MissingPackages
     {
         public string Packageid { get; set; } = string.Empty;

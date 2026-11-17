@@ -24,20 +24,97 @@ namespace PrintAndScan4Ukraine.ViewModel
 {
 	public partial class PackagesViewModel : INotifyPropertyChanged
 	{
+		private const int CacheVersion = 1;
+		private static string CachePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PrintAndScan4Ukraine", "packages.cache.json");
+
+		private bool TryLoadCache()
+		{
+			try
+			{
+				if (!File.Exists(CachePath)) return false;
+				var json = File.ReadAllText(CachePath);
+				var cache = JsonConvert.DeserializeObject<PackageCache>(json);
+				if (cache == null || cache.Version != CacheVersion || cache.Packages == null) return false;
+
+				Packages.ReplaceAll(cache.Packages);
+				_lastSyncToken = cache.SyncToken;
+				if (Packages.Count > 0)
+					SelectedPackage = Packages.First();
+
+				Libmiroppb.Log($"Loaded {Packages.Count} packages from cache, token={_lastSyncToken}");
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Libmiroppb.Log(ex, "Failed to load package cache");
+				return false;
+			}
+		}
+
+		private void SaveCacheSnapshot()
+		{
+			var snapshot = Packages.ToList();
+			var token = _lastSyncToken;
+			Task.Run(() =>
+			{
+				try
+				{
+					var dir = Path.GetDirectoryName(CachePath);
+					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+						Directory.CreateDirectory(dir);
+
+					var cache = new PackageCache
+					{
+						Version = CacheVersion,
+						SyncToken = token,
+						Packages = snapshot
+					};
+					File.WriteAllText(CachePath, JsonConvert.SerializeObject(cache));
+				}
+				catch (Exception ex)
+				{
+					Libmiroppb.Log(ex, "Failed to save package cache");
+				}
+			});
+		}
+
 		public async Task LoadAsync()
 		{
-			if (IsOnline)
+			if (!IsOnline) return;
+
+			bool fromCache = TryLoadCache();
+
+			if (fromCache)
 			{
-				if (Packages.Any())
-					Packages.Clear();
-
-				var packages = await _packageDataProvider.GetAllAsync(true).ConfigureAwait(true);
-				packages?.ToList().ForEach(Packages.Add);
-
-				if (packages?.Any() == true)
+				await SyncDeltaAsync().ConfigureAwait(true);
+				SaveCacheSnapshot();
+			}
+			else if (string.IsNullOrEmpty(_lastSyncToken))
+			{
+				// Full sync (first run / no token yet).
+				var all = new List<Package>();
+				string? cursor = null;
+				do
 				{
-                    SelectedPackage = Packages.First();
-                }
+					var page = await _packageDataProvider.GetPackageChangesAsync(null, cursor, 1000).ConfigureAwait(true);
+					all.AddRange(page.Packages);
+					cursor = page.NextCursor;
+					if (!string.IsNullOrWhiteSpace(page.ServerTime))
+						_lastSyncToken = page.ServerTime;
+				}
+				while (!string.IsNullOrWhiteSpace(cursor));
+
+				Packages.ReplaceAll(all);
+				if (all.Count > 0)
+					SelectedPackage = Packages.First();
+
+				SaveCacheSnapshot();
+			}
+			else
+			{
+				// Delta sync.
+				await SyncDeltaAsync().ConfigureAwait(true);
+				SaveCacheSnapshot();
 			}
 		}
 
@@ -281,7 +358,31 @@ namespace PrintAndScan4Ukraine.ViewModel
 			if (WasSomethingSet)
 			{
 				await Save().ConfigureAwait(true);
-				await LoadAsync().ConfigureAwait(true);
+
+				// Avoid a full reload of all packages: fetch only the package(s)
+				// that were just added and append them to the in-memory list.
+				var idsToCheck = barCodes.Count > 0
+					? new List<string>(barCodes)
+					: new List<string>();
+
+				if (!string.IsNullOrWhiteSpace(BarCodeThatWasSet) && !idsToCheck.Contains(BarCodeThatWasSet))
+					idsToCheck.Add(BarCodeThatWasSet);
+
+				var missingIds = idsToCheck
+					.Where(id => !Packages.Any(p => p.PackageId == id))
+					.Distinct()
+					.ToList();
+
+				if (missingIds.Count > 0)
+				{
+					var fetched = await _packageDataProvider.GetPackagesAsync(missingIds, false).ConfigureAwait(true);
+					foreach (var pkg in fetched ?? Enumerable.Empty<Package>())
+					{
+						if (!Packages.Any(p => p.PackageId == pkg.PackageId))
+							Packages.Add(pkg);
+					}
+					SaveCacheSnapshot();
+				}
 			}
 			if (BarCodeThatWasSet != string.Empty)
 			{
@@ -528,11 +629,35 @@ namespace PrintAndScan4Ukraine.ViewModel
 			}
 		}
 
+		private async Task SyncDeltaAsync()
+		{
+			if (string.IsNullOrEmpty(_lastSyncToken)) return;
+
+			string? cursor = null;
+			do
+			{
+				var page = await _packageDataProvider.GetPackageChangesAsync(_lastSyncToken, cursor, 1000).ConfigureAwait(true);
+				_packageDataProvider.ApplyPackageChanges(Packages, SelectedPackage, page.Packages);
+				cursor = page.NextCursor;
+				if (!string.IsNullOrWhiteSpace(page.ServerTime))
+					_lastSyncToken = page.ServerTime;
+			}
+			while (!string.IsNullOrWhiteSpace(cursor));
+		}
+
 		public async Task ReloadPackagesAndUpdateIfChanged()
 		{
 			if (IsOnline && !EditingPreviousShipment)
 			{
-				await _packageDataProvider.ReloadPackagesAndUpdateIfChanged(Packages, SelectedPackage).ConfigureAwait(true);
+				if (string.IsNullOrEmpty(_lastSyncToken))
+				{
+					await LoadAsync().ConfigureAwait(true);
+				}
+				else
+				{
+					await SyncDeltaAsync().ConfigureAwait(true);
+				}
+				SaveCacheSnapshot();
 				LastSaved = $"Last Refreshed: {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}";
             }
 		}

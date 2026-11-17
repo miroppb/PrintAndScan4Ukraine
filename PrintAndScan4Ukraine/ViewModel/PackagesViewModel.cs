@@ -2,6 +2,7 @@
 using miroppb;
 using PrintAndScan4Ukraine.Command;
 using PrintAndScan4Ukraine.Data;
+using PrintAndScan4Ukraine.Extensions;
 using PrintAndScan4Ukraine.Model;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 	{
 		private readonly IPackageDataProvider _packageDataProvider;
 
+		private string? _lastSyncToken;
 		private List<string> barCodes = new();
 		public bool WasSomethingSet = false;
 		public string BarCodeThatWasSet = string.Empty;
@@ -32,7 +34,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public ObservableCollection<Package> Packages { get; } = new();
+		public RangeObservableCollection<Package> Packages { get; } = new();
 
 		// Indicates the user currently has keyboard focus in an editable field
 		// (e.g. recipient name/address/phone). Autosave should be suppressed
@@ -86,7 +88,7 @@ namespace PrintAndScan4Ukraine.ViewModel
 			DateTime SysDate = DateTime.Now;
 			DateTime ServDate = await _packageDataProvider.GetServerDate();
 			TimeSpan diff = SysDate > ServDate ? SysDate - ServDate : ServDate - SysDate;
-			if (diff.TotalHours > 5)
+			if (diff.TotalHours > 1)
 			{
 				Libmiroppb.Log("System time out of sync");
 				MessageBox.Show($"{Loc.Tr("PAS4U.MainWindow.SystemTimeOutOfSync", "We detected that the current system time is out of sync. Please fix or run this application as Administrator")}");

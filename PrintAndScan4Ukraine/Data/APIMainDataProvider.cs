@@ -5,6 +5,7 @@ using PrintAndScan4Ukraine.Model;
 using System;
 using System.Globalization;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -77,11 +78,19 @@ namespace PrintAndScan4Ukraine.Data
                 var requestBody = new
                 {
                     id = user.Id,
-                    lastcheckin = DateTime.Now
+                    // Send a naive datetime (no time-zone offset) so MySQL can store it.
+                    lastcheckin = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 };
 
                 var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("/heartbeat", content, cancellationToken).ConfigureAwait(false);
+
+                using var request = new HttpRequestMessage(HttpMethod.Post, "/heartbeat") { Content = content };
+                if (!string.IsNullOrEmpty(Secrets.ApiKey))
+                {
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Secrets.ApiKey);
+                }
+
+                var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {

@@ -1,3 +1,14 @@
+v. 1.8.0.0
+
+Improve package sync performance and add local cache
+
+- Enable gzip compression for API responses
+- Bulk-update package collection to reduce UI churn
+- Avoid full reload after scanning a new package
+- Add delta sync endpoint and client support
+- Cache packages locally for instant startup
+- Fix heartbeat authorization and datetime handling
+
 v. 1.7.3.0
 
 - Fix for Content List clearing

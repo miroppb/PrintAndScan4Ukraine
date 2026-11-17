@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Windows;
@@ -22,7 +23,8 @@ namespace PrintAndScan4Ukraine.Data
                 PooledConnectionLifetime = TimeSpan.FromMinutes(5),
                 PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2),
                 MaxConnectionsPerServer = 10,
-                EnableMultipleHttp2Connections = true
+                EnableMultipleHttp2Connections = true,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
             };
 
             Client = new HttpClient(handler, disposeHandler: true)
