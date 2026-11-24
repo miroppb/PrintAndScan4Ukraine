@@ -27,12 +27,18 @@ namespace PrintAndScan4Ukraine.ViewModel
 		private const int CacheVersion = 1;
 		private static string CachePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PrintAndScan4Ukraine", "packages.cache.json");
 
+		private static readonly object CacheFileLock = new();
+
 		private bool TryLoadCache()
 		{
 			try
 			{
 				if (!File.Exists(CachePath)) return false;
-				var json = File.ReadAllText(CachePath);
+				string json;
+				lock (CacheFileLock)
+				{
+					json = File.ReadAllText(CachePath);
+				}
 				var cache = JsonConvert.DeserializeObject<PackageCache>(json);
 				if (cache == null || cache.Version != CacheVersion || cache.Packages == null) return false;
 
@@ -69,7 +75,27 @@ namespace PrintAndScan4Ukraine.ViewModel
 						SyncToken = token,
 						Packages = snapshot
 					};
-					File.WriteAllText(CachePath, JsonConvert.SerializeObject(cache));
+					var json = JsonConvert.SerializeObject(cache);
+
+					// The cache file may be touched by another thread/process (e.g. a
+					// concurrent save or an antivirus scan), so retry a few times
+					// instead of throwing "file is being used by another process".
+					lock (CacheFileLock)
+					{
+						const int maxAttempts = 10;
+						for (int attempt = 0; attempt < maxAttempts; attempt++)
+						{
+							try
+							{
+								File.WriteAllText(CachePath, json);
+								break;
+							}
+							catch (IOException) when (attempt < maxAttempts - 1)
+							{
+								System.Threading.Thread.Sleep(100);
+							}
+						}
+					}
 				}
 				catch (Exception ex)
 				{

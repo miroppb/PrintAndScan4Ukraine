@@ -1,3 +1,7 @@
+v. 1.8.0.1
+
+- Fix cache file write contention and clarify missing API key on unauthorized server-date call
+
 v. 1.8.0.0
 
 Improve package sync performance and add local cache

@@ -367,3 +367,4 @@ secrets.cs
 *.ifp
 *.py
 *.env
+/requirements.txt

@@ -379,7 +379,14 @@ namespace PrintAndScan4Ukraine.Data
             {
                 var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 Libmiroppb.Log($"Failed to get server date: {response.StatusCode} - {error}", Libmiroppb.LogType.Error);
-                MessageBox.Show($"Failed to get server date: {response.StatusCode} - {error}");
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized && string.IsNullOrWhiteSpace(Secrets.ApiKey))
+                {
+                    MessageBox.Show("API key is missing. Please contact your administrator.");
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to get server date: {response.StatusCode} - {error}");
+                }
                 return DateTime.Now;
             }
 
